@@ -21,7 +21,7 @@ export default function PolicyForm({ sessionId, leaves }: { sessionId: string; l
   const changed = leaves.filter((l) => vals[l.path] !== String(l.value)).map((l) => ({ path: l.path, value: vals[l.path] }));
   return (
     <div>
-      <div style={{ display: "flex", gap: 8, margin: "8px 0", position: "sticky", top: 0, background: "white", padding: 8 }}>
+      <div style={{ display: "flex", gap: 8, margin: "8px 0", position: "sticky", top: 0, background: "transparent", padding: 8 }}>
         <button disabled={!changed.length} onClick={() => send({ changes: changed })}>Save {changed.length || ""} change(s) and rerun</button>
         <button onClick={() => send({ reset: true })}>Reset to defaults</button>
         {msg && <span>{msg}</span>}
@@ -30,7 +30,7 @@ export default function PolicyForm({ sessionId, leaves }: { sessionId: string; l
       <table cellPadding={3}><tbody>
         {leaves.map((l) => (
           <tr key={l.path}><td style={{ fontFamily: "monospace", fontSize: 13 }}>{l.path}</td>
-            <td><input value={vals[l.path]} onChange={(e) => setVals({ ...vals, [l.path]: e.target.value })} style={{ width: 90, background: vals[l.path] !== String(l.value) ? "#fef3c7" : undefined }} /></td></tr>
+            <td><input value={vals[l.path]} onChange={(e) => setVals({ ...vals, [l.path]: e.target.value })} style={{ width: 90, background: vals[l.path] !== String(l.value) ? "rgba(245,165,36,0.18)" : undefined }} /></td></tr>
         ))}
       </tbody></table>
     </div>

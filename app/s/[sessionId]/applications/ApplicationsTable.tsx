@@ -35,7 +35,7 @@ export default function ApplicationsTable({ sessionId, rows, statuses }: { sessi
           <tr key={r.id}>
             <td><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.id)}`}>{r.id}</Link></td>
             <td>{r.name}<div className="muted small">{r.city}</div></td>
-            <td><span className={`pill ${r.cls}`}>{r.status}</span>{r.review && <div className="small" style={{ color: "#9a3412" }}>⚑ needs a human</div>}</td>
+            <td><span className={`pill ${r.cls}`}>{r.status}</span>{r.review && <div className="small" style={{ color: "var(--accent-2)" }}>⚑ needs a human</div>}</td>
             <td>{r.owner}</td><td>{r.score ?? "–"}</td><td>{r.pin ?? "–"}</td>
             <td className="small">{r.reason}</td><td className="small">{r.next}</td>
           </tr>

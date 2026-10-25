@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DEFAULT_POLICY as P, fastestLaunch } from "@/lib/engine/policy";
+import cities from "@/config/cities.json";
 
 export const metadata = { title: "How this decides" };
 
@@ -7,14 +8,14 @@ export default function How() {
   const tiers = Object.entries(P.tiers);
   const withSpace = fastestLaunch(P, true), noSpace = fastestLaunch(P, false);
   return (
-    <main style={{ lineHeight: 1.5 }}>
+    <main className="page card" style={{ lineHeight: 1.6, margin: "32px auto" }}>
       <p><Link href="/">← Upload</Link></p>
       <h1>How this decides</h1>
       <p>A rules engine makes every decision from your spreadsheet and an editable brand policy. AI (Google Gemini) only reads free text into quoted facts, translates, and explains stored reasons in chat. It never sets a status. A manager confirms every recommendation before agreement and fee.</p>
 
       <h2>Decision flow</h2>
       <ol>
-        <li><b>Read and check the file.</b> Pins become 6-digit text. Broken data (wrong city for pin, invalid pin, duplicate ID, state outside Karnataka, missing required field) puts the application <i>On hold</i>; nothing is guessed.</li>
+        <li><b>Read and check the file.</b> Pins become 6-digit text. Broken data (wrong city for pin, invalid pin, duplicate ID, state outside {cities[0].state}, missing required field) puts the application <i>On hold</i>; nothing is guessed.</li>
         <li><b>Match territory by pin.</b> Real capacity = open slots, capped by territory pins with no existing store. A pin in two territories belongs to the higher-priority one.</li>
         <li><b>Gates.</b> G1 pin in no territory → redirect within the city or reject. G2 pin already has a store → redirect to a free pin or waitlist. G3 investment below {P.gates.reject_below_investment_pct}% of the tier minimum → reject. G4 below 100% → on hold with the gap shown.</li>
         <li><b>Readiness score out of 100.</b> Investment headroom, experience, business relevance (from AI, neutral if unread), space, floor, size, timeline realism, payback and completeness, each weight × a policy percentage.</li>

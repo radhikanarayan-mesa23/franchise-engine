@@ -2,10 +2,15 @@ import { getSession, latestSnapshots } from "@/lib/db/repo";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS } from "@/lib/ui";
 import { resolveTerritories } from "@/lib/engine/territory";
-import PinBoard, { type TerritoryCard } from "./PinBoard";
+import MapView, { type TerritoryCard, type OutsideMarker } from "./MapView";
+import pinCoords from "@/config/pins.json";
 
-export default async function PinsTab({ params }: { params: Promise<{ sessionId: string }> }) {
+const coords = pinCoords as unknown as Record<string, [number, number] | string>;
+const at = (pin: string) => (Array.isArray(coords[pin]) ? (coords[pin] as [number, number]) : null);
+
+export default async function PinsTab({ params, searchParams }: { params: Promise<{ sessionId: string }>; searchParams: Promise<{ t?: string }> }) {
   const { sessionId } = await params;
+  const { t: focus } = await searchParams;
   const s = (await getSession(sessionId))!;
   const [snap] = await latestSnapshots(sessionId, 1);
   const byId = new Map(snap.decisions.map((d) => [d.applicationId, d]));
@@ -21,7 +26,7 @@ export default async function PinsTab({ params }: { params: Promise<{ sessionId:
       const sum = summary.get(t.id);
       const inTerritory = snap.decisions.filter((d) => d.territoryId === t.id);
       return {
-        id: t.id, city: t.city, tier: t.tier, priority: t.priority, openSlots: t.openSlots, realCapacity: sum?.realCapacity ?? 0,
+        id: t.id, city: t.city, state: t.state, tier: t.tier, priority: t.priority, openSlots: t.openSlots, realCapacity: sum?.realCapacity ?? 0,
         filled: inTerritory.filter((d) => d.assignedPin).length, priorities: order,
         flags: (sum?.flags ?? []).map((f) => `${f.code.replace(/_/g, " ")}: ${Object.values(f.params).join(", ")}`),
         pins: t.pins.map((pin) => {
@@ -37,7 +42,7 @@ export default async function PinsTab({ params }: { params: Promise<{ sessionId:
             : holder ? `Assigned to ${holder.applicationId} ${holder.name} (score ${holder.score?.total}). ${holder.reasons.map(render).find((r) => r.includes(pin)) ?? ""}`
             : "Free — no applicant won this pin in the current run.";
           return {
-            pin, state: elsewhere ? "store" : store ? "store" : holder ? "taken" : "free", label: elsewhere ? `in ${ownedBy}` : store ? store.id : holder ? holder.applicationId : "free", why,
+            pin, coord: at(pin), state: elsewhere ? "elsewhere" : store ? "store" : holder ? "taken" : "free", label: elsewhere ? `in ${ownedBy}` : store ? store.id : holder ? holder.applicationId : "free", why,
             contested: appliedHere.length > 1, alsoIn: other,
             applicants: appliedHere.map((d) => ({ id: d.applicationId, name: d.name, status: d.status, cls: STATUS_CLASS[d.status], score: d.score?.total ?? null, reason: d.reasons[0] ? render(d.reasons[0]) : "" })),
           };
@@ -47,16 +52,11 @@ export default async function PinsTab({ params }: { params: Promise<{ sessionId:
       };
     });
 
-  return (
-    <>
-      <p className="muted">How pin codes were decided. Each territory&apos;s real capacity is its open slots, capped by pins with no existing store. Click a pin to see who wanted it and why it went where it did. Changes here are what-ifs: they change inputs and the engine re-decides everyone.</p>
-      <div className="small" style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
-        <span><span className="pin store" style={{ padding: "1px 8px" }}>ST</span> existing store</span>
-        <span><span className="pin taken" style={{ padding: "1px 8px" }}>APP</span> assigned</span>
-        <span><span className="pin free" style={{ padding: "1px 8px" }}>free</span> open</span>
-        <span><span className="pin contested" style={{ padding: "1px 8px" }}>!</span> more than one applicant wanted it</span>
-      </div>
-      <PinBoard sessionId={sessionId} territories={cards} />
-    </>
-  );
+  const inTerritories = new Set(s.territories.flatMap((t) => t.pins));
+  const outside: OutsideMarker[] = s.applications.filter((a) => !inTerritories.has(a.pin)).map((a) => {
+    const d = byId.get(a.id);
+    return { id: a.id, name: a.name, city: a.city, pin: a.pin, coord: at(a.pin), status: d?.status ?? "", cls: d ? STATUS_CLASS[d.status] : "", reason: d?.reasons[0] ? render(d.reasons[0]) : "" };
+  });
+  const storeMarkers = s.stores.filter((st) => !inTerritories.has(st.pin)).map((st) => ({ id: st.id, city: st.city, pin: st.pin, coord: at(st.pin) }));
+  return <MapView sessionId={sessionId} territories={cards} outside={outside} stores={storeMarkers} focus={focus ?? null} />;
 }

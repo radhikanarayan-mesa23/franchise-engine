@@ -42,7 +42,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       <p><b>Owner:</b> {d.owner} · <b>Next step:</b> {render(d.nextStep)}</p>
       <p><b>Territory:</b> {d.territoryId ?? "none"} · <b>Assigned pin:</b> {d.assignedPin ?? "none"} · <b>Applied pin:</b> {app.pin}</p>
 
-      {needsApplicant && (<section style={{ background: "#f9fafb", padding: 8, borderRadius: 6 }}>
+      {needsApplicant && (<section style={{ background: "rgba(255,255,255,0.05)", padding: 8, borderRadius: 6 }}>
         <b>Drafted update message ({app.language}, not sent):</b>
         <div style={{ whiteSpace: "pre-wrap" }}>{draftLines.join("\n")}</div>
         {linkUrl ? <p>Update link: <a href={linkUrl}>{linkUrl}</a></p> : <UpdateLinkButton sessionId={sessionId} applicationId={id} />}
@@ -76,7 +76,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
           {d.signals.timing.evidence && <li>Timing: “{d.signals.timing.evidence}”{d.signals.timing.months_from_now !== null ? ` (~${d.signals.timing.months_from_now} months)` : ""}</li>}
         </ul>
       ) : <p>Free text was not read by AI (unavailable); decided on structured fields only.</p>}
-      <p style={{ color: "#666" }}>AI only extracts quoted facts. It never sets a status.</p>
+      <p style={{ color: "var(--muted)" }}>AI only extracts quoted facts. It never sets a status.</p>
 
       {pipe && (<><h3>Pipeline · launch {pipe.launchDate}{pipe.slipped ? ` (slipped ${pipe.slipDays} days)` : ""}</h3>
         <table cellPadding={4}><thead><tr><th align="left">Stage</th><th align="left">Owner</th><th align="left">Expected</th><th align="left">Done</th></tr></thead>
@@ -85,7 +85,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       {review.length > 0 && (<><h3>Review log</h3><ul>{review.map((r, i) => <li key={i}>{r.action} — {r.reason || "no reason given"} ({r.at.slice(0, 10)})</li>)}</ul></>)}
 
       {d.flags.length > 0 && (<><h3>Data flags</h3><ul>{d.flags.map((f, i) => <li key={i}>[{f.severity}] {f.code} {f.field ? `(${f.field})` : ""}</li>)}</ul></>)}
-      <p style={{ color: "#666" }}>Policy v{d.policyVersion} · computed {d.computedAt}</p>
+      <p style={{ color: "var(--muted)" }}>Policy v{d.policyVersion} · computed {d.computedAt}</p>
     </main>
   );
 }

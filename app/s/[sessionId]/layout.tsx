@@ -1,8 +1,8 @@
 import type React from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/repo";
-import SessionTabs from "./SessionTabs";
+import Sidebar from "./Sidebar";
+import Crumbs from "./Crumbs";
 
 export const dynamic = "force-dynamic";
 const APPROVED = ["Recommended for approval", "Conditionally approved"];
@@ -18,14 +18,17 @@ export default async function SessionLayout({ children, params }: { children: Re
     all: ds.length, approved: ds.filter((d) => APPROVED.includes(d.status)).length, territories: s.territories.length,
     review: ds.filter((d) => (d.humanReview || d.status === "Recommended for approval") && !done.has(d.applicationId)).length,
   };
+  const pinned = (snap?.territories ?? []).map((t) => ({ id: t.id, city: t.city, tier: t.tier, filled: t.filled, capacity: t.realCapacity }));
   return (
-    <>
-      <header className="topbar">
-        <h1><Link href="/" style={{ color: "inherit" }}>Franchise <span>decision engine</span></Link></h1>
-        <span className="muted small">Session {sessionId.slice(0, 8)} · run #{snap?.runNo} · policy v{s.policyVersion} · <Link href="/how">How this decides</Link></span>
-      </header>
-      <SessionTabs sessionId={sessionId} counts={counts} />
-      <main className="page">{children}</main>
-    </>
+    <div className="shell">
+      <Sidebar sessionId={sessionId} counts={counts} pinned={pinned} />
+      <div className="content">
+        <header className="topbar">
+          <Crumbs />
+          <span className="muted small">Session {sessionId.slice(0, 8)} · run #{snap?.runNo} · policy v{s.policyVersion}</span>
+        </header>
+        <main className="page">{children}</main>
+      </div>
+    </div>
   );
 }

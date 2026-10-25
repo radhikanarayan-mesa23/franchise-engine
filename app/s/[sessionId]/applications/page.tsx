@@ -3,6 +3,7 @@ import { diffDecisions } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS, STATUS_ORDER } from "@/lib/ui";
 import ChatPanel from "../ChatPanel";
+import StatCard from "@/components/StatCard";
 import ApplicationsTable, { type Row } from "./ApplicationsTable";
 
 export default async function ApplicationsTab({ params }: { params: Promise<{ sessionId: string }> }) {
@@ -22,10 +23,10 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   return (
     <>
       <div className="strip" style={{ marginBottom: 16 }}>
-        <div className="stat"><b>{ds.length}</b>applications processed</div>
-        <div className="stat"><b>{pct(ds.filter((d) => d.humanReview).length)}%</b>need a human</div>
-        <div className="stat"><b>{filled}/{slots}</b>real slots filled</div>
-        <div className="stat"><b>{pct(ds.filter((d) => d.nextStep).length)}%</b>have a clear next step</div>
+        <StatCard label="Applications processed" value={ds.length} icon="users" />
+        <StatCard label="Need a human" value={pct(ds.filter((d) => d.humanReview).length)} suffix="%" icon="flag" delay={60} />
+        <StatCard label="Real slots filled" value={filled} total={slots} icon="pin" delay={120} />
+        <StatCard label="Clear next step" value={pct(ds.filter((d) => d.nextStep).length)} suffix="%" icon="steps" delay={180} />
       </div>
       {diff.length > 0 && <div className="diff" style={{ marginBottom: 16 }}><b>Changed in the last run ({snap.trigger}):</b>
         <ul style={{ margin: "4px 0" }}>{diff.map((x) => <li key={x.applicationId}>{x.applicationId} {x.name}: {x.from ?? "new"} → {x.to ?? "removed"}{x.scoreFrom !== x.scoreTo ? ` (score ${x.scoreFrom ?? "–"} → ${x.scoreTo ?? "–"})` : ""}</li>)}</ul></div>}

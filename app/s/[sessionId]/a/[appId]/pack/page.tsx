@@ -52,7 +52,7 @@ export default async function Pack({ params, searchParams }: { params: Promise<{
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <main className="pack" lang={lang === "Kannada" ? "kn" : lang === "Hindi" ? "hi" : "en"}>
+    <main className="pack paper" lang={lang === "Kannada" ? "kn" : lang === "Hindi" ? "hi" : "en"}>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans:wght@400;600&display=swap" />
       <style>{`
         .pack { font-family: "Noto Sans", "Noto Sans Kannada", "Noto Sans Devanagari", system-ui, sans-serif; }

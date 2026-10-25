@@ -10,5 +10,5 @@ export default function UpdateLinkButton({ sessionId, applicationId }: { session
     const j = await res.json();
     if (!res.ok) setErr(j.error === "nothing_to_fix" ? "Nothing for the applicant to fix." : j.error); else router.refresh();
   }
-  return <>{" "}<button onClick={create}>Create applicant update link</button>{err && <span style={{ color: "crimson" }}> {err}</span>}</>;
+  return <>{" "}<button onClick={create}>Create applicant update link</button>{err && <span style={{ color: "var(--bad)" }}> {err}</span>}</>;
 }
