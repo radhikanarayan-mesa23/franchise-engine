@@ -3,7 +3,8 @@ import type { Application, Decision, Floor, SpaceStatus } from "@/lib/types";
 import { addNote, getNotes, getSession, latestSnapshots, savePolicy, upsertApplications } from "@/lib/db/repo";
 import { moveStage } from "@/lib/session/stage";
 import { normaliseLanguage, normalisePin, num, text } from "@/lib/ingest/normalise";
-import { setPolicyPath, validatePolicy } from "@/lib/engine/policy";
+import { DEFAULT_POLICY, setPolicyPath, validatePolicy } from "@/lib/engine/policy";
+import cities from "@/config/cities.json";
 import type { DiffItem } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
 import { rerun } from "@/lib/session/rerun";
@@ -40,7 +41,7 @@ export function applyField(a: Application, field: string, value: string): string
     case "Space size (sq ft)": a.sizeSqft = num(v); return needNum(a.sizeSqft);
     case "Floor": { if (v === "") { a.floor = null; return null; } const f = pick(FLOORS); if (!f) return `Floor must be one of: ${FLOORS.join(", ")}`; a.floor = f; return null; }
     case "Target launch (months)": a.targetLaunchMonths = num(v); return needNum(a.targetLaunchMonths);
-    case "Preferred language": a.language = normaliseLanguage(v, ["Kannada", "English", "Hindi"], "English"); return null;
+    case "Preferred language": a.language = normaliseLanguage(v, DEFAULT_POLICY.training.languages, DEFAULT_POLICY.training.default_language); return null;
     case "Notes from applicant": a.notes = text(v); return null;
     default: return `Unknown field "${field}"`;
   }
@@ -108,8 +109,8 @@ export function sessionTools(sessionId: string) {
       const { s } = await load();
       const max = Math.max(0, ...s.applications.map((a) => Number(a.id.match(/^APP-(\d+)$/)?.[1] ?? 0)));
       const id = `APP-${String(max + 1).padStart(3, "0")}`;
-      const app: Application = { id, name: "", city: "", state: "Karnataka", pin: "", investmentLakh: null, experienceYears: null, business: null,
-        space: null, sizeSqft: null, floor: null, targetLaunchMonths: null, language: "English", notes: null, source: "chat" };
+      const app: Application = { id, name: "", city: "", state: cities[0].state, pin: "", investmentLakh: null, experienceYears: null, business: null,
+        space: null, sizeSqft: null, floor: null, targetLaunchMonths: null, language: s.policy.training.default_language as Application["language"], notes: null, source: "chat" };
       const errors = (fields as FieldChange[] ?? []).map((c) => applyField(app, c.field, String(c.value))).filter(Boolean);
       if (errors.length) return { error: "invalid_values", details: errors, nothing_added: true };
       await upsertApplications(sessionId, [app]);

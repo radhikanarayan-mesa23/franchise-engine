@@ -1,3 +1,4 @@
+import { reason } from "@/lib/reasons/catalog";
 import type { Application, Decision, Flag, Owner, Reason, Status } from "@/lib/types";
 import type { Allocation } from "./allocate";
 import type { GateOutcome } from "./gates";
@@ -21,12 +22,12 @@ export interface DecideInput {
 /** Fixable gaps that turn a slot win into a conditional approval. */
 function gaps(app: Application, minSize: number, policy: Policy): Reason[] {
   const out: Reason[] = [];
-  if (app.space === "Not yet identified" || app.space === null) out.push({ code: "cond_find_space", params: { minSize }, impact: 30 });
-  else if (app.space === "Identified - tenure unknown") out.push({ code: "cond_confirm_tenure", params: {}, impact: 20 });
-  else if (app.sizeSqft === null || app.sizeSqft < minSize) out.push({ code: "cond_size", params: { minSize, size: app.sizeSqft ?? "unknown" }, impact: 15 });
+  if (app.space === "Not yet identified" || app.space === null) out.push(reason("cond_find_space", { minSize }));
+  else if (app.space === "Identified - tenure unknown") out.push(reason("cond_confirm_tenure", {}));
+  else if (app.sizeSqft === null || app.sizeSqft < minSize) out.push(reason("cond_size", { minSize, size: app.sizeSqft ?? "unknown" }));
   if (app.space !== "Not yet identified" && app.floor !== null && policy.space.conditional_floors.includes(app.floor))
-    out.push({ code: "cond_floor", params: { floor: app.floor }, impact: 15 });
-  if (app.space !== "Not yet identified" && app.floor === null) out.push({ code: "cond_floor", params: { floor: "not given" }, impact: 10 });
+    out.push(reason("cond_floor", { floor: app.floor }));
+  if (app.space !== "Not yet identified" && app.floor === null) out.push(reason("cond_floor", { floor: "not given" }));
   return out;
 }
 
@@ -49,26 +50,26 @@ export function decide(d: DecideInput): Decision {
   const minSize = territory ? policy.tiers[territory.tier].min_space_sqft : 0;
   const s = d.score?.total ?? null;
 
-  if (d.score) reasons.push({ code: "score_total", params: { score: d.score.total, approve: b.approve_min_score, reject: b.reject_below_score }, impact: 10 });
-  if (!d.signals && (app.business || app.notes)) reasons.push({ code: "text_not_read", params: {}, impact: 1 });
+  if (d.score) reasons.push(reason("score_total", { score: d.score.total, approve: b.approve_min_score, reject: b.reject_below_score }));
+  if (!d.signals && (app.business || app.notes)) reasons.push(reason("text_not_read", {}));
 
   switch (gate.kind) {
     case "hold_critical":
       status = "On hold";
       reasons.unshift(...gate.reasons);
-      gate.reasons.forEach((r) => conditions.push({ text: { code: "cond_fix_field", params: { field: String(r.params.field || r.code) }, impact: r.impact }, dueDate: holdDate }));
-      wwc.push({ code: "wwc_fix", params: {}, impact: 100 });
+      gate.reasons.forEach((r) => conditions.push({ text: reason("cond_fix_field", { field: String(r.params.field || r.code) }), dueDate: holdDate }));
+      wwc.push(reason("wwc_fix", {}));
       break;
     case "reject":
       status = "Rejected";
       reasons.unshift(gate.reason);
-      if (gate.reason.code === "G3_investment_too_low") wwc.push({ code: "wwc_investment", params: { min: gate.reason.params.min, tier: gate.reason.params.tier }, impact: 100 });
-      else wwc.push({ code: "wwc_territory", params: { city: app.city }, impact: 100 });
+      if (gate.reason.code === "G3_investment_too_low") wwc.push(reason("wwc_investment", { min: gate.reason.params.min, tier: gate.reason.params.tier }));
+      else wwc.push(reason("wwc_territory", { city: app.city }));
       break;
     case "waitlist":
       status = "Waitlisted";
       reasons.unshift(gate.reason);
-      wwc.push({ code: "wwc_slot", params: { territory: gate.territory.id, winnerScore: "-" }, impact: 100 });
+      wwc.push(reason("wwc_slot", { territory: gate.territory.id, winnerScore: "-" }));
       break;
     default: {
       if (gate.kind === "redirect_candidate") reasons.unshift(gate.reason);
@@ -76,40 +77,40 @@ export function decide(d: DecideInput): Decision {
       const a = d.alloc;
       if (s !== null && s < b.reject_below_score && gate.kind !== "hold_investment") {
         status = "Rejected";
-        reasons.unshift({ code: "score_below_reject", params: { score: s, reject: b.reject_below_score }, impact: 100 });
-        wwc.push({ code: "wwc_score", params: { gap: round(b.approve_min_score - s), approve: b.approve_min_score, hint: weakest(d.score!.parts, policy) }, impact: 100 });
+        reasons.unshift(reason("score_below_reject", { score: s, reject: b.reject_below_score }));
+        wwc.push(reason("wwc_score", { gap: round(b.approve_min_score - s), approve: b.approve_min_score, hint: weakest(d.score!.parts, policy) }));
       } else if (!a || a.kind !== "won") {
         status = "Waitlisted";
-        if (a?.kind === "lost_pin") reasons.unshift({ code: "lost_pin", params: { pin: app.pin, winner: a.winner, winnerScore: a.winnerScore, score: s ?? 0, territory: territory!.id }, impact: 90 });
-        else reasons.unshift({ code: "lost_slot", params: { territory: territory!.id, capacity: d.territoryCapacity, winner: a?.winner ?? "-", winnerScore: a?.winnerScore ?? 0, score: s ?? 0, gap: round((a?.winnerScore ?? 0) - (s ?? 0)) }, impact: 90 });
-        wwc.push({ code: "wwc_slot", params: { territory: territory!.id, winnerScore: a?.winnerScore ?? 0 }, impact: 100 });
-        if (gate.kind === "hold_investment") { status = "On hold"; conditions.push({ text: { code: "cond_close_gap", params: { gap: gate.reason.params.gap }, impact: 90 }, dueDate: holdDate }); }
+        if (a?.kind === "lost_pin") reasons.unshift(reason("lost_pin", { pin: app.pin, winner: a.winner, winnerScore: a.winnerScore, score: s ?? 0, territory: territory!.id }));
+        else reasons.unshift(reason("lost_slot", { territory: territory!.id, capacity: d.territoryCapacity, winner: a?.winner ?? "-", winnerScore: a?.winnerScore ?? 0, score: s ?? 0, gap: round((a?.winnerScore ?? 0) - (s ?? 0)) }));
+        wwc.push(reason("wwc_slot", { territory: territory!.id, winnerScore: a?.winnerScore ?? 0 }));
+        if (gate.kind === "hold_investment") { status = "On hold"; conditions.push({ text: reason("cond_close_gap", { gap: gate.reason.params.gap }), dueDate: holdDate }); }
       } else {
         assignedPin = a.pin;
-        reasons.push({ code: "won_slot", params: { rank: a.rank, count: a.count, territory: territory!.id, capacity: d.territoryCapacity, pin: a.pin }, impact: 50 });
+        reasons.push(reason("won_slot", { rank: a.rank, count: a.count, territory: territory!.id, capacity: d.territoryCapacity, pin: a.pin }));
         const g = gaps(app, minSize, policy);
         if (gate.kind === "hold_investment") {
           status = "On hold";
-          reasons.push({ code: "slot_reserved", params: { territory: territory!.id, pin: a.pin, date: holdDate }, impact: 40 });
-          conditions.push({ text: { code: "cond_close_gap", params: { gap: gate.reason.params.gap }, impact: 90 }, dueDate: holdDate });
-          wwc.push({ code: "wwc_investment", params: { min: gate.reason.params.min, tier: gate.reason.params.tier }, impact: 100 });
+          reasons.push(reason("slot_reserved", { territory: territory!.id, pin: a.pin, date: holdDate }));
+          conditions.push({ text: reason("cond_close_gap", { gap: gate.reason.params.gap }), dueDate: holdDate });
+          wwc.push(reason("wwc_investment", { min: gate.reason.params.min, tier: gate.reason.params.tier }));
         } else if (a.redirected) {
           status = "Redirected";
-          reasons.push({ code: "redirected_pin", params: { pin: a.pin, territory: territory!.id, ownPin: app.pin }, impact: 60 });
-          conditions.push({ text: { code: "cond_accept_pin", params: { pin: a.pin }, impact: 60 }, dueDate: holdDate });
+          reasons.push(reason("redirected_pin", { pin: a.pin, territory: territory!.id, ownPin: app.pin }));
+          conditions.push({ text: reason("cond_accept_pin", { pin: a.pin }), dueDate: holdDate });
           g.forEach((c) => conditions.push({ text: c, dueDate: condDate }));
-          wwc.push({ code: "wwc_accept", params: { pin: a.pin }, impact: 100 });
+          wwc.push(reason("wwc_accept", { pin: a.pin }));
         } else if (g.length) {
           status = "Conditionally approved";
           g.forEach((c) => conditions.push({ text: c, dueDate: condDate }));
-          wwc.push({ code: "wwc_conditions", params: { date: condDate }, impact: 100 });
+          wwc.push(reason("wwc_conditions", { date: condDate }));
         } else if (s !== null && s >= b.approve_min_score) {
           status = "Recommended for approval";
         } else {
           status = "Human review";
-          review.push({ code: "review_middle", params: { score: s ?? 0, approve: b.approve_min_score }, impact: 50 });
-          reasons.push({ code: "score_middle", params: { score: s ?? 0, approve: b.approve_min_score }, impact: 40 });
-          wwc.push({ code: "wwc_score", params: { gap: round(b.approve_min_score - (s ?? 0)), approve: b.approve_min_score, hint: weakest(d.score!.parts, policy) }, impact: 100 });
+          review.push(reason("review_middle", { score: s ?? 0, approve: b.approve_min_score }));
+          reasons.push(reason("score_middle", { score: s ?? 0, approve: b.approve_min_score }));
+          wwc.push(reason("wwc_score", { gap: round(b.approve_min_score - (s ?? 0)), approve: b.approve_min_score, hint: weakest(d.score!.parts, policy) }));
         }
       }
     }
@@ -118,29 +119,29 @@ export function decide(d: DecideInput): Decision {
   // Human-review triggers (flag, not status): near a threshold, AI risk flags, contradictions, ties.
   if (s !== null) {
     for (const [line, threshold] of [["approve", b.approve_min_score], ["reject", b.reject_below_score]] as const)
-      if (Math.abs(s - threshold) <= b.human_review_margin) review.push({ code: "review_near_threshold", params: { score: s, margin: b.human_review_margin, line, threshold }, impact: 30 });
+      if (Math.abs(s - threshold) <= b.human_review_margin) review.push(reason("review_near_threshold", { score: s, margin: b.human_review_margin, line, threshold }));
   }
   if (d.signals && policy.bands.ai_risk_flags_need_review)
-    d.signals.risk_flags.forEach((f) => review.push({ code: "review_ai_flag", params: { type: f.type, evidence: f.evidence }, impact: 40 }));
-  d.signals?.contradictions.forEach((c) => review.push({ code: "review_contradiction", params: { field: c.field, evidence: c.evidence }, impact: 40 }));
-  if (d.tie) review.push({ code: "review_tie", params: { score: s ?? 0, other: d.tie.other, rule: policy.allocation.tie_breakers.join(", ") }, impact: 30 });
+    d.signals.risk_flags.forEach((f) => review.push(reason("review_ai_flag", { type: f.type, evidence: f.evidence })));
+  d.signals?.contradictions.forEach((c) => review.push(reason("review_contradiction", { field: c.field, evidence: c.evidence })));
+  if (d.tie) review.push(reason("review_tie", { score: s ?? 0, other: d.tie.other, rule: policy.allocation.tie_breakers.join(", ") }));
 
   // A contradiction between text and fields is never approved through: winners get a condition to resolve it.
   if ((status === "Recommended for approval" || status === "Conditionally approved") && d.signals?.contradictions.length) {
-    if (status === "Recommended for approval") wwc.push({ code: "wwc_conditions", params: { date: condDate }, impact: 100 });
+    if (status === "Recommended for approval") wwc.push(reason("wwc_conditions", { date: condDate }));
     status = "Conditionally approved";
-    d.signals.contradictions.forEach((c) => conditions.push({ text: { code: "cond_resolve_contradiction", params: { field: c.field, evidence: c.evidence }, impact: 40 }, dueDate: condDate }));
+    d.signals.contradictions.forEach((c) => conditions.push({ text: reason("cond_resolve_contradiction", { field: c.field, evidence: c.evidence }), dueDate: condDate }));
   }
 
   const nextStep: Reason =
-    review.length && status !== "Rejected" ? { code: "next_review", params: { question: reviewQuestion(review[0]) }, impact: 0 }
-    : status === "Recommended for approval" ? { code: "next_confirm", params: {}, impact: 0 }
-    : status === "Conditionally approved" ? { code: "next_conditions", params: { date: condDate }, impact: 0 }
-    : status === "On hold" ? { code: "next_fix", params: { date: holdDate }, impact: 0 }
-    : status === "Redirected" ? { code: "next_redirect", params: { pin: assignedPin ?? "" }, impact: 0 }
-    : status === "Waitlisted" ? { code: "next_waitlist", params: {}, impact: 0 }
-    : status === "Human review" ? { code: "next_review", params: { question: "approve despite middle-band score?" }, impact: 0 }
-    : { code: "next_rejected", params: {}, impact: 0 };
+    review.length && status !== "Rejected" ? reason("next_review", { question: reviewQuestion(review[0]) })
+    : status === "Recommended for approval" ? reason("next_confirm", {})
+    : status === "Conditionally approved" ? reason("next_conditions", { date: condDate })
+    : status === "On hold" ? reason("next_fix", { date: holdDate })
+    : status === "Redirected" ? reason("next_redirect", { pin: assignedPin ?? "" })
+    : status === "Waitlisted" ? reason("next_waitlist", {})
+    : status === "Human review" ? reason("next_review", { question: "approve despite middle-band score?" })
+    : reason("next_rejected", {});
 
   const movers: Status[] = ["Recommended for approval", "Conditionally approved"];
   return {

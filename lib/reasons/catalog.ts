@@ -1,3 +1,6 @@
+import reasonsConfig from "@/config/reasons.json";
+import type { Reason } from "@/lib/types";
+
 /** Reason code → English template. {name} placeholders are filled from the reason's params at display time. */
 export const CATALOG: Record<string, string> = {
   G1_no_territory: "Pin {pin} is not in any territory, and {city} has no territory with a free pin. Kept on file.",
@@ -48,3 +51,8 @@ export const CATALOG: Record<string, string> = {
   next_review: "Expansion manager to review: {question}",
   text_not_read: "Free text was not read by AI; business relevance given neutral credit.",
 };
+
+const IMPACT = reasonsConfig.impact as Record<string, number>;
+/** Build a reason; its display order comes from config/reasons.json (G5_* share the "G5" entry). */
+export const reason = (code: string, params: Reason["params"]): Reason =>
+  ({ code, params, impact: IMPACT[code] ?? IMPACT[code.split("_")[0]] ?? 0 });
