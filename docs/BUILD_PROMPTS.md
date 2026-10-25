@@ -8,7 +8,7 @@ Nine-checks gate legend: **K** = kill switches (01 problem, 02 repeated, 03 inpu
 
 ## M0: Project setup
 **Prompt**
-> Read CLAUDE.md, docs/PRD.md and docs/COMPONENT_MAP.md. Scaffold a Next.js App Router TypeScript project with the folder structure in COMPONENT_MAP section 2. Add Vitest, SheetJS (xlsx), @google/genai and @supabase/supabase-js. Create `.env.example` with GEMINI_API_KEY, GEMINI_MODEL, SUPABASE_URL, SUPABASE_SERVICE_KEY. Copy config/policy.json as given. Create config/stores.json from the Existing stores sheet (pins as strings). Do not build features yet.
+> Read CLAUDE.md, docs/PRD.md and docs/COMPONENT_MAP.md. Scaffold a Next.js App Router TypeScript project with the folder structure in COMPONENT_MAP section 2. Add Vitest, SheetJS (xlsx), @google/genai and @neondatabase/serverless. Create `.env.example` with GEMINI_API_KEY, GEMINI_MODEL, DATABASE_URL (Neon). Copy config/policy.json as given. Create config/stores.json from the Existing stores sheet (pins as strings). Do not build features yet.
 
 **Acceptance**
 - `npm run dev` and `npx vitest run` both work.
@@ -62,7 +62,7 @@ Nine-checks gate legend: **K** = kill switches (01 problem, 02 repeated, 03 inpu
 
 ## M4: Sessions, upload, snapshots, diff, minimal UI
 **Prompt**
-> Build Supabase tables per COMPONENT_MAP section 5 (SQL migration file), lib/db/repo.ts, api/upload (parse → validate → run → snapshot, returns session id), engine/diff.ts, and plain pages: upload, results table with status/owner/reason/next step and the impact strip, and a decision card page. No styling work beyond readable.
+> Build Neon Postgres tables per COMPONENT_MAP section 5 (SQL migration file), lib/db/repo.ts, api/upload (parse → validate → run → snapshot, returns session id), engine/diff.ts, and plain pages: upload, results table with status/owner/reason/next step and the impact strip, and a decision card page. No styling work beyond readable.
 
 **Acceptance**
 - Upload traps.xlsx → results page at /s/{uuid} without login.

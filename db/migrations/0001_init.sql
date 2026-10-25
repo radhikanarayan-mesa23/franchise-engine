@@ -10,8 +10,3 @@ create table if not exists pipeline_events (session_id uuid references sessions(
 create table if not exists review_actions (session_id uuid references sessions(id) on delete cascade, application_id text, action text, reason text, at timestamptz default now());
 create table if not exists update_tokens (token text primary key, session_id uuid references sessions(id) on delete cascade, application_id text, fields_requested jsonb, expires_at timestamptz);
 create table if not exists chat_messages (session_id uuid references sessions(id) on delete cascade, role text, content text, tool_calls jsonb, at timestamptz default now());
--- Server-only access with the service key; RLS on with no policies blocks anon clients.
-alter table sessions enable row level security; alter table policy_versions enable row level security; alter table applications enable row level security;
-alter table territories enable row level security; alter table stores enable row level security; alter table ai_signals enable row level security;
-alter table snapshots enable row level security; alter table notes enable row level security; alter table pipeline_events enable row level security;
-alter table review_actions enable row level security; alter table update_tokens enable row level security; alter table chat_messages enable row level security;

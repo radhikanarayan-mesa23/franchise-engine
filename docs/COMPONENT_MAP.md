@@ -56,7 +56,7 @@ lib/
   ai/extract.ts                    batch, cache, validate JSON
   ai/chat.ts                       tool loop (max 6 rounds)
   ai/translate.ts                  placeholder protect/restore + check
-  db/supabase.ts                   server client (service key, server only)
+  db/neon.ts                       server client (DATABASE_URL, server only)
   db/repo.ts                       all reads/writes
   export/xlsx.ts                   results workbook
 tests/
@@ -123,7 +123,7 @@ interface Decision {
 }
 ```
 
-## 5. Supabase tables
+## 5. Database tables (Neon Postgres, db/migrations)
 
 | Table | Key columns |
 |---|---|
@@ -139,7 +139,7 @@ interface Decision {
 | update_tokens | token (pk), session_id, application_id, fields_requested, expires_at |
 | chat_messages | session_id, role, content, tool_calls (jsonb), at |
 
-All access through server routes with the service key. No client-side Supabase writes.
+All access through server routes. No client-side database access.
 
 ## 6. Dependency order (build sequence)
 

@@ -6,7 +6,7 @@ Read `docs/PRD.md` and `docs/COMPONENT_MAP.md` before any task. Follow them over
 A franchise partner decision engine for a hackathon. Judges upload an Excel file, ask why decisions were made, and give new information. Judged on reasoning and clarity of explanations. Public link, no login.
 
 ## Stack
-Next.js (App Router, TypeScript), Vercel, Supabase (server-side only), SheetJS, @google/genai (Gemini), Vitest.
+Next.js (App Router, TypeScript), Vercel, Neon Postgres (server-side only, DATABASE_URL), SheetJS, @google/genai (Gemini), Vitest.
 
 ## Non-negotiable rules
 1. **The engine decides; AI never does.** Statuses come only from `lib/engine/*`. Gemini output enters the engine only as validated signals from `lib/ai/extract.ts`.
