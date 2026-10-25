@@ -196,3 +196,4 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 - **Blank free text** never goes to the model: relevance "none", empty lists.
 - **Contradictions:** a winner with a contradiction becomes Conditionally approved with a "confirm {field}" condition, and is flagged for review. AI risk flags only add human review; they never change score or status.
 - **AI gateway:** Google Gemini models only, reached only through OpenRouter (OPENROUTER_API_KEY), pinned to Google's own infrastructure with no provider fallback. Default model google/gemini-3.7-flash (config/ai.json, overridable with GEMINI_MODEL).
+- **Numbers left in lib/engine** are only reason-ordering ranks (`impact`) and /100 percent conversions; every business threshold, weight and duration is read from policy.

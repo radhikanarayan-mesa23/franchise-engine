@@ -20,6 +20,7 @@ export default function Upload() {
         <input type="file" name="file" accept=".xlsx" required /> <button disabled={busy}>{busy ? "Deciding…" : "Upload and decide"}</button>
       </form>
       {err && <p style={{ color: "crimson" }}>{err}</p>}
+      <p><a href="/how">How this decides →</a></p>
     </main>
   );
 }
