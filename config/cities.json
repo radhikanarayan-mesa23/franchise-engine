@@ -1,0 +1,44 @@
+[
+  {
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "pinPrefix": "560",
+    "tier": "Tier 1"
+  },
+  {
+    "city": "Mysuru",
+    "state": "Karnataka",
+    "pinPrefix": "570",
+    "tier": "Tier 2"
+  },
+  {
+    "city": "Mangaluru",
+    "state": "Karnataka",
+    "pinPrefix": "575",
+    "tier": "Tier 2"
+  },
+  {
+    "city": "Hubballi-Dharwad",
+    "state": "Karnataka",
+    "pinPrefix": "580",
+    "tier": "Tier 2"
+  },
+  {
+    "city": "Belagavi",
+    "state": "Karnataka",
+    "pinPrefix": "590",
+    "tier": "Tier 2"
+  },
+  {
+    "city": "Tumakuru",
+    "state": "Karnataka",
+    "pinPrefix": "572",
+    "tier": "Tier 3"
+  },
+  {
+    "city": "Davanagere",
+    "state": "Karnataka",
+    "pinPrefix": "577",
+    "tier": "Tier 3"
+  }
+]
