@@ -25,5 +25,6 @@
     "Excel",
     "PDF"
   ],
-  "translate_prompt_version": 1
+  "translate_prompt_version": 1,
+  "extract_budget_ms": 15000
 }

@@ -2,7 +2,8 @@ import "server-only";
 import type { AiSignals, Application } from "@/lib/types";
 import { db } from "@/lib/db/neon";
 import { extractSignals, type SignalCache } from "./extract";
-import { generateJson, geminiEnabled, geminiModel } from "./gemini";
+import aiConfig from "@/config/ai.json";
+import { GeminiUnavailable, generateJson, geminiEnabled, geminiModel } from "./gemini";
 
 const mem = ((globalThis as unknown as { __feSignals?: Map<string, AiSignals> }).__feSignals ??= new Map());
 
@@ -26,8 +27,11 @@ const cache: SignalCache = {
 
 /** Signals for every application; only rows whose text changed since the last read cost a Gemini call. */
 export function signalsFor(apps: Application[]) {
+  // Whole extraction shares one time budget; batches still running when it ends count as "text not read".
+  const deadline = Date.now() + aiConfig.extract_budget_ms;
+  const withinBudget = <T,>(p: Promise<T>) => Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new GeminiUnavailable("AI time budget used")), Math.max(0, deadline - Date.now())))]);
   return extractSignals(apps, {
     cache, model: geminiModel(),
-    call: geminiEnabled() ? (system, user, schema) => generateJson({ system, user, schema }) : null,
+    call: geminiEnabled() ? (system, user, schema) => withinBudget(generateJson({ system, user, schema })) : null,
   });
 }

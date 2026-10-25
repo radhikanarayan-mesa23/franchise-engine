@@ -65,7 +65,11 @@ export async function saveSnapshot(id: string, policyVersion: number, run: RunRe
     s.snaps.push({ runNo: s.snaps.length + 1, policyVersion, decisions: run.decisions, territories: run.territories, trigger });
     return;
   }
-  await snapshotInsert(id, null, policyVersion, run, trigger);
+  // Concurrent reruns can pick the same next run_no; retry on the unique-key clash.
+  for (let attempt = 0; ; attempt++) {
+    try { await snapshotInsert(id, null, policyVersion, run, trigger); return; }
+    catch (e) { if ((e as { code?: string }).code !== "23505" || attempt >= 5) throw e; }
+  }
 }
 
 export async function latestSnapshots(id: string, n = 2): Promise<Snapshot[]> {
@@ -94,13 +98,11 @@ export async function upsertApplications(id: string, apps: Application[]) {
 export async function savePolicy(id: string, policy: Policy, note: string): Promise<number> {
   const sql = db();
   if (!sql) { const d = mem.get(id)!.data; d.policy = policy; d.policyVersion += 1; return d.policyVersion; }
-  const [s] = await sql`select current_policy_version v from sessions where id = ${id}`;
-  const v = (s.v as number) + 1;
-  await sql.transaction([
-    sql`insert into policy_versions (session_id, version, policy, changed_by, change_note) values (${id}, ${v}, ${JSON.stringify(policy)}::jsonb, 'chat', ${note})`,
-    sql`update sessions set current_policy_version = ${v} where id = ${id}`,
-  ]);
-  return v;
+  // One statement: the row lock on sessions serialises concurrent edits, so versions never collide.
+  const [r] = await sql`with v as (update sessions set current_policy_version = current_policy_version + 1 where id = ${id} returning current_policy_version as version)
+    insert into policy_versions (session_id, version, policy, changed_by, change_note)
+    select ${id}, version, ${JSON.stringify(policy)}::jsonb, 'chat', ${note} from v returning version`;
+  return r.version as number;
 }
 
 export async function addNote(id: string, applicationId: string, note: string) {
