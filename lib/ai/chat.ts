@@ -21,10 +21,16 @@ export async function runChat(sessionId: string, history: ChatRow[], message: st
     { role: "user", content: message },
   ];
   const trace: ChatResult["toolCalls"] = [];
+  let emptyRetried = false;
   for (let round = 0; round <= MAX_ROUNDS; round++) {
     const msg = await chatCompletion({ temperature: 0, messages, tools: TOOLS, tool_choice: round === MAX_ROUNDS ? "none" : "auto" });
     const calls = (msg.tool_calls ?? []) as { id: string; function: { name: string; arguments: string } }[];
-    if (!calls.length) return { reply: String(msg.content ?? "").trim(), toolCalls: trace };
+    if (!calls.length) {
+      const reply = String(msg.content ?? "").trim();
+      // The model occasionally returns an empty message; ask once more before giving up.
+      if (!reply && !emptyRetried) { emptyRetried = true; round--; continue; }
+      return { reply: reply || "I couldn't put an answer together just now. Please ask again or rephrase.", toolCalls: trace };
+    }
     messages.push({ role: "assistant", content: msg.content ?? null, tool_calls: calls });
     for (const c of calls) {
       let args: Record<string, unknown> = {};
