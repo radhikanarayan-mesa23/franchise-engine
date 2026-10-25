@@ -19,6 +19,8 @@ export function validatePolicy(p: Policy): string[] {
     if (!(v.min_investment_lakh > 0) || !(v.min_space_sqft > 0) || !(v.monthly_sales_lakh > 0)) errs.push(`${t} values must be positive.`);
   for (const [k, v] of Object.entries(p.deadlines_days)) if (!(Number(v) > 0)) errs.push(`Deadline ${k} must be positive.`);
   if (!(p.payback.margin_pct > 0)) errs.push(`Margin must be positive.`);
+  if (!(p.brand_economics.royalty_pct_of_sales >= 0)) errs.push(`Royalty % cannot be negative.`);
+  if (!(p.brand_economics.projection_months > 0)) errs.push(`Projection months must be positive.`);
   return errs;
 }
 

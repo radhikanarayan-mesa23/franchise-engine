@@ -27,7 +27,8 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
             <p style={{ margin: "6px 0" }}>{confirmed.has(d.applicationId) ? "✔ Confirmed by expansion manager" : <Link href={`/s/${sessionId}/review`}>Awaiting confirmation →</Link>}</p>
             {d.conditions.length > 0 && <ul className="small" style={{ paddingLeft: 18 }}>{d.conditions.map((c, i) => <li key={i}>{render(c.text)} — by {c.dueDate}</li>)}</ul>}
             {p && <p className="small">Stage: <b>{p.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b> · next: {p.next?.label ?? "—"} ({p.next?.owner}) · launch {p.launchDate}{p.slipped ? ` ⚠ +${p.slipDays} days` : ""}</p>}
-            <p className="small">Payback (estimate): month {d.payback?.breakEvenMonth ?? "beyond horizon"} · <Link href={`${base}/pack`}>Partner pack ({d.plan?.language})</Link></p>
+            <p className="small">Investing ₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh} lakh · brand revenue ({(d.payback?.projection?.months ?? 0) / 12} yrs) ₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh} lakh · break-even month {d.payback?.breakEvenMonth ?? "–"}</p>
+            <Link href={`/s/${sessionId}/approved/${encodeURIComponent(d.applicationId)}`}><button className="primary" style={{ width: "100%" }}>Open profile snapshot →</button></Link>
           </div>
         );
       })}</div>

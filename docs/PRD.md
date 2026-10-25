@@ -197,3 +197,4 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 - **Contradictions:** a winner with a contradiction becomes Conditionally approved with a "confirm {field}" condition, and is flagged for review. AI risk flags only add human review; they never change score or status.
 - **AI gateway:** Google Gemini models only, reached only through OpenRouter (OPENROUTER_API_KEY), pinned to Google's own infrastructure with no provider fallback. Default model google/gemini-3.7-flash (config/ai.json, overridable with GEMINI_MODEL).
 - **No literals in lib/engine:** business values come from policy.json; reason display order from config/reasons.json; only /100 percent conversions remain.
+- **Brand revenue (estimate):** franchise fee (its share of setup cost) + royalty % on projected partner sales over `brand_economics.projection_months`; royalty % is an assumption in policy.

@@ -6,6 +6,6 @@ const TITLES: Record<string, string> = { upload: "Upload", applications: "Applic
 export default function Crumbs() {
   const parts = usePathname().split("/").filter(Boolean);
   const key = parts[2] ?? "applications";
-  const title = parts[4] === "pack" ? "Partner pack" : TITLES[key] ?? "Dashboard";
+  const title = parts[4] === "pack" ? "Partner pack" : key === "approved" && parts[3] ? "Profile snapshot" : TITLES[key] ?? "Dashboard";
   return <div className="crumbs">Dashboard / {title}<b>{title}{key === "a" && parts[3] ? ` · ${decodeURIComponent(parts[3])}` : ""}</b></div>;
 }

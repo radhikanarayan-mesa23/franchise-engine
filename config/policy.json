@@ -332,6 +332,12 @@
   },
   "calendar": {
     "days_per_week": 7,
-    "weeks_per_month": 4.33
+    "weeks_per_month": 4.33,
+    "months_per_year": 12
+  },
+  "brand_economics": {
+    "royalty_pct_of_sales": 6,
+    "projection_months": 36,
+    "franchise_fee_item": "Franchise fee"
   }
 }

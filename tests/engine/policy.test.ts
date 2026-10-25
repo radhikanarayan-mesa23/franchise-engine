@@ -43,3 +43,15 @@ describe("policy-driven engine", () => {
     expect(d.status).not.toBe("Recommended for approval");
   });
 });
+
+describe("brand revenue projection", () => {
+  it("brand total = franchise fee + royalty on projected sales, and follows policy", () => {
+    const d = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today }).decisions[0];
+    const pr = d.payback!.projection;
+    const base = pr.scenarios.find((s) => s.name === "Base")!;
+    expect(pr.monthly).toHaveLength(DEFAULT_POLICY.brand_economics.projection_months);
+    expect(base.brandTotalLakh).toBeCloseTo(pr.franchiseFeeLakh + (base.salesLakh * DEFAULT_POLICY.brand_economics.royalty_pct_of_sales) / 100, 1);
+    const doubled = runEngine({ applications: [ravi], territories: [ter01], policy: setPolicyPath(DEFAULT_POLICY, "brand_economics.royalty_pct_of_sales", "12"), today }).decisions[0];
+    expect(doubled.payback!.projection.scenarios.find((s) => s.name === "Base")!.royaltyLakh).toBeCloseTo(base.royaltyLakh * 2, 1);
+  });
+});

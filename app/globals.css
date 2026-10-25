@@ -131,7 +131,12 @@ details summary { cursor: pointer; color: var(--muted); } details[open] summary 
   .side-label, .side-item { display: none; } .brand { margin-bottom: 0; width: 100%; }
   .page, .topbar { padding-left: 16px; padding-right: 16px; } .popover { width: calc(100% - 28px); left: 14px !important; }
 }
+@media (max-width: 960px) { .snap-row { grid-template-columns: 1fr !important; } }
 @media print {
+  .snapshot .card, .snapshot .stat { background: #fff !important; border-color: #ddd !important; box-shadow: none !important; backdrop-filter: none !important; color: #111; break-inside: avoid; animation: none !important; }
+  .snapshot .muted, .snapshot .label { color: #555 !important; } .snapshot th { color: #555; } .snapshot td { color: #111; border-bottom-color: #e5e5e5; }
+  .snapshot .meter { background: #eee; } .snapshot .pill { border: 1px solid #ccc; } .snapshot .grid { grid-template-columns: 1fr 1fr; }
+  .snapshot a { color: #111; }
   body { background: #fff !important; color: #111; } .sidebar, .topbar, .noprint { display: none !important; }
   .shell { display: block; } .page { padding: 0; max-width: none; } .paper { padding: 0; border-radius: 0; }
 }

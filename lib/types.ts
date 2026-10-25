@@ -59,6 +59,15 @@ export interface Payback {
   scenarios: { name: string; salesPct: number; breakEvenMonth: number | null; monthlyProfitLakh: number }[];
   breakEvenMonth: number | null;
   ramp: { month: number; salesLakh: number; profitLakh: number; cumulativeLakh: number }[];
+  /** Projection over policy.brand_economics.projection_months, per scenario: partner sales/profit and brand earnings. */
+  projection: {
+    months: number; royaltyPct: number; franchiseFeeLakh: number;
+    scenarios: { name: string; salesLakh: number; partnerProfitLakh: number; royaltyLakh: number; brandTotalLakh: number }[];
+    monthly: { month: number; low: number; base: number; high: number }[];
+    /** Cumulative partner profit per scenario, to compare against the setup cost. */
+    cumulativeProfit: { month: number; low: number; base: number; high: number }[];
+    year1: { salesLakh: number; royaltyLakh: number };
+  };
 }
 
 export interface PlanStep { id: string; label: string; owner: string; start: string; end: string; weeks: number }
