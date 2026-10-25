@@ -4,6 +4,7 @@ import { buildProfile } from "@/lib/profile";
 import { STATUS_CLASS } from "@/lib/ui";
 import { Bars, ProjectionChart, SplitBar, Timeline } from "@/components/charts";
 import SnapshotActions from "./SnapshotActions";
+import PipelineAction from "@/components/PipelineAction";
 import brand from "@/config/brand.json";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,8 @@ export default async function Snapshot({ params }: { params: Promise<{ sessionId
             <span className="muted small">{a.city}, {a.state} · pin {d.assignedPin ?? a.pin} · {t ? `${t.id} (${t.tier}, ${t.priority} priority)` : "no territory"} · {a.language}</span>
           </div>
         </div>
+        {p.approved && <div className="noprint"><PipelineAction sessionId={sessionId} applicationId={id} confirmed={p.confirmed}
+          next={p.pipeline?.next ? { id: p.pipeline.next.id, label: p.pipeline.next.label, owner: p.pipeline.next.owner } : null} /></div>}
         <SnapshotActions jsonHref={`/api/profile?sessionId=${sessionId}&appId=${enc}`} xlsxHref={`/api/pack-xlsx?sessionId=${sessionId}&appId=${enc}`} packHref={`/s/${sessionId}/a/${enc}/pack`} />
       </div>
 

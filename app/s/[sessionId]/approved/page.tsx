@@ -3,6 +3,7 @@ import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
 import { STATUS_CLASS } from "@/lib/ui";
+import PipelineAction from "@/components/PipelineAction";
 
 export default async function ApprovedTab({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
@@ -24,7 +25,9 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
               <b><Link href={base}>{d.applicationId}</Link> {d.name}</b><span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status}</span>
             </div>
             <p className="small muted" style={{ margin: "6px 0" }}>{d.territoryId} · pin {d.assignedPin} · score {d.score?.total}</p>
-            <p style={{ margin: "6px 0" }}>{confirmed.has(d.applicationId) ? "✔ Confirmed by expansion manager" : <Link href={`/s/${sessionId}/review`}>Awaiting confirmation →</Link>}</p>
+            <p style={{ margin: "6px 0" }} className="small">{confirmed.has(d.applicationId) ? "✔ Confirmed by expansion manager" : "Awaiting manager approval"}</p>
+            <PipelineAction sessionId={sessionId} applicationId={d.applicationId} confirmed={confirmed.has(d.applicationId)}
+              next={p?.next ? { id: p.next.id, label: p.next.label, owner: p.next.owner } : null} />
             {d.conditions.length > 0 && <ul className="small" style={{ paddingLeft: 18 }}>{d.conditions.map((c, i) => <li key={i}>{render(c.text)} — by {c.dueDate}</li>)}</ul>}
             {p && <p className="small">Stage: <b>{p.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b> · next: {p.next?.label ?? "—"} ({p.next?.owner}) · launch {p.launchDate}{p.slipped ? ` ⚠ +${p.slipDays} days` : ""}</p>}
             <p className="small">Investing ₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh} lakh · brand revenue ({(d.payback?.projection?.months ?? 0) / 12} yrs) ₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh} lakh · break-even month {d.payback?.breakEvenMonth ?? "–"}</p>
