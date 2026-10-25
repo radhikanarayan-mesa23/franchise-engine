@@ -3,7 +3,7 @@
 Read `docs/PRD.md` and `docs/COMPONENT_MAP.md` before any task. Follow them over your own assumptions.
 
 ## What this is
-A franchise partner decision engine for a hackathon. Judges upload an Excel file, ask why decisions were made, and give new information. Judged on reasoning and clarity of explanations. Public link, no login.
+Laser Vision franchise partner decision engine (premium eyewear brand) for a hackathon. Brand name, tagline and category live in `config/brand.json`; never hardcode them. Judges upload an Excel file, ask why decisions were made, and give new information. Judged on reasoning and clarity of explanations. Public link, no login.
 
 ## Stack
 Next.js (App Router, TypeScript), Vercel, Neon Postgres (server-side only, DATABASE_URL), SheetJS, Google Gemini via OpenRouter (OPENROUTER_API_KEY, google/ models only), Vitest.

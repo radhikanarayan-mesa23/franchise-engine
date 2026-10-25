@@ -2,7 +2,7 @@
 
 ## 1. Problem
 
-A fast-growing eyewear retail brand wants many more franchise stores. Today the expansion team handles every applicant by hand, from first application to an open, trained store. The journey is **slow** (long time to decision and to opening) and **leaky** (good applicants drop out because nobody follows up, data is incomplete, or the process stalls).
+Laser Vision, a fast-growing premium eyewear retail brand, wants many more franchise stores. Today the expansion team handles every applicant by hand, from first application to an open, trained store. The journey is **slow** (long time to decision and to opening) and **leaky** (good applicants drop out because nobody follows up, data is incomplete, or the process stalls).
 
 **Goal:** take this journey off the expansion team's plate. The system makes and explains routine decisions; humans step in only where judgment is genuinely needed.
 

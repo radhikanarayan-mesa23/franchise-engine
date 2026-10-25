@@ -11,6 +11,7 @@ const PATHS: Record<string, string> = {
   grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
   steps: "M5 12h14M13 6l6 6-6 6",
   book: "M5 4h10a4 4 0 014 4v12H9a4 4 0 01-4-4V4zM5 16a4 4 0 014-4h10",
+  glasses: "M2 10h2.5M19.5 10H22M10 11.5c1.2-1 2.8-1 4 0M4.5 9.5a3 3 0 013-2.5h0a3 3 0 013 3v1.5a3.5 3.5 0 01-7 0zM19.5 9.5a3 3 0 00-3-2.5h0a3 3 0 00-3 3v1.5a3.5 3.5 0 007 0z",
 };
 export default function Icon({ name }: { name: keyof typeof PATHS | string }) {
   return (

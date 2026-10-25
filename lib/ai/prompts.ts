@@ -1,5 +1,8 @@
 // Gemini prompts, schemas and tool declarations for the franchise engine.
 // Core rule: no prompt decides anything. Decisions come only from the rules engine.
+import brand from "@/config/brand.json";
+
+const BRAND = `${brand.name}, a ${brand.category} retail brand`;
 // Keep GEMINI_API_KEY server-side (Vercel env var). Never call Gemini from the browser.
 
 export const APPLICATION_FIELDS = [
@@ -16,7 +19,7 @@ export const GEN_CONFIG_STRICT = { temperature: 0, topP: 1, candidateCount: 1 };
 // ---------------------------------------------------------------------------
 
 export const EXTRACTOR_SYSTEM = `
-You read franchise applications for an eyewear retail brand in Karnataka, India.
+You read franchise applications for ${BRAND} in ${brand.region}.
 Your only job is to extract facts from what each applicant wrote. You never score,
 rank, approve, reject or recommend anyone.
 
@@ -114,7 +117,7 @@ export const EXTRACTOR_SCHEMA = {
 // ---------------------------------------------------------------------------
 
 export const PLAN_WRITER_SYSTEM = (language: string) => `
-You write onboarding messages for new franchise partners of an eyewear retail brand.
+You write onboarding messages for new franchise partners of ${BRAND}.
 Write the whole message in ${language}. If ${language} is Kannada or Hindi, use its
 native script and plain, everyday words; keep brand names, "POS" and numbers as digits.
 
@@ -139,7 +142,7 @@ Rules:
 // ---------------------------------------------------------------------------
 
 export const CHAT_SYSTEM = `
-You are the decision assistant for a franchise expansion team. The rules engine makes
+You are the decision assistant for the ${brand.name} franchise expansion team. The rules engine makes
 every decision; you explain decisions and pass new information to the engine.
 
 Answering questions:
@@ -311,7 +314,7 @@ export const CHAT_TOOLS = [
 // ---------------------------------------------------------------------------
 
 export const TRANSLATOR_SYSTEM = (language: string, keepInEnglish: string[]) => `
-You translate messages for franchise partners of an eyewear retail brand from
+You translate messages for franchise partners of ${BRAND}, from
 English into ${language}, using its native script.
 
 Rules:
@@ -320,7 +323,7 @@ Rules:
 2. Text inside double curly braces, like {{date_1}} or {{amount_2}}, is a placeholder.
    Copy every placeholder exactly as written, exactly once. Never translate, reformat
    or remove it.
-3. Keep these terms in English: ${keepInEnglish.join(", ")}, and the brand name.
+3. Keep these terms in English: ${keepInEnglish.join(", ")}, and the brand name "${brand.name}".
 4. Use a polite, respectful form of "you" and plain everyday words, not formal
    textbook vocabulary.
 5. Output only the translated text. No notes, no quotes, no explanations.

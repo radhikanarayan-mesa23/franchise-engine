@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { getSession, latestSnapshots } from "@/lib/db/repo";
 import { costSplit } from "@/lib/pack";
+import brand from "@/config/brand.json";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,7 @@ export async function GET(req: Request) {
   const p = d.payback;
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-    ["Partner financials (estimate)", `${d.applicationId} ${d.name}`], ["Status", d.status], ["Policy version", d.policyVersion], ["Run", snap.runNo],
+    [`${brand.name} partner financials (estimate)`, `${d.applicationId} ${d.name}`], ["Status", d.status], ["Policy version", d.policyVersion], ["Run", snap.runNo],
     ["Setup cost (₹ lakh)", p.setupCostLakh], ["Monthly sales at full ramp (₹ lakh)", p.monthlySalesLakh], ["Margin %", session.policy.payback.margin_pct],
     ["Nearest store (km)", p.nearestStoreKm ?? "unknown"], ["Cannibalisation cut applied", p.cannibalised ? "yes" : "no"],
     ["Note", "Estimates from brand policy assumptions, not a promise of earnings."],
@@ -26,6 +27,6 @@ export async function GET(req: Request) {
   const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
   return new Response(buf, { headers: {
     "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "Content-Disposition": `attachment; filename="${d.applicationId.replace(/[^\w-]/g, "_")}-financials.xlsx"`,
+    "Content-Disposition": `attachment; filename="${d.applicationId.replace(/[^\w-]/g, "_")}-${brand.name.toLowerCase().replace(/\s+/g, "-")}-financials.xlsx"`,
   } });
 }

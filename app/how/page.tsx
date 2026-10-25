@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { DEFAULT_POLICY as P, fastestLaunch } from "@/lib/engine/policy";
 import cities from "@/config/cities.json";
+import brand from "@/config/brand.json";
 
-export const metadata = { title: "How this decides" };
+export const metadata = { title: `How ${brand.name} decides` };
 
 export default function How() {
   const tiers = Object.entries(P.tiers);
@@ -10,7 +11,7 @@ export default function How() {
   return (
     <main className="page card" style={{ lineHeight: 1.6, margin: "32px auto" }}>
       <p><Link href="/">← Upload</Link></p>
-      <h1>How this decides</h1>
+      <h1>How {brand.name} decides</h1>
       <p>A rules engine makes every decision from your spreadsheet and an editable brand policy. AI (Google Gemini) only reads free text into quoted facts, translates, and explains stored reasons in chat. It never sets a status. A manager confirms every recommendation before agreement and fee.</p>
 
       <h2>Decision flow</h2>

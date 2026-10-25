@@ -4,6 +4,7 @@ import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTo
 import { headers } from "next/headers";
 import { translate } from "@/lib/ai/translator";
 import UpdateLinkButton from "./UpdateLinkButton";
+import brand from "@/config/brand.json";
 import { pipelineFor } from "@/lib/session/stage";
 import { render } from "@/lib/reasons/render";
 
@@ -28,10 +29,11 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
   const linkUrl = token ? `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}/u/${token}` : null;
   // Drafted message (not sent): English from reason codes, translated with placeholder checks.
   const draftEn = needsApplicant ? [
-    `Dear ${app.name}, thank you for applying (${d.applicationId}). Current status: ${d.status}.`,
+    `Dear ${app.name}, thank you for applying to become a ${brand.name} franchise partner (${d.applicationId}). Current status: ${d.status}.`,
     ...d.conditions.map((c) => `${render(c.text)} Deadline: ${c.dueDate}.`),
     render(d.nextStep),
     ...(linkUrl ? [`Update your details here: ${linkUrl}`] : []),
+    `— ${brand.support_note}`,
   ] : [];
   const draftLines = draftEn.length ? (await translate(draftEn, app.language)).lines : [];
   return (

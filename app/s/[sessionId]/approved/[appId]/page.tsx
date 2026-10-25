@@ -4,6 +4,7 @@ import { buildProfile } from "@/lib/profile";
 import { STATUS_CLASS } from "@/lib/ui";
 import { Bars, ProjectionChart, SplitBar, Timeline } from "@/components/charts";
 import SnapshotActions from "./SnapshotActions";
+import brand from "@/config/brand.json";
 
 export const dynamic = "force-dynamic";
 const L = (n: number | null | undefined) => (n === null || n === undefined ? "–" : `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 2 })} lakh`);
@@ -25,7 +26,7 @@ export default async function Snapshot({ params }: { params: Promise<{ sessionId
 
       <div className="card" style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div>
-          <div className="muted small">Franchise partner profile · {a.id}</div>
+          <div className="muted small">{brand.name} franchise partner profile · {a.id}</div>
           <h2 style={{ fontSize: 26, margin: "4px 0" }}>{a.name}</h2>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             <span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status}</span>
@@ -104,7 +105,7 @@ export default async function Snapshot({ params }: { params: Promise<{ sessionId
         <p className="small"><b>Training ({d.plan.language}):</b> {d.plan.modules.join(", ")}</p>
       </div>}
 
-      <p className="small muted">Snapshot of run #{p.runNo}, policy v{p.policyVersion}, generated {p.generatedAt.slice(0, 16).replace("T", " ")} UTC. All money figures are estimates from brand policy assumptions. <Link className="noprint" href={`/s/${sessionId}/a/${enc}`}>Full decision card →</Link></p>
+      <p className="small muted">Snapshot of run #{p.runNo}, policy v{p.policyVersion}, generated {p.generatedAt.slice(0, 16).replace("T", " ")} UTC. All money figures are estimates from {brand.name} policy assumptions. <Link className="noprint" href={`/s/${sessionId}/a/${enc}`}>Full decision card →</Link></p>
     </div>
   );
 }

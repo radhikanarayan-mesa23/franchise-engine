@@ -2,6 +2,9 @@ import * as XLSX from "xlsx";
 import { getSession, latestSnapshots } from "@/lib/db/repo";
 import { payload } from "@/lib/ai/extract";
 import { render } from "@/lib/reasons/render";
+import brand from "@/config/brand.json";
+
+const slug = brand.name.toLowerCase().replace(/\s+/g, "-");
 
 export const runtime = "nodejs";
 
@@ -24,6 +27,6 @@ export async function GET(req: Request) {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(s.territories.map((t) => ({ "Territory ID": t.id, City: t.city, State: t.state, "Pin codes covered": t.pins.join(", "), "City tier": t.tier, "Open slots": t.openSlots, Priority: t.priority }))), "Territories");
   return new Response(XLSX.write(wb, { type: "buffer", bookType: "xlsx" }), { headers: {
     "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "Content-Disposition": `attachment; filename="decisions-run-${snap.runNo}.xlsx"`,
+    "Content-Disposition": `attachment; filename="${slug}-decisions-run-${snap.runNo}.xlsx"`,
   } });
 }

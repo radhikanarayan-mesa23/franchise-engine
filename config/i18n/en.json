@@ -1,5 +1,5 @@
 {
-  "pack_title": "Partner pack",
+  "pack_title": "Laser Vision partner pack",
   "partner_view": "Partner view",
   "team_view": "Team view",
   "decision": "Decision",
@@ -24,7 +24,14 @@
   "training": "Training plan",
   "training_in": "Training language",
   "documents": "Documents to prepare",
-  "doc_list": ["Government photo ID (Aadhaar or PAN)", "Address proof", "GST registration or application", "Bank statements for the last 6 months", "Proof of funds or loan sanction letter", "Rent agreement or ownership papers for the store space"],
+  "doc_list": [
+    "Government photo ID (Aadhaar or PAN)",
+    "Address proof",
+    "GST registration or application",
+    "Bank statements for the last 6 months",
+    "Proof of funds or loan sanction letter",
+    "Rent agreement or ownership papers for the store space"
+  ],
   "current_stage": "Current stage",
   "not_started": "Not started",
   "score": "Score breakdown",

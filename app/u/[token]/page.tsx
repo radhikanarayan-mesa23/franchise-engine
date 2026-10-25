@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getSession, getUpdateToken } from "@/lib/db/repo";
 import { payload } from "@/lib/ai/extract";
 import UpdateForm from "./UpdateForm";
+import brand from "@/config/brand.json";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +20,9 @@ export default async function UpdateLink({ params }: { params: Promise<{ token: 
   if (!app) notFound();
   const current = payload(app) as Record<string, unknown>;
   return (
-    <main>
-      <h1>Update your application</h1>
+    <main className="page card" style={{ margin: "32px auto", maxWidth: 640 }}>
+      <p className="muted small">{brand.name} · {brand.tagline}</p>
+      <h1>Update your {brand.name} application</h1>
       <p>{app.name} ({app.id}). Please complete or correct only the items below. Your application is re-checked as soon as you submit.</p>
       <UpdateForm token={token} fields={t.fields.map((f) => ({ name: f, value: String(current[f] ?? ""), options: OPTIONS[f] }))} />
     </main>

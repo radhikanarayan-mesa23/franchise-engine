@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/Icon";
+import brand from "@/config/brand.json";
 
 export interface PinnedTerritory { id: string; city: string; tier: string; filled: number; capacity: number }
 
@@ -18,7 +19,7 @@ export default function Sidebar({ sessionId, counts, pinned }: { sessionId: stri
   ];
   return (
     <aside className="sidebar">
-      <Link href="/" className="brand"><span className="logo">◎</span>Franchise engine</Link>
+      <Link href="/" className="brand"><span className="logo"><Icon name="glasses" /></span>{brand.name}</Link>
       {items.map((it) => {
         const active = pathname.startsWith(it.href) || (it.also && pathname.startsWith(it.also));
         return (
