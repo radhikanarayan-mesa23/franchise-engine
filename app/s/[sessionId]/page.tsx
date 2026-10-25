@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSession, latestSnapshots } from "@/lib/db/repo";
+import { getChat, getSession, latestSnapshots } from "@/lib/db/repo";
+import ChatPanel from "./ChatPanel";
 import { render } from "@/lib/reasons/render";
 import { diffDecisions } from "@/lib/engine/diff";
 
@@ -16,6 +17,7 @@ export default async function Results({ params }: { params: Promise<{ sessionId:
   const slots = snap.territories.reduce((a, t) => a + t.realCapacity, 0);
   const filled = ds.filter((d) => d.assignedPin && (d.status === "Recommended for approval" || d.status === "Conditionally approved" || d.status === "Redirected")).length;
   const diff = prev ? diffDecisions(prev.decisions, ds) : [];
+  const chat = await getChat(sessionId, 20);
   return (
     <main>
       <p><Link href="/">← New upload</Link></p>
@@ -28,6 +30,7 @@ export default async function Results({ params }: { params: Promise<{ sessionId:
         <div><b>{ds.filter((d) => d.reasons.some((r) => r.code === "text_not_read")).length}</b> with free text not read by AI</div>
         <div>Run #{snap.runNo} · policy v{snap.policyVersion}</div>
       </section>
+      <ChatPanel sessionId={sessionId} initial={chat} />
       {diff.length > 0 && (
         <section><h3>Changed in last run</h3><ul>{diff.map((x) => <li key={x.applicationId}>{x.applicationId} {x.name}: {x.from ?? "new"} → {x.to ?? "removed"}</li>)}</ul></section>
       )}

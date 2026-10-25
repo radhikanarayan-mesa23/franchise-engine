@@ -38,27 +38,25 @@ async function chat(body: Record<string, unknown>, signal: AbortSignal) {
 }
 
 /**
- * One JSON-mode call with a hard timeout and exponential backoff on 429/5xx.
+ * One chat completion with a hard timeout and exponential backoff on 429/5xx.
  * 402 (out of credits) stops immediately. Throws GeminiUnavailable on any failure; callers must fall back.
  */
-export async function generateJson(opts: { system: string; user: string; schema: unknown; temperature?: number }): Promise<unknown> {
+export async function chatCompletion(body: Record<string, unknown>): Promise<Record<string, unknown>> {
   if (!geminiEnabled()) throw new GeminiUnavailable("OPENROUTER_API_KEY not set");
   let lastErr: unknown;
   for (let attempt = 0; attempt <= aiConfig.max_retries; attempt++) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), aiConfig.request_timeout_ms);
     try {
-      const body = await chat({
-        temperature: opts.temperature ?? 0, top_p: 1,
-        messages: [{ role: "system", content: opts.system }, { role: "user", content: opts.user }],
-        response_format: { type: "json_schema", json_schema: { name: "result", schema: toJsonSchema(opts.schema) } },
-      }, ctrl.signal);
-      return JSON.parse(String(body?.choices?.[0]?.message?.content ?? ""));
+      const res = await chat(body, ctrl.signal);
+      const message = res?.choices?.[0]?.message;
+      if (!message) throw new HttpError(502, "empty response");
+      return message;
     } catch (e) {
       lastErr = e;
       const status = (e as { status?: number }).status;
       if (status === 402) console.error("[gemini] OpenRouter credits exhausted (402); AI disabled until topped up");
-      const retryable = status === 429 || (status !== undefined && status >= 500) || ctrl.signal.aborted || e instanceof SyntaxError;
+      const retryable = status === 429 || (status !== undefined && status >= 500) || ctrl.signal.aborted;
       if (!retryable || attempt === aiConfig.max_retries) break;
       await sleep(aiConfig.backoff_base_ms * 2 ** attempt);
     } finally {
@@ -66,4 +64,18 @@ export async function generateJson(opts: { system: string; user: string; schema:
     }
   }
   throw new GeminiUnavailable(`Gemini call failed: ${(lastErr as Error)?.message?.slice(0, 200) ?? "unknown"}`);
+}
+
+/** JSON-mode call against a response schema. Malformed JSON gets one fresh attempt. */
+export async function generateJson(opts: { system: string; user: string; schema: unknown; temperature?: number }): Promise<unknown> {
+  const body = {
+    temperature: opts.temperature ?? 0, top_p: 1,
+    messages: [{ role: "system", content: opts.system }, { role: "user", content: opts.user }],
+    response_format: { type: "json_schema", json_schema: { name: "result", schema: toJsonSchema(opts.schema) } },
+  };
+  for (let i = 0; ; i++) {
+    const msg = await chatCompletion(body);
+    try { return JSON.parse(String(msg.content ?? "")); }
+    catch { if (i >= 1) throw new GeminiUnavailable("Model returned malformed JSON"); }
+  }
 }
