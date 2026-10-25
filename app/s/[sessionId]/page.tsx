@@ -25,6 +25,7 @@ export default async function Results({ params }: { params: Promise<{ sessionId:
         <div><b>{pct(ds.filter((d) => d.humanReview).length)}%</b> need a human</div>
         <div><b>{filled}/{slots}</b> real slots filled</div>
         <div><b>{pct(ds.filter((d) => d.nextStep).length)}%</b> have a clear next step</div>
+        <div><b>{ds.filter((d) => d.reasons.some((r) => r.code === "text_not_read")).length}</b> with free text not read by AI</div>
         <div>Run #{snap.runNo} · policy v{snap.policyVersion}</div>
       </section>
       {diff.length > 0 && (

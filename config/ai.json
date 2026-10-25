@@ -1,0 +1,8 @@
+{
+  "default_model": "gemini-2.5-flash",
+  "extract_batch_size": 10,
+  "request_timeout_ms": 20000,
+  "max_retries": 3,
+  "backoff_base_ms": 800,
+  "extract_prompt_version": 1
+}

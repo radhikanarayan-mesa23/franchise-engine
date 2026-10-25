@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_POLICY } from "@/lib/engine/policy";
 import { runEngine, BUILTIN_STORES } from "@/lib/engine/run";
 import type { Application, Territory } from "@/lib/types";
-import { ravi, ter01 } from "./policy.test";
+import { ravi, ter01 } from "../support/fixtures";
 
 const today = "2026-10-25";
 const app = (id: string, over: Partial<Application> = {}): Application => ({ ...ravi, id, name: id, ...over });

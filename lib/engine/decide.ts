@@ -125,11 +125,11 @@ export function decide(d: DecideInput): Decision {
   d.signals?.contradictions.forEach((c) => review.push({ code: "review_contradiction", params: { field: c.field, evidence: c.evidence }, impact: 40 }));
   if (d.tie) review.push({ code: "review_tie", params: { score: s ?? 0, other: d.tie.other, rule: policy.allocation.tie_breakers.join(", ") }, impact: 30 });
 
-  // Unresolved contradiction on an otherwise clean recommendation → condition instead of approval.
-  if (status === "Recommended for approval" && d.signals?.contradictions.length) {
+  // A contradiction between text and fields is never approved through: winners get a condition to resolve it.
+  if ((status === "Recommended for approval" || status === "Conditionally approved") && d.signals?.contradictions.length) {
+    if (status === "Recommended for approval") wwc.push({ code: "wwc_conditions", params: { date: condDate }, impact: 100 });
     status = "Conditionally approved";
-    d.signals.contradictions.forEach((c) => conditions.push({ text: { code: "cond_fix_field", params: { field: c.field }, impact: 40 }, dueDate: condDate }));
-    wwc.push({ code: "wwc_conditions", params: { date: condDate }, impact: 100 });
+    d.signals.contradictions.forEach((c) => conditions.push({ text: { code: "cond_resolve_contradiction", params: { field: c.field, evidence: c.evidence }, impact: 40 }, dueDate: condDate }));
   }
 
   const nextStep: Reason =
@@ -149,7 +149,7 @@ export function decide(d: DecideInput): Decision {
     territoryId: territory?.id ?? null, assignedPin,
     score: d.score, reasons: reasons.sort((x, y) => y.impact - x.impact), conditions, whatWouldChange: status === "Recommended for approval" ? [] : wwc,
     nextStep, payback: d.payback, plan: movers.includes(status) ? buildPlan(app, policy, today) : null,
-    flags: d.flags, policyVersion: d.policyVersion, computedAt: today,
+    flags: d.flags, signals: d.signals, policyVersion: d.policyVersion, computedAt: today,
   };
 }
 

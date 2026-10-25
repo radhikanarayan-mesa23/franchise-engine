@@ -26,6 +26,7 @@ export const CATALOG: Record<string, string> = {
   cond_accept_pin: "Accept the offered pin {pin}.",
   cond_close_gap: "Show financing or a co-investor for the ₹{gap} lakh gap.",
   cond_fix_field: "Correct \"{field}\".",
+  cond_resolve_contradiction: "Confirm {field}: the application says otherwise (\"{evidence}\").",
   wwc_investment: "Investment of at least ₹{min} lakh would clear the {tier} gate.",
   wwc_score: "Raising the score by {gap} points to {approve} (e.g. {hint}) would make this recommendable.",
   wwc_slot: "A slot opening in {territory}, or a score above {winnerScore}, would win a slot.",

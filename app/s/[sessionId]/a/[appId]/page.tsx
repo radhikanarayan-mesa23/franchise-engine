@@ -41,6 +41,18 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
         <ol>{d.plan.steps.map((s) => <li key={s.id}>{s.label} — {s.owner} — {s.start} → {s.end}</li>)}</ol>
         <p>Training ({d.plan.language}): {d.plan.modules.join(", ")}</p></>)}
 
+      <h3>What the applicant wrote (AI-read signals)</h3>
+      {d.signals ? (
+        <ul>
+          {d.signals.summary && <li>Summary: {d.signals.summary}</li>}
+          <li>Business relevance: {d.signals.business_relevance.replace("_", " ")}</li>
+          {d.signals.contradictions.map((c, i) => <li key={`c${i}`}>Contradiction on {c.field}: field says “{c.structured_value}”, text says “{c.evidence}”</li>)}
+          {d.signals.risk_flags.map((f, i) => <li key={`r${i}`}>Risk flag ({f.type.replace(/_/g, " ")}): “{f.evidence}” — routed to a human, does not change the score</li>)}
+          {d.signals.timing.evidence && <li>Timing: “{d.signals.timing.evidence}”{d.signals.timing.months_from_now !== null ? ` (~${d.signals.timing.months_from_now} months)` : ""}</li>}
+        </ul>
+      ) : <p>Free text was not read by AI (unavailable); decided on structured fields only.</p>}
+      <p style={{ color: "#666" }}>AI only extracts quoted facts. It never sets a status.</p>
+
       {d.flags.length > 0 && (<><h3>Data flags</h3><ul>{d.flags.map((f, i) => <li key={i}>[{f.severity}] {f.code} {f.field ? `(${f.field})` : ""}</li>)}</ul></>)}
       <p style={{ color: "#666" }}>Policy v{d.policyVersion} · computed {d.computedAt}</p>
     </main>

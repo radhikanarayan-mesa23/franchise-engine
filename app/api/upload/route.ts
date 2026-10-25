@@ -3,6 +3,7 @@ import { ingest } from "@/lib/ingest/index";
 import { DEFAULT_POLICY, clonePolicy } from "@/lib/engine/policy";
 import { runEngine } from "@/lib/engine/run";
 import { createSession } from "@/lib/db/repo";
+import { signalsFor } from "@/lib/ai/signals";
 
 export const runtime = "nodejs";
 
@@ -15,9 +16,11 @@ export async function POST(req: Request) {
     const data = ingest(Buffer.from(await file.arrayBuffer()), policy);
     if (!data.applications.length) return NextResponse.json({ error: "No applications found. Is the Applications sheet in the template format?" }, { status: 400 });
     const today = new Date().toISOString().slice(0, 10);
-    const run = runEngine({ ...data, policy, policyVersion: policy.meta.version, today });
+    // AI reads free text only; failures leave rows unread and the engine decides without them.
+    const ai = await signalsFor(data.applications).catch(() => ({ signals: {}, notRead: data.applications.map((a) => a.id), calls: 0 }));
+    const run = runEngine({ ...data, signals: ai.signals, policy, policyVersion: policy.meta.version, today });
     const id = await createSession({ ...data, policy, policyVersion: policy.meta.version }, run, "upload");
-    return NextResponse.json({ sessionId: id });
+    return NextResponse.json({ sessionId: id, aiCalls: ai.calls, textNotRead: ai.notRead.length });
   } catch (e) {
     return NextResponse.json({ error: `Could not read the file: ${(e as Error).message}` }, { status: 400 });
   }

@@ -71,6 +71,6 @@ export interface Decision {
   score: { total: number; parts: Record<string, number> } | null;
   reasons: Reason[]; conditions: { text: Reason; dueDate: string }[];
   whatWouldChange: Reason[]; nextStep: Reason; payback: Payback | null; plan: Plan | null;
-  flags: Flag[];
+  flags: Flag[]; signals: AiSignals | null;
   policyVersion: number; computedAt: string;
 }

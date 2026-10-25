@@ -191,3 +191,8 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 - **G4 holders compete** for slots; a winning holder keeps the pin reserved until the hold deadline.
 - **Geo** uses approximate bundled pin centroids (`config/pins.json`); unknown pin → no distance, no cannibalisation cut.
 - **Storage:** in-memory fallback when DB env vars are missing (local dev only).
+- **AI cache key:** hash of every field the model reads (not the Application ID), plus model and prompt version. Re-uploads, policy edits and reruns make zero calls; a chat edit to one row re-reads only that row.
+- **Evidence check:** an AI item is kept only if its quoted evidence appears in the applicant's own text; otherwise it is dropped.
+- **Blank free text** never goes to the model: relevance "none", empty lists.
+- **Contradictions:** a winner with a contradiction becomes Conditionally approved with a "confirm {field}" condition, and is flagged for review. AI risk flags only add human review; they never change score or status.
+- **Gemini keys:** AI Studio keys use the Developer API; Vertex Express keys ("AQ.") use Vertex mode.
