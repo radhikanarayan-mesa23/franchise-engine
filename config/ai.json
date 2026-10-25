@@ -1,8 +1,19 @@
 {
-  "default_model": "gemini-2.5-flash",
+  "default_model": "google/gemini-3.7-flash",
   "extract_batch_size": 10,
   "request_timeout_ms": 20000,
   "max_retries": 3,
   "backoff_base_ms": 800,
-  "extract_prompt_version": 1
+  "extract_prompt_version": 1,
+  "openrouter_url": "https://openrouter.ai/api/v1/chat/completions",
+  "openrouter_provider": {
+    "only": [
+      "google-vertex",
+      "google-ai-studio"
+    ],
+    "allow_fallbacks": false
+  },
+  "reasoning": {
+    "effort": "low"
+  }
 }

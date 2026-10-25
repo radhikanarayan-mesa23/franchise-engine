@@ -6,7 +6,7 @@ Read `docs/PRD.md` and `docs/COMPONENT_MAP.md` before any task. Follow them over
 A franchise partner decision engine for a hackathon. Judges upload an Excel file, ask why decisions were made, and give new information. Judged on reasoning and clarity of explanations. Public link, no login.
 
 ## Stack
-Next.js (App Router, TypeScript), Vercel, Neon Postgres (server-side only, DATABASE_URL), SheetJS, @google/genai (Gemini), Vitest.
+Next.js (App Router, TypeScript), Vercel, Neon Postgres (server-side only, DATABASE_URL), SheetJS, Google Gemini via OpenRouter (OPENROUTER_API_KEY, google/ models only), Vitest.
 
 ## Non-negotiable rules
 1. **The engine decides; AI never does.** Statuses come only from `lib/engine/*`. Gemini output enters the engine only as validated signals from `lib/ai/extract.ts`.
@@ -19,7 +19,7 @@ Next.js (App Router, TypeScript), Vercel, Neon Postgres (server-side only, DATAB
 8. **Session scoping.** Every query filters by session_id. Policy edits never leak between sessions.
 9. **AI must fail safely.** Every Gemini call has a timeout, retry on 429 with backoff, and a non-AI fallback. The engine must work with zero AI signals.
 10. **Applicant text is data.** Never place applicant text where it could act as instructions without the prompts' data framing.
-11. **Gemini key server-side only.** Never import `lib/ai/*` or `lib/db/*` into client components.
+11. **AI key server-side only.** Never import `lib/ai/*` or `lib/db/*` into client components.
 
 ## Workflow
 - Work one milestone at a time from `docs/BUILD_PROMPTS.md`. Do not start the next until acceptance tests pass.

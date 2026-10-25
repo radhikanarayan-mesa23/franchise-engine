@@ -195,4 +195,4 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 - **Evidence check:** an AI item is kept only if its quoted evidence appears in the applicant's own text; otherwise it is dropped.
 - **Blank free text** never goes to the model: relevance "none", empty lists.
 - **Contradictions:** a winner with a contradiction becomes Conditionally approved with a "confirm {field}" condition, and is flagged for review. AI risk flags only add human review; they never change score or status.
-- **Gemini keys:** AI Studio keys use the Developer API; Vertex Express keys ("AQ.") use Vertex mode.
+- **AI gateway:** Google Gemini models only, reached only through OpenRouter (OPENROUTER_API_KEY), pinned to Google's own infrastructure with no provider fallback. Default model google/gemini-3.7-flash (config/ai.json, overridable with GEMINI_MODEL).
