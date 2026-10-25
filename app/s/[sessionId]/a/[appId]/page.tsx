@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSession, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
+import { pipelineFor } from "@/lib/session/stage";
 import { render } from "@/lib/reasons/render";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,9 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
   const app = session.applications.find((a) => a.id === id);
   if (!d || !app) notFound();
   const w = session.policy.scoring.weights as Record<string, number>;
+  const [events, reviews] = await Promise.all([getStageEvents(sessionId), getReviewActions(sessionId)]);
+  const pipe = pipelineFor(d, events, session.policy);
+  const review = reviews.filter((r) => r.applicationId === id);
   return (
     <main>
       <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
@@ -52,6 +56,12 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
         </ul>
       ) : <p>Free text was not read by AI (unavailable); decided on structured fields only.</p>}
       <p style={{ color: "#666" }}>AI only extracts quoted facts. It never sets a status.</p>
+
+      {pipe && (<><h3>Pipeline · launch {pipe.launchDate}{pipe.slipped ? ` (slipped ${pipe.slipDays} days)` : ""}</h3>
+        <table cellPadding={4}><thead><tr><th align="left">Stage</th><th align="left">Owner</th><th align="left">Expected</th><th align="left">Done</th></tr></thead>
+          <tbody>{pipe.stages.map((s) => <tr key={s.id}><td>{s.label}</td><td>{s.owner}</td><td>{s.expected}</td>
+            <td>{s.actual ? `${s.actual}${s.slipDays > 0 ? ` ⚠ ${s.slipDays} days late` : ""}` : "–"}</td></tr>)}</tbody></table></>)}
+      {review.length > 0 && (<><h3>Review log</h3><ul>{review.map((r, i) => <li key={i}>{r.action} — {r.reason || "no reason given"} ({r.at.slice(0, 10)})</li>)}</ul></>)}
 
       {d.flags.length > 0 && (<><h3>Data flags</h3><ul>{d.flags.map((f, i) => <li key={i}>[{f.severity}] {f.code} {f.field ? `(${f.field})` : ""}</li>)}</ul></>)}
       <p style={{ color: "#666" }}>Policy v{d.policyVersion} · computed {d.computedAt}</p>

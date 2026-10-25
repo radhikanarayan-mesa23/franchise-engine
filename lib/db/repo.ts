@@ -12,7 +12,8 @@ export interface SessionData {
 export interface Snapshot { runNo: number; policyVersion: number; decisions: Decision[]; territories: RunResult["territories"]; trigger: string }
 
 // In-memory fallback (local dev / no DATABASE_URL). Survives hot reloads via globalThis.
-interface MemSession { data: SessionData; snaps: Snapshot[]; notes: { applicationId: string; note: string }[]; chat: ChatRow[]; events: StageEvent[] }
+interface MemSession { data: SessionData; snaps: Snapshot[]; notes: { applicationId: string; note: string }[]; chat: ChatRow[]; events: StageEvent[]; reviews: ReviewAction[] }
+export interface ReviewAction { applicationId: string; action: "confirm" | "override"; reason: string; at: string }
 export interface ChatRow { role: "user" | "assistant"; content: string }
 export interface StageEvent { applicationId: string; stage: string; at: string; note: string | null }
 const mem: Map<string, MemSession> = ((globalThis as unknown as { __fe2?: Map<string, MemSession> }).__fe2 ??= new Map());
@@ -20,7 +21,7 @@ const mem: Map<string, MemSession> = ((globalThis as unknown as { __fe2?: Map<st
 export async function createSession(data: Omit<SessionData, "id">, run: RunResult, trigger: string): Promise<string> {
   const id = randomUUID();
   const sql = db();
-  if (!sql) { mem.set(id, { data: { ...data, id }, snaps: [], notes: [], chat: [], events: [] }); await saveSnapshot(id, data.policyVersion, run, trigger); return id; }
+  if (!sql) { mem.set(id, { data: { ...data, id }, snaps: [], notes: [], chat: [], events: [], reviews: [] }); await saveSnapshot(id, data.policyVersion, run, trigger); return id; }
   const rows = (kind: string, items: { id: string }[]) =>
     items.length ? sql.query(`insert into ${kind} (session_id, id, data) select $1, x->>'id', x from jsonb_array_elements($2::jsonb) x`, [id, JSON.stringify(items)]) : null;
   await sql.transaction([
@@ -139,4 +140,17 @@ export async function getStageEvents(id: string): Promise<StageEvent[]> {
   if (!sql) return mem.get(id)?.events ?? [];
   const rows = await sql`select application_id, stage, at::text at, note from pipeline_events where session_id = ${id} order by at`;
   return rows.map((r) => ({ applicationId: r.application_id, stage: r.stage, at: r.at, note: r.note }));
+}
+
+export async function addReviewAction(id: string, r: Omit<ReviewAction, "at">) {
+  const sql = db();
+  if (!sql) { mem.get(id)!.reviews.push({ ...r, at: new Date().toISOString() }); return; }
+  await sql`insert into review_actions (session_id, application_id, action, reason) values (${id}, ${r.applicationId}, ${r.action}, ${r.reason})`;
+}
+
+export async function getReviewActions(id: string): Promise<ReviewAction[]> {
+  const sql = db();
+  if (!sql) return mem.get(id)?.reviews ?? [];
+  const rows = await sql`select application_id, action, reason, at::text at from review_actions where session_id = ${id} order by at`;
+  return rows.map((r) => ({ applicationId: r.application_id, action: r.action, reason: r.reason, at: r.at }));
 }

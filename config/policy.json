@@ -235,44 +235,46 @@
   ],
   "pipeline_stages": [
     {
-      "id": "recommended",
-      "label": "Recommended",
-      "owner": "Expansion manager"
-    },
-    {
       "id": "confirmed",
-      "label": "Confirmed",
-      "owner": "Expansion manager"
+      "label": "Confirmed by expansion manager",
+      "owner": "Expansion manager",
+      "step": null
     },
     {
       "id": "agreement_signed",
       "label": "Agreement signed",
-      "owner": "Partner"
+      "owner": "Partner",
+      "step": "agreement"
     },
     {
       "id": "site_checked",
       "label": "Site checked",
-      "owner": "Expansion team"
+      "owner": "Expansion team",
+      "step": "site_check"
     },
     {
       "id": "fit_out",
-      "label": "Fit-out",
-      "owner": "Partner + brand vendor"
+      "label": "Fit-out done",
+      "owner": "Partner + brand vendor",
+      "step": "fit_out"
     },
     {
       "id": "staff_hired",
       "label": "Staff hired",
-      "owner": "Partner"
+      "owner": "Partner",
+      "step": "hiring"
     },
     {
       "id": "trained",
       "label": "Trained",
-      "owner": "Brand trainer"
+      "owner": "Brand trainer",
+      "step": "training"
     },
     {
       "id": "open",
       "label": "Store open",
-      "owner": "Partner + brand"
+      "owner": "Partner + brand",
+      "step": "launch"
     }
   ],
   "training": {

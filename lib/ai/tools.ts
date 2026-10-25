@@ -1,18 +1,18 @@
 import "server-only";
 import type { Application, Decision, Floor, SpaceStatus } from "@/lib/types";
-import { addNote, addStageEvent, getNotes, getSession, getStageEvents, latestSnapshots, savePolicy, upsertApplications } from "@/lib/db/repo";
+import { addNote, getNotes, getSession, latestSnapshots, savePolicy, upsertApplications } from "@/lib/db/repo";
+import { moveStage } from "@/lib/session/stage";
 import { normaliseLanguage, normalisePin, num, text } from "@/lib/ingest/normalise";
 import { setPolicyPath, validatePolicy } from "@/lib/engine/policy";
 import type { DiffItem } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
-import { rerun, todayIso } from "@/lib/session/rerun";
+import { rerun } from "@/lib/session/rerun";
 
 type Args = Record<string, unknown>;
 type FieldChange = { field: string; value: string };
 
 const SPACES: SpaceStatus[] = ["Owned", "Rented", "Not yet identified", "Identified - tenure unknown"];
 const FLOORS: Floor[] = ["Ground", "Upper", "Mall unit", "Not known"];
-export const STAGES = ["confirmed", "agreement_signed", "site_checked", "fit_out", "staff_hired", "trained", "open"] as const;
 
 function lev(a: string, b: string) {
   const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
@@ -141,16 +141,7 @@ export function sessionTools(sessionId: string) {
       return { policy_version: version, changed: `${path} = ${value}`, changed_decisions: diffLines(diff) };
     },
     async update_stage({ application_id, stage, date, note }) {
-      const { s, decisions } = await load();
-      const d = decisions.find((x) => x.applicationId === application_id);
-      if (!d) return notFound(String(application_id), s.applications.map((x) => x.id));
-      if (!["Recommended for approval", "Conditionally approved"].includes(d.status))
-        return { error: "not_in_pipeline", status: d.status, why: "Only approved partners move through onboarding stages." };
-      const idx = STAGES.indexOf(stage as (typeof STAGES)[number]);
-      if (idx < 0) return { error: "unknown_stage", allowed: STAGES };
-      await addStageEvent(sessionId, { applicationId: d.applicationId, stage: String(stage), at: String(date || todayIso()), note: note ? String(note) : null });
-      const history = (await getStageEvents(sessionId)).filter((e) => e.applicationId === d.applicationId);
-      return { application_id, stage, at: date || todayIso(), next_stage: STAGES[idx + 1] ?? null, stage_history: history, plan: d.plan };
+      return moveStage(sessionId, String(application_id), String(stage), date ? String(date) : undefined, note ? String(note) : undefined);
     },
   };
   return tools;

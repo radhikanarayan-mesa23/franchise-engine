@@ -75,10 +75,22 @@ describe("chat tools (M6)", () => {
     expect(await getNotes(sid, "APP-003")).toEqual(["very nice person"]);
     expect(((await tools.update_stage({ application_id: "APP-003", stage: "agreement_signed" })) as R).error).toBe("not_in_pipeline");
     const ok = (await tools.update_stage({ application_id: "APP-008", stage: "agreement_signed" })) as R;
-    expect(ok.next_stage).toBe("site_checked");
+    expect(ok.next_stage.id).toBe("site_checked");
   });
 
   it("no tool can set a status", () => {
     expect(Object.keys(tools).some((k) => /status|approve|reject/.test(k))).toBe(false);
+  });
+});
+
+describe("review queue (M7)", () => {
+  it("confirming moves the applicant to Confirmed", async () => {
+    const { moveStage } = await import("@/lib/session/stage");
+    const { addReviewAction, getReviewActions } = await import("@/lib/db/repo");
+    await addReviewAction(sid, { applicationId: "APP-008", action: "confirm", reason: "" });
+    const r = (await moveStage(sid, "APP-008", "confirmed")) as R;
+    expect(r.stage).toBe("confirmed");
+    expect(r.next_stage.id).toBe("agreement_signed");
+    expect((await getReviewActions(sid))[0].action).toBe("confirm");
   });
 });
