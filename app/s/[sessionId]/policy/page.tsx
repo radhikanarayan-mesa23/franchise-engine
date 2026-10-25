@@ -12,7 +12,6 @@ export default async function PolicyPage({ params }: { params: Promise<{ session
   if (!s) notFound();
   return (
     <main>
-      <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
       <h1>Brand policy (v{s.policyVersion})</h1>
       <p>The brief gives no numbers, so every threshold, weight and duration below is an editable assumption. Edits apply to this session only, are validated (weights must add to 100, reject below hold, positive durations), and rerun every decision.</p>
       <PolicyForm key={s.policyVersion} sessionId={sessionId} leaves={numericLeaves(s.policy).filter((l) => !l.path.startsWith("meta."))} />

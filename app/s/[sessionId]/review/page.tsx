@@ -14,7 +14,6 @@ export default async function Review({ params }: { params: Promise<{ sessionId: 
   const queue = snap.decisions.filter((d) => d.humanReview || d.status === "Recommended for approval");
   return (
     <main>
-      <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
       <h1>Human review queue</h1>
       <p>Every recommendation needs a manager&apos;s confirmation before agreement and fee. Flagged cases list the question to answer. Overrides need a reason and are logged.</p>
       {queue.length === 0 && <p>Nothing needs a human right now.</p>}

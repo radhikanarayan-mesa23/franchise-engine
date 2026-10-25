@@ -36,7 +36,6 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
   const draftLines = draftEn.length ? (await translate(draftEn, app.language)).lines : [];
   return (
     <main>
-      <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
       <h1>{d.applicationId} · {d.name}</h1>
       <p><Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}/pack`}>Partner pack ({app.language}) →</Link> · <Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}/pack?view=team&lang=English`}>Team view →</Link></p>
       <h2>{d.status}{d.humanReview ? " — needs human review" : ""}</h2>

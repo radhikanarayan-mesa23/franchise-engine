@@ -181,3 +181,17 @@ export async function latestTokenFor(sessionId: string, applicationId: string): 
   const [r] = await sql`select token from update_tokens where session_id = ${sessionId} and application_id = ${applicationId} and expires_at > now() order by expires_at desc limit 1`;
   return (r?.token as string) ?? null;
 }
+
+export async function upsertTerritories(id: string, ts: Territory[]) {
+  const sql = db();
+  if (!sql) {
+    const d = mem.get(id)!.data;
+    for (const t of ts) { const i = d.territories.findIndex((x) => x.id === t.id); if (i >= 0) d.territories[i] = t; else d.territories.push(t); }
+    return;
+  }
+  await sql.query(
+    `insert into territories (session_id, id, data) select $1, x->>'id', x from jsonb_array_elements($2::jsonb) x
+     on conflict (session_id, id) do update set data = excluded.data`,
+    [id, JSON.stringify(ts)],
+  );
+}
