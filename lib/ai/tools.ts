@@ -24,7 +24,7 @@ function lev(a: string, b: string) {
 const closest = (id: string, ids: string[]) => [...ids].sort((x, y) => lev(id.toUpperCase(), x) - lev(id.toUpperCase(), y) || x.localeCompare(y)).slice(0, 3);
 
 /** Apply one template-named field to an application; returns an error string for invalid values. */
-function applyField(a: Application, field: string, value: string): string | null {
+export function applyField(a: Application, field: string, value: string): string | null {
   const v = value.trim();
   const pick = <T extends string>(list: readonly T[]) => list.find((x) => x.toLowerCase() === v.toLowerCase());
   const needNum = (n: number | null) => (v === "" ? null : n === null ? `"${value}" is not a number for ${field}` : null);

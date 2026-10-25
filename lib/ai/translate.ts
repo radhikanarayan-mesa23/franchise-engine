@@ -7,7 +7,7 @@ export type TextCaller = (system: string, user: string) => Promise<string>;
 export interface TextCache { get(key: string): Promise<string[] | null>; set(key: string, lines: string[]): Promise<void> }
 
 // Dates, money, IDs and numbers never pass through the model; they are swapped for {{p_n}} and restored after.
-const PROTECT = /(\d{4}-\d{2}-\d{2}|₹\s?\d[\d,.]*(?:\s?lakh)?|\b(?:APP|TER|ST)-\d+(?:\s\(row \d+\))?|\d+(?:\.\d+)?%?|"[^"]*")/g;
+const PROTECT = /(https?:\/\/\S+|\d{4}-\d{2}-\d{2}|₹\s?\d[\d,.]*(?:\s?lakh)?|\b(?:APP|TER|ST)-\d+(?:\s\(row \d+\))?|\d+(?:\.\d+)?%?|"[^"]*")/g;
 
 export function protect(line: string) {
   const values: string[] = [];

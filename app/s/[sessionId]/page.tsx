@@ -22,7 +22,9 @@ export default async function Results({ params }: { params: Promise<{ sessionId:
     <main>
       <p><Link href="/">← New upload</Link></p>
       <h1>Decisions</h1>
-      <p><Link href={`/s/${sessionId}/review`}>Human review queue →</Link></p>
+      <p style={{ display: "flex", gap: 16 }}><Link href={`/s/${sessionId}/review`}>Human review queue →</Link>
+        <Link href={`/s/${sessionId}/policy`}>Edit policy →</Link>
+        <a href={`/api/export?sessionId=${sessionId}`}>Export to Excel ↓</a></p>
       <section style={{ display: "flex", gap: 24, padding: 12, background: "#f3f4f6", borderRadius: 8 }}>
         <div><b>{ds.length}</b> applications processed</div>
         <div><b>{pct(ds.filter((d) => d.humanReview).length)}%</b> need a human</div>

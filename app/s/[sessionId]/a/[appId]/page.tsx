@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTokenFor } from "@/lib/db/repo";
+import { headers } from "next/headers";
+import { translate } from "@/lib/ai/translator";
+import UpdateLinkButton from "./UpdateLinkButton";
 import { pipelineFor } from "@/lib/session/stage";
 import { render } from "@/lib/reasons/render";
 
@@ -19,6 +22,18 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
   const [events, reviews] = await Promise.all([getStageEvents(sessionId), getReviewActions(sessionId)]);
   const pipe = pipelineFor(d, events, session.policy);
   const review = reviews.filter((r) => r.applicationId === id);
+  const needsApplicant = d.owner === "Applicant" || d.status === "On hold" || d.status === "Conditionally approved" || d.status === "Redirected";
+  const token = needsApplicant ? await latestTokenFor(sessionId, id) : null;
+  const h = await headers();
+  const linkUrl = token ? `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}/u/${token}` : null;
+  // Drafted message (not sent): English from reason codes, translated with placeholder checks.
+  const draftEn = needsApplicant ? [
+    `Dear ${app.name}, thank you for applying (${d.applicationId}). Current status: ${d.status}.`,
+    ...d.conditions.map((c) => `${render(c.text)} Deadline: ${c.dueDate}.`),
+    render(d.nextStep),
+    ...(linkUrl ? [`Update your details here: ${linkUrl}`] : []),
+  ] : [];
+  const draftLines = draftEn.length ? (await translate(draftEn, app.language)).lines : [];
   return (
     <main>
       <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
@@ -27,6 +42,12 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       <h2>{d.status}{d.humanReview ? " — needs human review" : ""}</h2>
       <p><b>Owner:</b> {d.owner} · <b>Next step:</b> {render(d.nextStep)}</p>
       <p><b>Territory:</b> {d.territoryId ?? "none"} · <b>Assigned pin:</b> {d.assignedPin ?? "none"} · <b>Applied pin:</b> {app.pin}</p>
+
+      {needsApplicant && (<section style={{ background: "#f9fafb", padding: 8, borderRadius: 6 }}>
+        <b>Drafted update message ({app.language}, not sent):</b>
+        <div style={{ whiteSpace: "pre-wrap" }}>{draftLines.join("\n")}</div>
+        {linkUrl ? <p>Update link: <a href={linkUrl}>{linkUrl}</a></p> : <UpdateLinkButton sessionId={sessionId} applicationId={id} />}
+      </section>)}
 
       <h3>Why</h3>
       <ul>{d.reasons.map((r, i) => <li key={i}>{render(r)}</li>)}</ul>

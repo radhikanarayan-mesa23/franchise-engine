@@ -154,3 +154,30 @@ export async function getReviewActions(id: string): Promise<ReviewAction[]> {
   const rows = await sql`select application_id, action, reason, at::text at from review_actions where session_id = ${id} order by at`;
   return rows.map((r) => ({ applicationId: r.application_id, action: r.action, reason: r.reason, at: r.at }));
 }
+
+export interface UpdateToken { token: string; sessionId: string; applicationId: string; fields: string[] }
+const tokens: Map<string, UpdateToken> = ((globalThis as unknown as { __feTok?: Map<string, UpdateToken> }).__feTok ??= new Map());
+
+export async function createUpdateToken(sessionId: string, applicationId: string, fields: string[], expiresDays: number): Promise<string> {
+  const token = randomUUID().replace(/-/g, "");
+  const sql = db();
+  if (!sql) { tokens.set(token, { token, sessionId, applicationId, fields }); return token; }
+  await sql`insert into update_tokens (token, session_id, application_id, fields_requested, expires_at)
+            values (${token}, ${sessionId}, ${applicationId}, ${JSON.stringify(fields)}::jsonb, now() + make_interval(days => ${expiresDays}))`;
+  return token;
+}
+
+export async function getUpdateToken(token: string): Promise<UpdateToken | null> {
+  const sql = db();
+  if (!sql) return tokens.get(token) ?? null;
+  if (!/^[0-9a-f]{32}$/.test(token)) return null;
+  const [r] = await sql`select * from update_tokens where token = ${token} and expires_at > now()`;
+  return r ? { token, sessionId: r.session_id, applicationId: r.application_id, fields: r.fields_requested } : null;
+}
+
+export async function latestTokenFor(sessionId: string, applicationId: string): Promise<string | null> {
+  const sql = db();
+  if (!sql) return [...tokens.values()].reverse().find((t) => t.sessionId === sessionId && t.applicationId === applicationId)?.token ?? null;
+  const [r] = await sql`select token from update_tokens where session_id = ${sessionId} and application_id = ${applicationId} and expires_at > now() order by expires_at desc limit 1`;
+  return (r?.token as string) ?? null;
+}
