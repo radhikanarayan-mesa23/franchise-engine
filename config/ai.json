@@ -15,5 +15,15 @@
   },
   "reasoning": {
     "effort": "low"
-  }
+  },
+  "translate_keep_in_english": [
+    "POS",
+    "GST",
+    "PAN",
+    "Aadhaar",
+    "fit-out",
+    "Excel",
+    "PDF"
+  ],
+  "translate_prompt_version": 1
 }

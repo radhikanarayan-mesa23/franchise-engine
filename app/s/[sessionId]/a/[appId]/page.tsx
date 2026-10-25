@@ -23,6 +23,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
     <main>
       <p><Link href={`/s/${sessionId}`}>← All decisions</Link></p>
       <h1>{d.applicationId} · {d.name}</h1>
+      <p><Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}/pack`}>Partner pack ({app.language}) →</Link> · <Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}/pack?view=team&lang=English`}>Team view →</Link></p>
       <h2>{d.status}{d.humanReview ? " — needs human review" : ""}</h2>
       <p><b>Owner:</b> {d.owner} · <b>Next step:</b> {render(d.nextStep)}</p>
       <p><b>Territory:</b> {d.territoryId ?? "none"} · <b>Assigned pin:</b> {d.assignedPin ?? "none"} · <b>Applied pin:</b> {app.pin}</p>
