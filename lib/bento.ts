@@ -5,10 +5,6 @@ import type { FranchiseBentoData } from "@/components/ui/franchise-bento";
 import { render } from "@/lib/reasons/render";
 import { STATUS_ORDER } from "@/lib/ui";
 
-const MIX_COLOURS: Record<string, string> = {
-  "Recommended for approval": "#4ade9b", "Conditionally approved": "#9ff0c8", "Human review": "#ffcf70", Redirected: "#7cc8ff",
-  "On hold": "#fbbf4b", Waitlisted: "#a5a4ff", Rejected: "#ff7a7a",
-};
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 /** Aggregates stored engine output for the dashboard bento; no new business rules. */
@@ -28,6 +24,7 @@ export function bentoData(decisions: Decision[], territories: RunResult["territo
     return { ...row, t1: r2(row.t1), t2: r2(row.t2), t3: r2(row.t3) };
   });
   const pct = policy.brand_economics.royalty_pct_of_sales;
+  const count = (sts: string[]) => decisions.filter((d) => sts.includes(d.status)).length;
   const base = (d: Decision) => d.payback!.projection.scenarios.find((s) => s.name === "Base") ?? d.payback!.projection.scenarios[0];
   const deadlines = decisions.flatMap((d) => d.conditions.map((c) => ({ name: d.name || d.applicationId, iso: c.dueDate, what: render(c.text) })))
     .sort((a, b) => a.iso.localeCompare(b.iso))
@@ -36,7 +33,13 @@ export function bentoData(decisions: Decision[], territories: RunResult["territo
   return {
     stream,
     royalty: stream.map((s) => r2(((s.t1 + s.t2 + s.t3) * pct) / 100)),
-    mix: STATUS_ORDER.map((st) => ({ label: st, value: decisions.filter((d) => d.status === st).length, color: MIX_COLOURS[st] })),
+    // Four calm groups instead of seven colours: placed, conditional, needs action, not placed.
+    mix: [
+      { label: "Recommended", value: count(["Recommended for approval"]), color: "#F5A524" },
+      { label: "Conditional", value: count(["Conditionally approved"]), color: "#FFCF70" },
+      { label: "Needs action", value: count(["Human review", "On hold", "Redirected"]), color: "rgba(255,255,255,.55)" },
+      { label: "Not placed", value: count(["Waitlisted", "Rejected"]), color: "rgba(255,255,255,.22)" },
+    ],
     brand: { totalLakh: r2(approved.reduce((a, d) => a + base(d).brandTotalLakh, 0)), feeLakh: r2(approved.reduce((a, d) => a + d.payback!.projection.franchiseFeeLakh, 0)),
       royaltyLakh: r2(approved.reduce((a, d) => a + base(d).royaltyLakh, 0)), royaltyPct: pct, months },
     slots: { filled: territories.reduce((a, t) => a + t.filled, 0), total: territories.reduce((a, t) => a + t.realCapacity, 0), approved: approved.length },

@@ -24,27 +24,27 @@ const CSS = `.frb{--acc:#F5A524;--acc2:#FFCF70;--t1:#fff;--t2:rgba(255,255,255,.
   --c1:#FFCF70;--c2:#C4B5FD;--c3:#7DD3FC;font-family:inherit;color:#fff;width:100%}
 .frb *{box-sizing:border-box}
 .frb .top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.frb .top h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.03em;flex:1}
+.frb .top h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.03em;flex:1}
 .frb .top h2 span{font-weight:500;color:var(--t3);font-size:13px;margin-left:10px}
 .frb .seg{display:flex;padding:3px;gap:2px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
 .frb .seg button{border:0;height:28px;min-width:48px;padding:0 12px;border-radius:11px;background:transparent;color:var(--t2);font:600 12.5px inherit;cursor:pointer;transition:background .25s,color .25s;box-shadow:none}
 .frb .seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#1a1205}
-.frb .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
-.frb .h1{height:360px}.frb .h2{height:168px}.frb .h3{height:320px}
+.frb .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.frb .h1{height:270px}.frb .h2{height:132px}
 .frb #nw{grid-column:span 8}.frb #alloc{grid-column:span 4}.frb .kpi{grid-column:span 3}
 .frb #flow{grid-column:span 5}.frb #terr{grid-column:span 4}.frb #stat{grid-column:span 3}
 @media (max-width:1199px){.frb #nw{grid-column:span 12}.frb #alloc{grid-column:span 6;grid-row:span 2;height:auto}.frb .kpi{grid-column:span 6}.frb #flow{grid-column:span 12}.frb #terr,.frb #stat{grid-column:span 6}}
 @media (max-width:767px){.frb #nw{height:400px}.frb #alloc{grid-column:span 12;grid-row:auto;height:360px}.frb .kpi{grid-column:span 6}.frb #terr,.frb #stat{grid-column:span 12}.frb .grid{gap:12px}.frb .top{flex-wrap:wrap}}
 @media (max-width:520px){.frb .kpi{grid-column:span 12}}
-.frb .card{position:relative;border-radius:24px;overflow:hidden;opacity:0;transform:translateY(14px) scale(.985);transition:opacity .7s ease,transform .9s var(--ease);margin:0;padding:0;animation:none}
+.frb .card{position:relative;border-radius:18px;overflow:hidden;opacity:0;transform:translateY(14px) scale(.985);transition:opacity .7s ease,transform .9s var(--ease);margin:0;padding:0;animation:none}
 .frb .in .card{opacity:1;transform:none}
 .frb .rim{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.06);pointer-events:none;z-index:9}
 .frb .g{position:absolute;inset:0}.frb .core{position:absolute;left:10%;right:10%;top:16%;bottom:-6%;border-radius:90px;filter:blur(60px)}
 .frb .glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(20px)}
-.frb .in-c{position:absolute;inset:0;padding:20px 22px;z-index:2}
-.frb .ttl{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.frb .in-c{position:absolute;inset:0;padding:16px 18px;z-index:2}
+.frb .ttl{font-size:15px;font-weight:600;letter-spacing:-.02em}
 .frb .cap{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t2)}
-.frb .big{font-size:38px;font-weight:200;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.frb .big{font-size:30px;font-weight:200;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
 .frb .delta{font-weight:600;font-size:12.5px;color:var(--acc2)}
 .frb .muted{font-size:12.5px;color:var(--t3);font-weight:500}
 .frb .chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:11px;background:rgba(0,0,0,.6);color:#fff;font-weight:600;font-size:11px}
@@ -65,7 +65,7 @@ function mount(root, data, opts) {
   const $ = (id) => root.querySelector("#" + id);
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ACC = "#F5A524", T2 = "rgba(255,255,255,.6)", T3 = "rgba(255,255,255,.4)", HAIR = "rgba(255,255,255,.12)";
-  const COL = { t1: "#FFCF70", t2: "#C4B5FD", t3: "#7DD3FC" };
+  const COL = { t1: "#F5A524", t2: "#FFCF70", t3: "rgba(255,255,255,.5)" };
   const ease = (t) => 1 - Math.pow(1 - t, 3);
   const NS = "http://www.w3.org/2000/svg";
   const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; };
@@ -79,18 +79,15 @@ function mount(root, data, opts) {
   root.innerHTML = `<div class="top"><h2>${esc(opts.title)}<span>${esc(opts.subtitle)}</span></h2>
       <div class="seg" id="period" role="group" aria-label="Projection period"></div></div>
     <div class="grid" id="grid">
-      <section class="card h1" id="nw" aria-label="Projected network sales"></section>
-      <section class="card h1" id="alloc" aria-label="Decision mix"></section>
-      <section class="card h2 kpi" id="ret" aria-label="Brand revenue"></section>
+      <section class="card glass h1" id="nw" aria-label="Projected network sales"></section>
+      <section class="card glass h1" id="alloc" aria-label="Decision mix"></section>
+      <section class="card glass h2 kpi" id="ret" aria-label="Brand revenue"></section>
       <section class="card glass h2 kpi" id="cash" aria-label="Slots filled"></section>
       <section class="card glass h2 kpi" id="pay" aria-label="Upcoming deadlines"></section>
       <section class="card glass h2 kpi" id="goals" aria-label="Territory fill"></section>
-      <section class="card h3" id="flow" aria-label="Sales and royalty"></section>
-      <section class="card h3" id="terr" aria-label="Territories"></section>
-      <section class="card h3" id="stat" aria-label="Applications by status"></section>
     </div><div class="tip" id="tip"></div>`;
 
-  const bg = ({ top, base, bottom, core }) => `<div class="g" style="background:linear-gradient(180deg,${top} 0%,${base} 36%,${base} 74%,${bottom} 100%)"></div><div class="core" style="background:${core}"></div>`;
+  const bg = () => "";
   const GR = {
     plum: { top: "#7c5cff", base: "#2a1a5e", bottom: "#4b2fa3", core: "#0b0618" },
     graph: { top: "#5a5468", base: "#24202e", bottom: "#36303f", core: "#08070b" },
@@ -127,13 +124,13 @@ function mount(root, data, opts) {
   nw.innerHTML = `${bg(GR.plum)}<div class="in-c">
     <div class="row" style="justify-content:space-between;flex-wrap:wrap"><div class="ttl">Projected network sales</div>
       <div class="legend"><span><i style="background:${COL.t1}"></i>Tier 1</span><span><i style="background:${COL.t2}"></i>Tier 2</span><span><i style="background:${COL.t3}"></i>Tier 3</span></div></div>
-    <div class="row" style="margin-top:14px;align-items:flex-end;gap:16px;flex-wrap:wrap"><div class="nwn"></div>
+    <div class="row" style="margin-top:10px;align-items:flex-end;gap:14px;flex-wrap:wrap"><div class="nwn"></div>
       <div style="padding-bottom:6px"><div class="delta nwd"></div><div class="muted nwc" style="margin-top:3px"></div></div></div>
     <svg class="nws" style="position:absolute;left:0;right:0;bottom:0;display:block" aria-hidden="true"></svg></div><div class="rim"></div>`;
-  const nwNum = DotNumber(nw.querySelector(".nwn"), innerWidth < 520 ? 5 : 6.5);
+  const nwNum = DotNumber(nw.querySelector(".nwn"), innerWidth < 520 ? 3.6 : 4.4);
   let grow = 0, nwRaf = 0;
   function drawNW() {
-    const D = series(), svg = nw.querySelector(".nws"), W = nw.clientWidth, Hh = 210, top = 26, bot = 26, mid = top + (Hh - top - bot) / 2, n = D.length;
+    const D = series(), svg = nw.querySelector(".nws"), W = nw.clientWidth, Hh = 160, top = 24, bot = 24, mid = top + (Hh - top - bot) / 2, n = D.length;
     svg.setAttribute("width", W); svg.setAttribute("height", Hh); svg.setAttribute("viewBox", `0 0 ${W} ${Hh}`);
     if (n < 2) { svg.innerHTML = ""; return; }
     const tots = D.map(total), mx = Math.max(...tots, .01), half = (Hh - top - bot) / 2, X = (i) => -20 + i / (n - 1) * (W + 40), g = ease(grow);
@@ -164,9 +161,9 @@ function mount(root, data, opts) {
 
   /* ---- Decision mix: half gauge of ticks ---- */
   const al = $("alloc");
-  al.innerHTML = `${bg(GR.graph)}<div class="in-c"><div class="row" style="justify-content:space-between"><div class="ttl">Decision mix</div><span class="chip">${data.mix.reduce((a, m) => a + m.value, 0)} applications</span></div>
-    <svg class="alg" width="300" height="168" viewBox="-150 -150 300 168" style="position:absolute;left:50%;margin-left:-150px;top:64px" aria-hidden="true"></svg>
-    <div class="all" style="position:absolute;left:22px;right:22px;bottom:16px"></div></div><div class="rim"></div>`;
+  al.innerHTML = `${bg(GR.graph)}<div class="in-c"><div class="row" style="justify-content:space-between"><div class="ttl">Decision mix</div><span class="muted">${data.mix.reduce((a, m) => a + m.value, 0)} applications</span></div>
+    <svg class="alg" width="210" height="118" viewBox="-150 -150 300 168" style="position:absolute;left:50%;margin-left:-105px;top:44px" aria-hidden="true"></svg>
+    <div class="all" style="position:absolute;left:18px;right:18px;bottom:12px"></div></div><div class="rim"></div>`;
   function updateMix() {
     const tot = data.mix.reduce((a, m) => a + m.value, 0) || 1, n = 56, svg = al.querySelector(".alg"); let s = "", acc = 0;
     const bounds = data.mix.map((m) => (acc += m.value / tot));
@@ -175,21 +172,21 @@ function mount(root, data, opts) {
     const share = Math.round(((data.mix[0]?.value ?? 0) + (data.mix[1]?.value ?? 0)) / tot * 100);
     s += `<text y="-22" text-anchor="middle" font-weight="200" font-size="50" fill="#fff" letter-spacing="-2">${share}<tspan font-size="17" dy="-24" fill="${T2}">%</tspan></text><text y="0" text-anchor="middle" font-size="12" fill="${T3}">approved or conditional</text>`;
     svg.innerHTML = `<style>@keyframes tk{to{opacity:1}}</style>` + s;
-    al.querySelector(".all").innerHTML = data.mix.filter((m) => m.value).map((m, i) => `<div class="row" style="height:26px;${i ? "border-top:1px solid rgba(255,255,255,.08)" : ""}"><i style="width:8px;height:8px;border-radius:50%;background:${m.color}"></i><span style="flex:1;font-size:12.5px;font-weight:600">${esc(m.label)}</span><span class="mono muted" style="width:40px;text-align:right">${Math.round(m.value / tot * 100)}%</span><span class="mono" style="width:30px;text-align:right;font-size:13px">${m.value}</span></div>`).join("");
+    al.querySelector(".all").innerHTML = data.mix.filter((m) => m.value).map((m, i) => `<div class="row" style="height:23px;${i ? "border-top:1px solid rgba(255,255,255,.07)" : ""}"><i style="width:8px;height:8px;border-radius:50%;background:${m.color}"></i><span style="flex:1;font-size:12.5px;font-weight:600">${esc(m.label)}</span><span class="mono muted" style="width:40px;text-align:right">${Math.round(m.value / tot * 100)}%</span><span class="mono" style="width:30px;text-align:right;font-size:13px">${m.value}</span></div>`).join("");
   }
 
   /* ---- KPI: brand revenue (accent tile) ---- */
   const ret = $("ret");
-  ret.innerHTML = `${bg(GR.saffron)}<div class="in-c" style="color:#1a1205"><div class="row" style="justify-content:space-between"><div class="cap" style="color:rgba(26,18,5,.6)">Brand revenue · ${Math.round(data.brand.months / 12)} yrs</div><span class="chip">${data.brand.royaltyPct}% royalty</span></div>
-    <div style="position:absolute;left:20px;bottom:32px;display:flex;align-items:center;gap:8px"><svg width="26" height="32" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 37V5M5 17L17 5l12 12" fill="none" stroke="#1a1205" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="big rtv" style="font-size:44px;font-weight:300">₹0L</span></div>
-    <div class="rtp" style="position:absolute;left:22px;bottom:12px;font-size:11.5px;color:rgba(26,18,5,.65)">Fee ${lakh(data.brand.feeLakh)} + royalty ${lakh(data.brand.royaltyLakh)} · estimate</div></div><div class="rim"></div>`;
+  ret.innerHTML = `${bg(GR.saffron)}<div class="in-c"><div class="row" style="justify-content:space-between"><div class="cap">Brand revenue · ${Math.round(data.brand.months / 12)} yrs</div><span class="chip">${data.brand.royaltyPct}% royalty</span></div>
+    <div style="position:absolute;left:20px;bottom:34px;display:flex;align-items:center;gap:8px"><svg width="20" height="26" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 37V5M5 17L17 5l12 12" fill="none" stroke="#F5A524" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="big rtv" style="font-size:34px;font-weight:300;color:#FFCF70">₹0L</span></div>
+    <div class="rtp muted" style="position:absolute;left:22px;bottom:12px;font-size:11.5px">Fee ${lakh(data.brand.feeLakh)} + royalty ${lakh(data.brand.royaltyLakh)} · estimate</div></div><div class="rim"></div>`;
   const updateRet = () => tween(ret.querySelector(".rtv"), data.brand.totalLakh, (v) => lakh(v));
 
   /* ---- KPI: slots filled with tick ruler ---- */
   const cash = $("cash");
   cash.innerHTML = `<div class="in-c"><div class="row" style="justify-content:space-between"><div class="cap">Real slots filled</div><span class="muted">capacity</span></div>
-    <div class="row" style="margin-top:14px;align-items:baseline;justify-content:space-between"><span class="big csv" style="font-size:38px">0</span><span class="mono" style="font-size:18px;font-weight:500">/ ${data.slots.total}</span></div>
+    <div class="row" style="margin-top:10px;align-items:baseline;justify-content:space-between"><span class="big csv">0</span><span class="mono" style="font-size:18px;font-weight:500">/ ${data.slots.total}</span></div>
     <svg class="cst" height="22" style="position:absolute;left:22px;bottom:20px;width:calc(100% - 44px)" aria-hidden="true"></svg></div>`;
   function updateCash() { tween(cash.querySelector(".csv"), data.slots.filled, (x) => Math.round(x).toString());
     const svg = cash.querySelector(".cst"), W = svg.getBoundingClientRect().width || 220, n = 36, f = data.slots.total ? data.slots.filled / data.slots.total : 0; let s = "";
@@ -199,7 +196,7 @@ function mount(root, data, opts) {
   /* ---- KPI: upcoming deadlines ---- */
   const pay = $("pay");
   pay.innerHTML = `<div class="in-c" style="padding-bottom:12px"><div class="row" style="justify-content:space-between"><div class="cap">Next deadlines</div><span class="muted">${data.deadlines.length} open</span></div>
-    <div style="margin-top:8px">${data.deadlines.slice(0, 3).map((d, i) => `<div class="row" style="height:34px;${i ? "border-top:1px solid rgba(255,255,255,.08)" : ""}" title="${esc(d.what)}"><i style="width:24px;height:24px;border-radius:8px;background:rgba(245,165,36,.18);color:${ACC};display:grid;place-items:center;font-weight:700;font-size:11px;font-style:normal">${esc(d.name.charAt(0))}</i><span style="flex:1;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span><span class="muted mono" style="font-size:11.5px">${esc(d.date)}</span></div>`).join("") || `<p class="muted">No open deadlines.</p>`}</div></div>`;
+    <div style="margin-top:8px">${data.deadlines.slice(0, 3).map((d, i) => `<div class="row" style="height:28px;${i ? "border-top:1px solid rgba(255,255,255,.07)" : ""}" title="${esc(d.what)}"><i style="width:24px;height:24px;border-radius:8px;background:rgba(245,165,36,.18);color:${ACC};display:grid;place-items:center;font-weight:700;font-size:11px;font-style:normal">${esc(d.name.charAt(0))}</i><span style="flex:1;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span><span class="muted mono" style="font-size:11.5px">${esc(d.date)}</span></div>`).join("") || `<p class="muted">No open deadlines.</p>`}</div></div>`;
 
   /* ---- KPI: territory fill ---- */
   const goals = $("goals");
@@ -210,80 +207,13 @@ function mount(root, data, opts) {
     for (let i = 0; i < n; i++) { const x = 1 + i * (W - 2) / (n - 1), on = f > 0 && i / (n - 1) <= f; s += `<line x1="${x}" x2="${x}" y1="${i % 8 === 0 ? 0 : 4}" y2="12" stroke="${on ? ACC : "rgba(255,255,255,.25)"}" stroke-width="1.6" stroke-linecap="round" style="opacity:0;animation:tk2 .3s ${300 + k * 150 + i * 12}ms forwards"/>`; }
     svg.innerHTML = "<style>@keyframes tk2{to{opacity:1}}</style>" + s; })); }
 
-  /* ---- Sales vs royalty: mirrored waves ---- */
-  const flow = $("flow");
-  flow.innerHTML = `${bg(GR.rose)}<div class="in-c"><div class="row" style="justify-content:space-between"><div><div class="ttl">Sales and royalty</div><div class="muted flm" style="margin-top:4px"></div></div>
-    <div class="legend" style="flex-direction:column;gap:4px;align-items:flex-end"><span><i style="background:#fff"></i>Partner sales</span><span><i style="background:#FFD0DC"></i>Brand royalty</span></div></div>
-    <svg class="fls" style="position:absolute;left:0;bottom:10px" aria-hidden="true"></svg></div><div class="rim"></div>`;
-  let flowRaf = 0;
-  function updateFlow(instant) {
-    const D = series(), R = data.royalty.slice(0, S.period), svg = flow.querySelector(".fls"), W = flow.clientWidth, Hh = 232, L = 46, Rx = W - 30, mid = Hh / 2, lab = 14, amp = mid - lab - 10;
-    svg.setAttribute("width", W); svg.setAttribute("height", Hh); svg.setAttribute("viewBox", `0 0 ${W} ${Hh}`);
-    flow.querySelector(".flm").innerHTML = `Royalty <span style="color:${ACC}">${lakh(R.reduce((a, b) => a + b, 0), 1)}</span> over ${D.length} months`;
-    if (D.length < 2) { svg.innerHTML = ""; return; }
-    const sales = D.map(total), maxS = Math.max(...sales, .01), maxR = Math.max(...R, .001), X = (i) => L + i / (D.length - 1) * (Rx - L);
-    cancelAnimationFrame(flowRaf); const t0 = instant ? -1e6 : performance.now();
-    const frame = (now) => { const g = ease(reduce ? 1 : Math.min(1, (now - t0) / 1200)); let s = "";
-      [.5, 1].forEach((f) => { const yT = mid - lab - f * amp, yB = mid + lab + f * amp;
-        s += `<line x1="${L}" x2="${Rx}" y1="${yT}" y2="${yT}" stroke="${HAIR}"/><line x1="${L}" x2="${Rx}" y1="${yB}" y2="${yB}" stroke="${HAIR}"/>
-          <text x="${L - 8}" y="${yT + 3.5}" text-anchor="end" font-size="10" fill="${T3}">${lakh(maxS * f)}</text><text x="${L - 8}" y="${yB + 3.5}" text-anchor="end" font-size="10" fill="${T3}">${lakh(maxR * f, 2)}</text>`; });
-      const step = Math.max(1, Math.ceil(D.length / 6));
-      D.forEach((p, i) => { if (i % step === 0 || i === D.length - 1) s += `<text x="${X(i)}" y="${mid + 4}" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.75)">${esc(p.label)}</text>`; });
-      s += `<path d="${smooth(sales.map((v, i) => [X(i), mid - lab - v / maxS * amp * g]))}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`;
-      s += `<path d="${smooth(R.map((v, i) => [X(i), mid + lab + v / maxR * amp * g]))}" fill="none" stroke="#FFD0DC" stroke-width="2.4" stroke-linecap="round"/>`;
-      s += `<line class="hl" y1="10" y2="${Hh - 10}" stroke="#fff" stroke-opacity=".5" opacity="0"/><rect class="hit" x="${L - 10}" width="${Rx - L + 20}" height="${Hh}" fill="transparent"/>`;
-      svg.innerHTML = s;
-      const hit = svg.querySelector(".hit"), hl = svg.querySelector(".hl");
-      hit.onpointermove = (e) => { const r = svg.getBoundingClientRect(), z = r.width / W, x = (e.clientX - r.left) / z, i = Math.max(0, Math.min(D.length - 1, Math.round((x - L) / (Rx - L) * (D.length - 1))));
-        hl.setAttribute("x1", X(i)); hl.setAttribute("x2", X(i)); hl.setAttribute("opacity", 1);
-        showTip(r.left + X(i) * z, r.top + (mid - lab - sales[i] / maxS * amp) * z, D[i].label, [["Partner sales", lakh(sales[i], 2), "#fff"], ["Brand royalty", lakh(R[i], 2), "#FFD0DC"]]); };
-      hit.onpointerleave = () => { hl.setAttribute("opacity", 0); hideTip(); };
-      if (g < 1) flowRaf = RAF(frame); };
-    flowRaf = RAF(frame);
-  }
-
-  /* ---- Territories: share bar + sparkline rows ---- */
-  const tr = $("terr");
-  const TT = [...data.territories].sort((a, b) => b.salesLakh - a.salesLakh).slice(0, 3);
-  const totT = TT.reduce((a, t) => a + t.salesLakh, 0) || 1;
-  const spark = (d, id) => { if (d.length < 2) return ""; const W = 92, H = 30, lo = Math.min(...d), hi = Math.max(...d), pad = (hi - lo) * .15 || 1, Y = (v) => H - 3 - (v - lo + pad) / (hi - lo + 2 * pad) * (H - 6);
-    const P = d.map((v, i) => [2 + i / (d.length - 1) * (W - 6), Y(v)]), e = P[P.length - 1];
-    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs><linearGradient id="sp${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
-      <path d="${smooth(P)}L${e[0]},${H}L${P[0][0]},${H}Z" fill="url(#sp${id})"/><path d="${smooth(P)}" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="${e[0]}" cy="${e[1]}" r="3" fill="${ACC}"/></svg>`; };
-  tr.innerHTML = `${bg(GR.teal)}<div class="in-c"><div class="row" style="justify-content:space-between"><div class="ttl">Territories</div><span class="muted">${data.brand.months} mo sales</span></div>
-    <div class="row" style="margin-top:12px;align-items:flex-end;justify-content:space-between"><span class="big trv" style="font-size:34px">₹0L</span><span class="muted" style="padding-bottom:4px">top ${TT.length}</span></div>
-    <div style="margin-top:14px"><div style="display:flex;gap:3px;height:6px">${TT.map((t, i) => `<div class="trs" style="flex:0 0 calc(${t.salesLakh / totT * 100}% - 2px);border-radius:3px;background:rgba(255,255,255,${[.95, .6, .32][i]});transform-origin:left;transform:scaleX(0);transition:transform .8s var(--ease) ${.1 + i * .1}s"></div>`).join("")}</div>
-      <div style="display:flex;gap:3px;margin-top:7px">${TT.map((t) => `<span class="muted" style="flex:0 0 calc(${t.salesLakh / totT * 100}% - 2px);font-size:11px;white-space:nowrap;overflow:hidden">${esc(t.id)} ${Math.round(t.salesLakh / totT * 100)}%</span>`).join("")}</div></div>
-    <div style="position:absolute;left:22px;right:22px;bottom:12px">${TT.map((t, i) => `<div class="row" style="height:46px;${i ? "border-top:1px solid rgba(255,255,255,.1)" : ""}"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${esc(t.id)} · ${esc(t.city)}</div><div class="muted" style="font-size:11px">${t.filled}/${t.capacity} slots</div></div>${spark(t.spark, i)}<div style="width:72px;text-align:right" class="mono"><div style="font-size:13px">${lakh(t.salesLakh, 0)}</div></div></div>`).join("")}</div></div><div class="rim"></div>`;
-  function updateTerr() { tween(tr.querySelector(".trv"), totT, (v) => lakh(v, 0)); RAF(() => RAF(() => tr.querySelectorAll(".trs").forEach((b) => (b.style.transform = "scaleX(1)")))); }
-
-  /* ---- Applications by status: capsule columns ---- */
-  const st = $("stat");
-  st.innerHTML = `${bg(GR.violet)}<div class="in-c"><div class="ttl">By status</div>
-    <div style="margin-top:12px"><span class="big stv" style="font-size:34px">0</span></div><div class="row" style="margin-top:6px;gap:8px"><span class="delta">${data.slots.approved} approved</span><span class="muted">this run</span></div>
-    <svg class="sts" style="position:absolute;left:16px;bottom:12px" aria-hidden="true"></svg></div><div class="rim"></div>`;
-  function updateStat(instant) {
-    if (!instant) tween(st.querySelector(".stv"), data.statuses.reduce((a, x) => a + x.count, 0), (x) => Math.round(x).toString());
-    const svg = st.querySelector(".sts"), W = st.clientWidth - 32, Hh = 150, pb = 18, cols = data.statuses.length, bw = Math.min(22, (W - 10) / cols - 6), max = Math.max(1, ...data.statuses.map((x) => x.count)), gap = cols > 1 ? (W - 8 - bw * cols) / (cols - 1) : 0;
-    svg.setAttribute("width", W); svg.setAttribute("height", Hh);
-    const Y = (x) => (Hh - pb) * (1 - x / max); let s = "";
-    data.statuses.forEach((x, i) => { const X0 = 4 + i * (bw + gap);
-      s += `<rect x="${X0}" y="${Y(max)}" width="${bw}" height="${Hh - pb - Y(max)}" rx="${bw / 2}" fill="rgba(0,0,0,.25)"/>
-        <rect class="sb" x="${X0}" y="${Hh - pb}" width="${bw}" height="0" rx="${bw / 2}" fill="${x.highlight ? ACC : "#fff"}" data-y="${Y(x.count)}" data-h="${Hh - pb - Y(x.count)}" style="transition:y .8s var(--ease) ${i * 70}ms,height .8s var(--ease) ${i * 70}ms"/>
-        <text x="${X0 + bw / 2}" y="${Hh - 3}" text-anchor="middle" font-size="9.5" fill="${x.highlight ? "#fff" : T3}">${esc(x.label.slice(0, 4))}</text>
-        <rect class="hit" x="${X0 - 3}" y="0" width="${bw + 6}" height="${Hh}" fill="transparent" data-i="${i}"/>`; });
-    svg.innerHTML = s;
-    RAF(() => RAF(() => svg.querySelectorAll(".sb").forEach((b) => { b.setAttribute("y", b.dataset.y); b.setAttribute("height", b.dataset.h); })));
-    svg.querySelectorAll(".hit").forEach((h) => { h.onpointermove = (e) => { const x = data.statuses[+h.dataset.i]; showTip(e.clientX, e.clientY, x.label, [["Applications", String(x.count)]]); }; h.onpointerleave = hideTip; });
-  }
-
   /* ---- controls + lifecycle ---- */
   const seg = $("period");
   seg.innerHTML = PERIODS.map((p) => `<button type="button" aria-pressed="${S.period === p}">${p}M</button>`).join("");
-  seg.querySelectorAll("button").forEach((b, i) => (b.onclick = () => { S.period = PERIODS[i]; seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); updateNW(); updateFlow(); }));
-  function updateAll() { updateNW(); updateMix(); updateRet(); updateCash(); updateGoals(); updateFlow(); updateTerr(); updateStat(); }
-  let rz; const ro = new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { cancelAnimationFrame(nwRaf); grow = 1; drawNW(); updateFlow(true); updateStat(true); updateCash(); updateGoals(); }, 120); });
-  ["nw", "flow", "stat", "cash"].forEach((id) => ro.observe($(id)));
+  seg.querySelectorAll("button").forEach((b, i) => (b.onclick = () => { S.period = PERIODS[i]; seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); updateNW(); }));
+  function updateAll() { updateNW(); updateMix(); updateRet(); updateCash(); updateGoals(); }
+  let rz; const ro = new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { cancelAnimationFrame(nwRaf); grow = 1; drawNW(); updateCash(); updateGoals(); }, 120); });
+  ["nw", "cash"].forEach((id) => ro.observe($(id)));
   RAF(() => { $("grid").classList.add("in"); root.querySelectorAll(".card").forEach((c, i) => (c.style.transitionDelay = (i * 60) + "ms")); updateAll(); });
   return () => { alive = false; frames.forEach((f) => cancelAnimationFrame(f)); ro.disconnect(); clearTimeout(rz); };
 }
