@@ -20,15 +20,15 @@ export interface FranchiseBentoData {
   statuses: { label: string; count: number; highlight?: boolean }[];
 }
 
-const CSS = `.frb{--acc:#F5A524;--acc2:#FFCF70;--t1:#fff;--t2:rgba(255,255,255,.6);--t3:rgba(255,255,255,.4);--hair:rgba(255,255,255,.12);--ease:cubic-bezier(.32,.72,0,1);
-  --c1:#FFCF70;--c2:#C4B5FD;--c3:#7DD3FC;font-family:inherit;color:#fff;width:100%}
+const CSS = `.frb{--acc:#1e88d8;--acc2:#5bc0eb;--t1:#0d2b45;--t2:rgba(13,43,69,.6);--t3:rgba(13,43,69,.4);--hair:rgba(13,43,69,.12);--ease:cubic-bezier(.32,.72,0,1);
+  --c1:#5bc0eb;--c2:#C4B5FD;--c3:#7DD3FC;font-family:inherit;color:#0d2b45;width:100%}
 .frb *{box-sizing:border-box}
 .frb .top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .frb .top h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.03em;flex:1}
 .frb .top h2 span{font-weight:500;color:var(--t3);font-size:13px;margin-left:10px}
-.frb .seg{display:flex;padding:3px;gap:2px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.frb .seg{display:flex;padding:3px;gap:2px;border-radius:14px;background:rgba(13,43,69,.08);border:1px solid rgba(13,43,69,.12)}
 .frb .seg button{border:0;height:28px;min-width:48px;padding:0 12px;border-radius:11px;background:transparent;color:var(--t2);font:600 12.5px inherit;cursor:pointer;transition:background .25s,color .25s;box-shadow:none}
-.frb .seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#1a1205}
+.frb .seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#0d2b45fff}
 .frb .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
 .frb .h1{height:270px}.frb .h2{height:132px}
 .frb #nw{grid-column:span 8}.frb #alloc{grid-column:span 4}.frb .kpi{grid-column:span 3}
@@ -38,20 +38,20 @@ const CSS = `.frb{--acc:#F5A524;--acc2:#FFCF70;--t1:#fff;--t2:rgba(255,255,255,.
 @media (max-width:520px){.frb .kpi{grid-column:span 12}}
 .frb .card{position:relative;border-radius:18px;overflow:hidden;opacity:0;transform:translateY(14px) scale(.985);transition:opacity .7s ease,transform .9s var(--ease);margin:0;padding:0;animation:none}
 .frb .in .card{opacity:1;transform:none}
-.frb .rim{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.06);pointer-events:none;z-index:9}
+.frb .rim{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.9);pointer-events:none;z-index:9}
 .frb .g{position:absolute;inset:0}.frb .core{position:absolute;left:10%;right:10%;top:16%;bottom:-6%;border-radius:90px;filter:blur(60px)}
-.frb .glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(20px)}
+.frb .glass{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(30,136,216,.10)}
 .frb .in-c{position:absolute;inset:0;padding:16px 18px;z-index:2}
 .frb .ttl{font-size:15px;font-weight:600;letter-spacing:-.02em}
 .frb .cap{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t2)}
 .frb .big{font-size:30px;font-weight:200;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
 .frb .delta{font-weight:600;font-size:12.5px;color:var(--acc2)}
 .frb .muted{font-size:12.5px;color:var(--t3);font-weight:500}
-.frb .chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:11px;background:rgba(0,0,0,.6);color:#fff;font-weight:600;font-size:11px}
+.frb .chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:11px;background:rgba(30,136,216,.12);color:#1e88d8;font-weight:600;font-size:11px}
 .frb .legend{display:flex;gap:14px;font-size:12px;font-weight:500;color:var(--t2)}.frb .legend span{display:inline-flex;align-items:center;gap:6px}.frb .legend i{width:8px;height:8px;border-radius:50%}
 .frb .row{display:flex;align-items:center;gap:12px}.frb .mono{font-variant-numeric:tabular-nums}
 .frb .dots circle{transition:opacity .26s,transform .26s;transform-box:fill-box;transform-origin:center}
-.frb .tip{position:fixed;z-index:50;pointer-events:none;background:rgba(14,12,20,.94);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:9px 11px;font-size:12px;backdrop-filter:blur(16px);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;white-space:nowrap;min-width:160px}
+.frb .tip{position:fixed;z-index:50;pointer-events:none;background:rgba(255,255,255,.96);color:#0d2b45;border:1px solid rgba(13,43,69,.12);border-radius:14px;padding:9px 11px;font-size:12px;backdrop-filter:blur(16px);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;white-space:nowrap;min-width:160px}
 .frb .tip.on{opacity:1;transform:none}.frb .tip .t{color:var(--t2);margin-bottom:5px}.frb .tip .r{display:flex;justify-content:space-between;gap:14px;align-items:center;line-height:19px}
 .frb .tip .r span{display:inline-flex;align-items:center;gap:6px;color:var(--t2)}.frb .tip i{width:7px;height:7px;border-radius:50%}
 @media (prefers-reduced-motion: reduce){.frb .card{transition:none}}`;
@@ -64,8 +64,8 @@ function mount(root, data, opts) {
   const RAF = (cb) => { if (!alive) return 0; const id = requestAnimationFrame((t) => { frames.delete(id); if (alive) cb(t); }); frames.add(id); return id; };
   const $ = (id) => root.querySelector("#" + id);
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ACC = "#F5A524", T2 = "rgba(255,255,255,.6)", T3 = "rgba(255,255,255,.4)", HAIR = "rgba(255,255,255,.12)";
-  const COL = { t1: "#F5A524", t2: "#FFCF70", t3: "rgba(255,255,255,.5)" };
+  const ACC = "#1e88d8", T2 = "rgba(13,43,69,.6)", T3 = "rgba(13,43,69,.4)", HAIR = "rgba(13,43,69,.12)";
+  const COL = { t1: "#1e88d8", t2: "#5bc0eb", t3: "rgba(13,43,69,.5)" };
   const ease = (t) => 1 - Math.pow(1 - t, 3);
   const NS = "http://www.w3.org/2000/svg";
   const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; };
@@ -89,9 +89,9 @@ function mount(root, data, opts) {
 
   const bg = () => "";
   const GR = {
-    plum: { top: "#7c5cff", base: "#2a1a5e", bottom: "#4b2fa3", core: "#0b0618" },
+    plum: { top: "#7c5cff", base: "#2a1a5e", bottom: "#4b2fa3", core: "#ffffff" },
     graph: { top: "#5a5468", base: "#24202e", bottom: "#36303f", core: "#08070b" },
-    saffron: { top: "#ffe0a3", base: "#f5a524", bottom: "#ffc861", core: "#3a2203" },
+    saffron: { top: "#bfe9fb", base: "#1e88d8", bottom: "#ffc861", core: "#3a2203" },
     rose: { top: "#ff9fb7", base: "#b3264f", bottom: "#d94a73", core: "#2a0512" },
     teal: { top: "#8fe3e0", base: "#1f6f78", bottom: "#3b98a0", core: "#04181a" },
     violet: { top: "#cbb8ff", base: "#5b3fd6", bottom: "#7d63ea", core: "#0d0624" },
@@ -102,7 +102,7 @@ function mount(root, data, opts) {
   const F = { "0": ["01110","10001","10011","10101","11001","10001","01110"], "1": ["00100","01100","00100","00100","00100","00100","01110"], "2": ["01110","10001","00001","00010","00100","01000","11111"], "3": ["11111","00010","00100","00010","00001","10001","01110"], "4": ["00010","00110","01010","10010","11111","00010","00010"], "5": ["11111","10000","11110","00001","00001","10001","01110"], "6": ["00110","01000","10000","11110","10001","10001","01110"], "7": ["11111","00001","00010","00100","01000","01000","01000"], "8": ["01110","10001","10001","01110","10001","10001","01110"], "9": ["01110","10001","10001","01111","00001","00010","01100"], "₹": ["11111","00100","11111","00100","01000","00110","00001"], "L": ["10000","10000","10000","10000","10000","10000","11111"], ",": ["0","0","0","0","0","1","1"], ".": ["0","0","0","0","0","0","1"], " ": ["00","00","00","00","00","00","00"] };
   function DotNumber(host, pitch) {
     const cols = 48, svg = el("svg", { class: "dots", "aria-hidden": "true" }, host), cells = [];
-    for (let c = 0; c < cols; c++) for (let r = 0; r < 7; r++) { const ci = el("circle", { cx: c * pitch + pitch / 2, cy: r * pitch + pitch / 2, r: pitch * .36, fill: "#fff", opacity: 0 }, svg); ci.style.transitionDelay = (c * 7) + "ms"; cells.push([c, r, ci]); }
+    for (let c = 0; c < cols; c++) for (let r = 0; r < 7; r++) { const ci = el("circle", { cx: c * pitch + pitch / 2, cy: r * pitch + pitch / 2, r: pitch * .36, fill: "#0d2b45", opacity: 0 }, svg); ci.style.transitionDelay = (c * 7) + "ms"; cells.push([c, r, ci]); }
     const set = (t) => { const on = new Set(); let x = 0; for (const ch of t) { const g = F[ch] || F[" "]; const w = g[0].length; for (let r = 0; r < 7; r++) for (let k = 0; k < w; k++) if (g[r][k] === "1") on.add((x + k) * 8 + r); x += w + 1; }
       const used = Math.max(1, x - 1); for (const [c, r, ci] of cells) { const v = on.has(c * 8 + r); ci.setAttribute("opacity", v ? 1 : (c < used ? .08 : 0)); ci.style.transform = v ? "none" : "scale(.55)"; }
       svg.setAttribute("width", used * pitch); svg.setAttribute("height", 7 * pitch); svg.setAttribute("viewBox", `0 0 ${used * pitch} ${7 * pitch}`); };
@@ -137,13 +137,13 @@ function mount(root, data, opts) {
     const lay = D.map((p) => { const q = (half * 2 / mx) * g / 2; return { a: p.t1 * q, ab: (p.t1 + p.t2) * q, abc: total(p) * q }; });
     const band = (k) => smooth(D.map((p, i) => [X(i), mid - lay[i][k]])) + smooth(D.map((p, i) => [X(i), mid + lay[i][k]]).reverse(), false) + "Z";
     const marks = [Math.round((n - 1) * .2), Math.round((n - 1) * .6), n - 1];
-    svg.innerHTML = `<defs><linearGradient id="frf" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".2" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="frm"><rect width="${W}" height="${Hh}" fill="url(#frf)"/></mask></defs>
+    svg.innerHTML = `<defs><linearGradient id="frf" x1="0" x2="1"><stop offset="0" stop-color="#0d2b45" stop-opacity="0"/><stop offset=".2" stop-color="#0d2b45" stop-opacity="1"/></linearGradient><mask id="frm"><rect width="${W}" height="${Hh}" fill="url(#frf)"/></mask></defs>
       <g mask="url(#frm)"><path d="${band("abc")}" fill="${COL.t3}" opacity=".9"/><path d="${band("ab")}" fill="${COL.t2}"/><path d="${band("a")}" fill="${COL.t1}"/></g>
       ${marks.map((i, k) => { const x = Math.min(W - 40, Math.max(40, X(i))); return `<g style="opacity:${g > .6 ? 1 : 0};transition:opacity .4s ${k * .08}s">
-        <line x1="${x}" x2="${x}" y1="${top - 4}" y2="${Hh - bot + 4}" stroke="rgba(0,0,0,.5)" stroke-width="1.5"/>
-        <rect x="${x - 38}" y="${top - 14}" width="76" height="22" rx="11" fill="#0b0618"/><text x="${x}" y="${top + 1}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">${lakh(total(D[i]))}/mo</text>
-        <rect x="${x - 30}" y="${Hh - bot - 8}" width="60" height="22" rx="11" fill="#0b0618"/><text x="${x}" y="${Hh - bot + 7}" text-anchor="middle" font-size="10.5" fill="rgba(255,255,255,.7)">${esc(D[i].label)}</text></g>`; }).join("")}
-      <line class="hl" y1="${top}" y2="${Hh - bot}" stroke="#fff" stroke-width="1.5" opacity="0"/><rect width="${W}" height="${Hh}" fill="transparent" class="hit"/>`;
+        <line x1="${x}" x2="${x}" y1="${top - 4}" y2="${Hh - bot + 4}" stroke="rgba(13,43,69,.25)" stroke-width="1.2"/>
+        <rect x="${x - 38}" y="${top - 14}" width="76" height="22" rx="11" fill="#ffffff"/><text x="${x}" y="${top + 1}" text-anchor="middle" font-size="11" font-weight="600" fill="#0d2b45">${lakh(total(D[i]))}/mo</text>
+        <rect x="${x - 30}" y="${Hh - bot - 8}" width="60" height="22" rx="11" fill="#ffffff"/><text x="${x}" y="${Hh - bot + 7}" text-anchor="middle" font-size="10.5" fill="rgba(13,43,69,.7)">${esc(D[i].label)}</text></g>`; }).join("")}
+      <line class="hl" y1="${top}" y2="${Hh - bot}" stroke="#0d2b45" stroke-width="1.5" opacity="0"/><rect width="${W}" height="${Hh}" fill="transparent" class="hit"/>`;
     const hit = svg.querySelector(".hit"), hl = svg.querySelector(".hl");
     hit.onpointermove = (e) => { const r = svg.getBoundingClientRect(), z = r.width / W, x = (e.clientX - r.left) / z; const i = Math.max(0, Math.min(n - 1, Math.round((x + 20) / (W + 40) * (n - 1)))); const p = D[i];
       hl.setAttribute("x1", X(i)); hl.setAttribute("x2", X(i)); hl.setAttribute("opacity", 1);
@@ -170,16 +170,16 @@ function mount(root, data, opts) {
     for (let i = 0; i <= n; i++) { const f = i / n, a = 180 + f * 180, k = Math.max(0, bounds.findIndex((b) => f <= b + 1e-9)); const [x1, y1] = P2(136, a), [x2, y2] = P2(i % 7 === 0 ? 112 : 118, a);
       s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${data.mix[k]?.color ?? "#555"}" stroke-width="3.2" stroke-linecap="round" style="opacity:0;animation:tk .4s ${i * 12}ms forwards"/>`; }
     const share = Math.round(((data.mix[0]?.value ?? 0) + (data.mix[1]?.value ?? 0)) / tot * 100);
-    s += `<text y="-22" text-anchor="middle" font-weight="200" font-size="50" fill="#fff" letter-spacing="-2">${share}<tspan font-size="17" dy="-24" fill="${T2}">%</tspan></text><text y="0" text-anchor="middle" font-size="12" fill="${T3}">approved or conditional</text>`;
+    s += `<text y="-22" text-anchor="middle" font-weight="200" font-size="50" fill="#0d2b45" letter-spacing="-2">${share}<tspan font-size="17" dy="-24" fill="${T2}">%</tspan></text><text y="0" text-anchor="middle" font-size="12" fill="${T3}">approved or conditional</text>`;
     svg.innerHTML = `<style>@keyframes tk{to{opacity:1}}</style>` + s;
-    al.querySelector(".all").innerHTML = data.mix.filter((m) => m.value).map((m, i) => `<div class="row" style="height:23px;${i ? "border-top:1px solid rgba(255,255,255,.07)" : ""}"><i style="width:8px;height:8px;border-radius:50%;background:${m.color}"></i><span style="flex:1;font-size:12.5px;font-weight:600">${esc(m.label)}</span><span class="mono muted" style="width:40px;text-align:right">${Math.round(m.value / tot * 100)}%</span><span class="mono" style="width:30px;text-align:right;font-size:13px">${m.value}</span></div>`).join("");
+    al.querySelector(".all").innerHTML = data.mix.filter((m) => m.value).map((m, i) => `<div class="row" style="height:23px;${i ? "border-top:1px solid rgba(13,43,69,.07)" : ""}"><i style="width:8px;height:8px;border-radius:50%;background:${m.color}"></i><span style="flex:1;font-size:12.5px;font-weight:600">${esc(m.label)}</span><span class="mono muted" style="width:40px;text-align:right">${Math.round(m.value / tot * 100)}%</span><span class="mono" style="width:30px;text-align:right;font-size:13px">${m.value}</span></div>`).join("");
   }
 
   /* ---- KPI: brand revenue (accent tile) ---- */
   const ret = $("ret");
   ret.innerHTML = `${bg(GR.saffron)}<div class="in-c"><div class="row" style="justify-content:space-between"><div class="cap">Brand revenue · ${Math.round(data.brand.months / 12)} yrs</div><span class="chip">${data.brand.royaltyPct}% royalty</span></div>
-    <div style="position:absolute;left:20px;bottom:34px;display:flex;align-items:center;gap:8px"><svg width="20" height="26" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 37V5M5 17L17 5l12 12" fill="none" stroke="#F5A524" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="big rtv" style="font-size:34px;font-weight:300;color:#FFCF70">₹0L</span></div>
+    <div style="position:absolute;left:20px;bottom:34px;display:flex;align-items:center;gap:8px"><svg width="20" height="26" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 37V5M5 17L17 5l12 12" fill="none" stroke="#1e88d8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="big rtv" style="font-size:34px;font-weight:300;color:#5bc0eb">₹0L</span></div>
     <div class="rtp muted" style="position:absolute;left:22px;bottom:12px;font-size:11.5px">Fee ${lakh(data.brand.feeLakh)} + royalty ${lakh(data.brand.royaltyLakh)} · estimate</div></div><div class="rim"></div>`;
   const updateRet = () => tween(ret.querySelector(".rtv"), data.brand.totalLakh, (v) => lakh(v));
 
@@ -190,13 +190,13 @@ function mount(root, data, opts) {
     <svg class="cst" height="22" style="position:absolute;left:22px;bottom:20px;width:calc(100% - 44px)" aria-hidden="true"></svg></div>`;
   function updateCash() { tween(cash.querySelector(".csv"), data.slots.filled, (x) => Math.round(x).toString());
     const svg = cash.querySelector(".cst"), W = svg.getBoundingClientRect().width || 220, n = 36, f = data.slots.total ? data.slots.filled / data.slots.total : 0; let s = "";
-    for (let i = 0; i < n; i++) { const x = 1 + i * (W - 2) / (n - 1), on = i / (n - 1) <= f && f > 0; s += `<line x1="${x}" x2="${x}" y1="${i % 6 === 0 ? 2 : 8}" y2="20" stroke="${on ? ACC : "rgba(255,255,255,.25)"}" stroke-width="1.6" stroke-linecap="round" style="transition:stroke .2s ${i * 14}ms"/>`; }
+    for (let i = 0; i < n; i++) { const x = 1 + i * (W - 2) / (n - 1), on = i / (n - 1) <= f && f > 0; s += `<line x1="${x}" x2="${x}" y1="${i % 6 === 0 ? 2 : 8}" y2="20" stroke="${on ? ACC : "rgba(13,43,69,.25)"}" stroke-width="1.6" stroke-linecap="round" style="transition:stroke .2s ${i * 14}ms"/>`; }
     svg.innerHTML = s; }
 
   /* ---- KPI: upcoming deadlines ---- */
   const pay = $("pay");
   pay.innerHTML = `<div class="in-c" style="padding-bottom:12px"><div class="row" style="justify-content:space-between"><div class="cap">Next deadlines</div><span class="muted">${data.deadlines.length} open</span></div>
-    <div style="margin-top:8px">${data.deadlines.slice(0, 3).map((d, i) => `<div class="row" style="height:28px;${i ? "border-top:1px solid rgba(255,255,255,.07)" : ""}" title="${esc(d.what)}"><i style="width:24px;height:24px;border-radius:8px;background:rgba(245,165,36,.18);color:${ACC};display:grid;place-items:center;font-weight:700;font-size:11px;font-style:normal">${esc(d.name.charAt(0))}</i><span style="flex:1;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span><span class="muted mono" style="font-size:11.5px">${esc(d.date)}</span></div>`).join("") || `<p class="muted">No open deadlines.</p>`}</div></div>`;
+    <div style="margin-top:8px">${data.deadlines.slice(0, 3).map((d, i) => `<div class="row" style="height:28px;${i ? "border-top:1px solid rgba(13,43,69,.07)" : ""}" title="${esc(d.what)}"><i style="width:24px;height:24px;border-radius:8px;background:rgba(30,136,216,.18);color:${ACC};display:grid;place-items:center;font-weight:700;font-size:11px;font-style:normal">${esc(d.name.charAt(0))}</i><span style="flex:1;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.name)}</span><span class="muted mono" style="font-size:11.5px">${esc(d.date)}</span></div>`).join("") || `<p class="muted">No open deadlines.</p>`}</div></div>`;
 
   /* ---- KPI: territory fill ---- */
   const goals = $("goals");
@@ -204,7 +204,7 @@ function mount(root, data, opts) {
     ${data.territories.slice(0, 2).map((t, k) => `<div style="margin-top:${k ? 14 : 16}px"><div class="row" style="justify-content:space-between;font-size:12.5px;font-weight:600"><span>${esc(t.id)} · ${esc(t.city)}</span><span class="mono" style="font-weight:500">${t.filled}<span class="muted"> of ${t.capacity}</span></span></div>
       <svg width="100%" height="12" style="margin-top:8px;display:block" class="gl" data-f="${t.capacity ? t.filled / t.capacity : 0}" aria-hidden="true"></svg></div>`).join("")}</div>`;
   function updateGoals() { RAF(() => goals.querySelectorAll(".gl").forEach((svg, k) => { const W = svg.getBoundingClientRect().width, n = 40, f = +svg.dataset.f; let s = "";
-    for (let i = 0; i < n; i++) { const x = 1 + i * (W - 2) / (n - 1), on = f > 0 && i / (n - 1) <= f; s += `<line x1="${x}" x2="${x}" y1="${i % 8 === 0 ? 0 : 4}" y2="12" stroke="${on ? ACC : "rgba(255,255,255,.25)"}" stroke-width="1.6" stroke-linecap="round" style="opacity:0;animation:tk2 .3s ${300 + k * 150 + i * 12}ms forwards"/>`; }
+    for (let i = 0; i < n; i++) { const x = 1 + i * (W - 2) / (n - 1), on = f > 0 && i / (n - 1) <= f; s += `<line x1="${x}" x2="${x}" y1="${i % 8 === 0 ? 0 : 4}" y2="12" stroke="${on ? ACC : "rgba(13,43,69,.25)"}" stroke-width="1.6" stroke-linecap="round" style="opacity:0;animation:tk2 .3s ${300 + k * 150 + i * 12}ms forwards"/>`; }
     svg.innerHTML = "<style>@keyframes tk2{to{opacity:1}}</style>" + s; })); }
 
   /* ---- controls + lifecycle ---- */

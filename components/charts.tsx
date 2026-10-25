@@ -14,11 +14,11 @@ export function ProjectionChart({ monthly, breakEven, target }: { monthly: { mon
   const ticks = [0, 0.5, 1].map((f) => max * f);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto" }} role="img" aria-label="Monthly sales projection">
-      <defs><linearGradient id="pg" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#f5a524" stopOpacity=".45" /><stop offset="100%" stopColor="#f5a524" stopOpacity="0" /></linearGradient></defs>
+      <defs><linearGradient id="pg" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#1e88d8" stopOpacity=".45" /><stop offset="100%" stopColor="#1e88d8" stopOpacity="0" /></linearGradient></defs>
       {ticks.map((t) => <g key={t}><line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke="currentColor" opacity=".12" /><text x={L - 6} y={y(t) + 4} textAnchor="end" fontSize="10" fill="currentColor" opacity=".6">{fmt(t)}</text></g>)}
       <path d={band} fill="#a5a4ff" opacity=".14" />
       <path d={area} fill="url(#pg)" />
-      <path d={line("base")} fill="none" stroke="#f5a524" strokeWidth="2.5" />
+      <path d={line("base")} fill="none" stroke="#1e88d8" strokeWidth="2.5" />
       <line x1={L} x2={W - R} y1={y(target)} y2={y(target)} stroke="#ff7a7a" strokeDasharray="6 4" />
       <text x={W - R} y={y(target) - 6} textAnchor="end" fontSize="11" fill="#ff7a7a">setup cost ₹{fmt(target)} lakh</text>
       {breakEven && breakEven <= monthly.length && <g>
@@ -46,7 +46,7 @@ export function Bars({ rows, unit = "" }: { rows: { label: string; value: number
 
 /** One stacked bar with a legend: how the setup cost splits. */
 export function SplitBar({ parts }: { parts: { item: string; pct: number; lakh: number }[] }) {
-  const colours = ["#f5a524", "#ffcf70", "#a5a4ff", "#4ade9b", "#7cc8ff", "#ff7a7a"];
+  const colours = ["#1e88d8", "#5bc0eb", "#a5a4ff", "#4ade9b", "#7cc8ff", "#ff7a7a"];
   return (
     <div>
       <div style={{ display: "flex", height: 14, borderRadius: 999, overflow: "hidden" }}>
@@ -70,7 +70,7 @@ export function Timeline({ steps }: { steps: { id: string; label: string; owner:
         <div key={s.id} style={{ display: "grid", gridTemplateColumns: "180px 1fr", gap: 10, alignItems: "center", fontSize: 12 }}>
           <span>{s.label}<br /><span style={{ opacity: .6 }}>{s.owner}</span></span>
           <div style={{ position: "relative", height: 16, background: "rgba(127,127,127,.12)", borderRadius: 999 }}>
-            <span style={{ position: "absolute", left: `${pos(s.start)}%`, width: `${Math.max(2, pos(s.end) - pos(s.start))}%`, top: 0, bottom: 0, borderRadius: 999, background: "linear-gradient(90deg,#f5a524,#ffcf70)" }} title={`${s.start} → ${s.end}`} />
+            <span style={{ position: "absolute", left: `${pos(s.start)}%`, width: `${Math.max(2, pos(s.end) - pos(s.start))}%`, top: 0, bottom: 0, borderRadius: 999, background: "linear-gradient(90deg,#1e88d8,#5bc0eb)" }} title={`${s.start} → ${s.end}`} />
           </div>
         </div>
       ))}

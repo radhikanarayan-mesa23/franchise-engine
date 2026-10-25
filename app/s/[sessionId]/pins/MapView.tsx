@@ -26,9 +26,9 @@ function Streets({ seed }: { seed: string }) {
   const blocks = Array.from({ length: 70 }, () => ({ x: r() * W, y: r() * H, w: 14 + r() * 40, h: 10 + r() * 30 }));
   return (
     <g opacity={0.9}>
-      <path d={`M0 ${H * 0.78} C ${W * 0.2} ${H * 0.68}, ${W * 0.35} ${H * 0.95}, ${W * 0.55} ${H * 0.88} S ${W * 0.85} ${H * 0.7}, ${W} ${H * 0.8} L ${W} ${H} L 0 ${H} Z`} fill="rgba(124,120,255,0.07)" />
-      {blocks.map((b, i) => <rect key={`b${i}`} x={b.x} y={b.y} width={b.w} height={b.h} rx={3} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.04)" />)}
-      {lines.map((l, i) => <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={l.w > 1 ? "rgba(245,165,36,0.16)" : "rgba(255,255,255,0.06)"} strokeWidth={l.w} />)}
+      <path d={`M0 ${H * 0.78} C ${W * 0.2} ${H * 0.68}, ${W * 0.35} ${H * 0.95}, ${W * 0.55} ${H * 0.88} S ${W * 0.85} ${H * 0.7}, ${W} ${H * 0.8} L ${W} ${H} L 0 ${H} Z`} fill="rgba(30,136,216,0.08)" />
+      {blocks.map((b, i) => <rect key={`b${i}`} x={b.x} y={b.y} width={b.w} height={b.h} rx={3} fill="rgba(13,43,69,0.025)" stroke="rgba(13,43,69,0.04)" />)}
+      {lines.map((l, i) => <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={l.w > 1 ? "rgba(30,136,216,0.16)" : "rgba(13,43,69,0.06)"} strokeWidth={l.w} />)}
     </g>
   );
 }
@@ -116,18 +116,18 @@ export default function MapView({ sessionId, territories, outside, stores, focus
 
         <svg className="map" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" onClick={() => setSel(null)}>
           <defs>
-            <radialGradient id="gTaken"><stop offset="0%" stopColor="#ffd98a" /><stop offset="100%" stopColor="#f5a524" /></radialGradient>
+            <radialGradient id="gTaken"><stop offset="0%" stopColor="#9adcf6" /><stop offset="100%" stopColor="#1e88d8" /></radialGradient>
             <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           </defs>
           <Streets seed={city} />
           {view.halos.map(({ t, cx, cy, rad }) => (
             <g key={t.id}>
-              <circle cx={cx} cy={cy} r={rad} fill="rgba(245,165,36,0.035)" stroke="rgba(245,165,36,0.35)" strokeDasharray="4 8" strokeWidth={1.2} />
-              <text x={cx} y={cy - rad - 10} textAnchor="middle" fill="rgba(255,207,112,0.85)" fontSize={13} fontWeight={600}>{t.id} · {t.filled}/{t.realCapacity} slots · {t.priority}</text>
+              <circle cx={cx} cy={cy} r={rad} fill="rgba(30,136,216,0.035)" stroke="rgba(30,136,216,0.35)" strokeDasharray="4 8" strokeWidth={1.2} />
+              <text x={cx} y={cy - rad - 10} textAnchor="middle" fill="rgba(14,90,150,0.9)" fontSize={13} fontWeight={600}>{t.id} · {t.filled}/{t.realCapacity} slots · {t.priority}</text>
             </g>
           ))}
           {view.sts.map(({ s, x, y }) => (
-            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><circle className="core" r={11} fill="#3a3448" stroke="rgba(255,255,255,0.35)" /><text y={4} textAnchor="middle" fontSize={8} fill="#cfc8de">ST</text></g>
+            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><circle className="core" r={11} fill="#cfdbe6" stroke="rgba(13,43,69,0.35)" /><text y={4} textAnchor="middle" fontSize={8} fill="#33506a">ST</text></g>
           ))}
           {view.outs.map(({ o, x, y }) => (
             <g key={o.id} className={`marker ${sel?.kind === "out" && sel.id === o.id ? "sel" : ""}`} transform={`translate(${x} ${y})`} onClick={(e) => { e.stopPropagation(); setSel({ kind: "out", id: o.id }); }}>
@@ -142,16 +142,16 @@ export default function MapView({ sessionId, territories, outside, stores, focus
               <g key={`${t.id}-${p.pin}`} transform={`translate(${x} ${y})`}>
               <g className={`marker ${p.state} ${isSel ? "sel" : ""}`}
                 onClick={(e) => { e.stopPropagation(); setSel({ kind: "pin", t: t.id, pin: p.pin }); setOffer(""); }} style={{ animation: `rise .5s ease ${i * 40}ms both` }}>
-                <circle className="pulse" r={r} fill={p.state === "taken" ? "rgba(245,165,36,0.45)" : "rgba(255,255,255,0.25)"} />
+                <circle className="pulse" r={r} fill={p.state === "taken" ? "rgba(30,136,216,0.45)" : "rgba(13,43,69,0.25)"} />
                 {p.contested && <circle r={r + 7} fill="none" stroke="#ff9f5a" strokeWidth={1.5} strokeDasharray="3 4" />}
                 {p.state === "taken" && <circle className="core" r={r} fill="url(#gTaken)" filter="url(#glow)" />}
-                {p.state === "free" && <circle className="core" r={r} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.75)" strokeWidth={1.6} strokeDasharray="4 3" />}
-                {p.state === "store" && <circle className="core" r={r} fill="#3a3448" stroke="rgba(255,255,255,0.35)" />}
-                {p.state === "elsewhere" && <circle className="core" r={r - 4} fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" />}
-                <text y={4} textAnchor="middle" fontSize={p.state === "taken" ? 10 : 9} fontWeight={700} fill={p.state === "taken" ? "#1a1205" : "#e8e3f3"}>
+                {p.state === "free" && <circle className="core" r={r} fill="rgba(13,43,69,0.06)" stroke="rgba(13,43,69,0.75)" strokeWidth={1.6} strokeDasharray="4 3" />}
+                {p.state === "store" && <circle className="core" r={r} fill="#cfdbe6" stroke="rgba(13,43,69,0.35)" />}
+                {p.state === "elsewhere" && <circle className="core" r={r - 4} fill="rgba(13,43,69,0.05)" stroke="rgba(13,43,69,0.25)" />}
+                <text y={4} textAnchor="middle" fontSize={p.state === "taken" ? 10 : 9} fontWeight={700} fill={p.state === "taken" ? "#ffffff" : "#0d2b45"}>
                   {p.state === "taken" ? p.label.replace("APP-", "") : p.state === "store" ? "ST" : p.state === "free" ? "+" : "↗"}
                 </text>
-                <text y={r + 16} textAnchor="middle" fontSize={11} fill="rgba(244,241,250,0.8)">{p.pin}</text>
+                <text y={r + 16} textAnchor="middle" fontSize={11} fill="rgba(13,43,69,0.8)">{p.pin}</text>
               </g>
               </g>
             );
@@ -171,7 +171,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
             </div>
             <p className="small" style={{ marginTop: 12 }}>{selMarker.p.why}</p>
             {selMarker.p.applicants.length > 0 ? selMarker.p.applicants.map((a) => (
-              <div key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "6px 0", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <div key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "6px 0", borderTop: "1px solid rgba(13,43,69,0.08)" }}>
                 <span className="small"><Link href={`/s/${sessionId}/a/${encodeURIComponent(a.id)}`}>{a.id}</Link> {a.name}<br /><span className="muted">{a.reason}</span></span>
                 <span style={{ textAlign: "right" }}><span className={`pill ${a.cls}`}>{a.status}</span><br /><span className="small muted">score {a.score ?? "–"}</span></span>
               </div>
@@ -194,9 +194,9 @@ export default function MapView({ sessionId, territories, outside, stores, focus
         )}
 
         <div className="legend glass" style={{ position: "absolute", left: 14, bottom: 14, padding: "8px 12px", borderRadius: 12, zIndex: 3 }}>
-          <span><i style={{ background: "#f5a524", boxShadow: "0 0 8px #f5a524" }} />Assigned</span>
+          <span><i style={{ background: "#1e88d8", boxShadow: "0 0 8px #1e88d8" }} />Assigned</span>
           <span><i style={{ border: "1.5px dashed #fff" }} />Free</span>
-          <span><i style={{ background: "#3a3448", border: "1px solid #888" }} />Existing store</span>
+          <span><i style={{ background: "#cfdbe6", border: "1px solid #888" }} />Existing store</span>
           <span><i style={{ border: "1.5px dashed #ff9f5a" }} />Contested</span>
           <span><i style={{ background: "#a5a4ff" }} />Outside territories</span>
         </div>
@@ -208,7 +208,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
           const set = (k: keyof typeof e, v: string) => setEdit({ ...edit, [t.id]: { ...e, [k]: v } });
           const pct = t.realCapacity ? Math.round((t.filled / t.realCapacity) * 100) : 0;
           return (
-            <div className="card" key={t.id} style={{ outline: focusT?.id === t.id ? "1px solid rgba(245,165,36,.5)" : undefined }}>
+            <div className="card" key={t.id} style={{ outline: focusT?.id === t.id ? "1px solid rgba(30,136,216,.5)" : undefined }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}><b>{t.id} · {t.city}</b><span className="muted small">{t.tier} · {t.priority}</span></div>
               <div className="kv" style={{ marginTop: 8 }}>
                 <div><span>Capacity used</span><b>{pct}%</b><div className="meter"><i style={{ width: `${pct}%` }} /></div></div>

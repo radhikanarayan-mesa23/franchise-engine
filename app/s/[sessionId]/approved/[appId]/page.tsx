@@ -29,7 +29,7 @@ export default async function Snapshot({ params }: { params: Promise<{ sessionId
           <h2 style={{ fontSize: 26, margin: "4px 0" }}>{a.name}</h2>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             <span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status}</span>
-            <span className="pill" style={{ background: p.confirmed ? "var(--ok-bg)" : "rgba(255,255,255,.08)", color: p.confirmed ? "var(--ok)" : "var(--muted)" }}>{p.confirmed ? "✔ Confirmed by expansion manager" : "Awaiting manager confirmation"}</span>
+            <span className="pill" style={{ background: p.confirmed ? "var(--ok-bg)" : "rgba(13,43,69,.08)", color: p.confirmed ? "var(--ok)" : "var(--muted)" }}>{p.confirmed ? "✔ Confirmed by expansion manager" : "Awaiting manager confirmation"}</span>
             <span className="muted small">{a.city}, {a.state} · pin {d.assignedPin ?? a.pin} · {t ? `${t.id} (${t.tier}, ${t.priority} priority)` : "no territory"} · {a.language}</span>
           </div>
         </div>

@@ -35,10 +35,10 @@ export function bentoData(decisions: Decision[], territories: RunResult["territo
     royalty: stream.map((s) => r2(((s.t1 + s.t2 + s.t3) * pct) / 100)),
     // Four calm groups instead of seven colours: placed, conditional, needs action, not placed.
     mix: [
-      { label: "Recommended", value: count(["Recommended for approval"]), color: "#F5A524" },
-      { label: "Conditional", value: count(["Conditionally approved"]), color: "#FFCF70" },
-      { label: "Needs action", value: count(["Human review", "On hold", "Redirected"]), color: "rgba(255,255,255,.55)" },
-      { label: "Not placed", value: count(["Waitlisted", "Rejected"]), color: "rgba(255,255,255,.22)" },
+      { label: "Recommended", value: count(["Recommended for approval"]), color: "#1e88d8" },
+      { label: "Conditional", value: count(["Conditionally approved"]), color: "#5bc0eb" },
+      { label: "Needs action", value: count(["Human review", "On hold", "Redirected"]), color: "rgba(13,43,69,.55)" },
+      { label: "Not placed", value: count(["Waitlisted", "Rejected"]), color: "rgba(13,43,69,.22)" },
     ],
     brand: { totalLakh: r2(approved.reduce((a, d) => a + base(d).brandTotalLakh, 0)), feeLakh: r2(approved.reduce((a, d) => a + d.payback!.projection.franchiseFeeLakh, 0)),
       royaltyLakh: r2(approved.reduce((a, d) => a + base(d).royaltyLakh, 0)), royaltyPct: pct, months },

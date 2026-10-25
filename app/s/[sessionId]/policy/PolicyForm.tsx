@@ -30,7 +30,7 @@ export default function PolicyForm({ sessionId, leaves }: { sessionId: string; l
       <table cellPadding={3}><tbody>
         {leaves.map((l) => (
           <tr key={l.path}><td style={{ fontFamily: "monospace", fontSize: 13 }}>{l.path}</td>
-            <td><input value={vals[l.path]} onChange={(e) => setVals({ ...vals, [l.path]: e.target.value })} style={{ width: 90, background: vals[l.path] !== String(l.value) ? "rgba(245,165,36,0.18)" : undefined }} /></td></tr>
+            <td><input value={vals[l.path]} onChange={(e) => setVals({ ...vals, [l.path]: e.target.value })} style={{ width: 90, background: vals[l.path] !== String(l.value) ? "rgba(30,136,216,0.18)" : undefined }} /></td></tr>
         ))}
       </tbody></table>
     </div>
