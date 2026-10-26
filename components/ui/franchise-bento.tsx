@@ -20,7 +20,7 @@ export interface FranchiseBentoData {
   statuses: { label: string; count: number; highlight?: boolean }[];
 }
 
-const CSS = `.frb{--acc:#1B7FDC;--acc2:#0DB8D3;--t1:#eef8fc;--t2:rgba(255,255,255,.6);--t3:rgba(255,255,255,.4);--hair:rgba(255,255,255,.12);--ease:cubic-bezier(.32,.72,0,1);
+const CSS = `.frb{--acc:#1B7FDC;--acc2:#0DB8D3;--t1:#eef8fc;--t2:rgba(255,255,255,.88);--t3:rgba(255,255,255,.78);--hair:rgba(255,255,255,.12);--ease:cubic-bezier(.32,.72,0,1);
   --c1:#0DB8D3;--c2:#C4B5FD;--c3:#7DD3FC;font-family:inherit;color:#eef8fc;width:100%}
 .frb *{box-sizing:border-box}
 .frb .top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
@@ -64,7 +64,7 @@ function mount(root, data, opts) {
   const RAF = (cb) => { if (!alive) return 0; const id = requestAnimationFrame((t) => { frames.delete(id); if (alive) cb(t); }); frames.add(id); return id; };
   const $ = (id) => root.querySelector("#" + id);
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ACC = "#1B7FDC", T2 = "rgba(255,255,255,.6)", T3 = "rgba(255,255,255,.4)", HAIR = "rgba(255,255,255,.12)";
+  const ACC = "#1B7FDC", T2 = "rgba(255,255,255,.88)", T3 = "rgba(255,255,255,.78)", HAIR = "rgba(255,255,255,.12)";
   const COL = { t1: "#1B7FDC", t2: "#0DB8D3", t3: "#7fdcec" };
   const ease = (t) => 1 - Math.pow(1 - t, 3);
   const NS = "http://www.w3.org/2000/svg";

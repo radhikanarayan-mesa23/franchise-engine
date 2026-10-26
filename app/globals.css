@@ -3,7 +3,7 @@
   /* Arctic Depths: #0DB8D3 cyan · #1B7FDC blue · #065B98 deep blue · #193546 navy */
   --bg: #0b2230; --bg-2: #12384c;
   --glass: rgba(255, 255, 255, 0.06); --glass-2: rgba(255, 255, 255, 0.11); --glass-border: rgba(255, 255, 255, 0.14);
-  --ink: #eef8fc; --muted: #a6c6d6; --faint: #6f93a6;
+  --ink: #eef8fc; --muted: #e4f2f8; --faint: #c9e0ea;
   --accent: #1B7FDC; --accent-2: #0DB8D3; --accent-glow: rgba(13, 184, 211, 0.35);
   --deep: #065B98; --navy: #193546;
   --ok: #3fd9a0; --ok-bg: rgba(63, 217, 160, 0.14); --warn: #ffcf5c; --warn-bg: rgba(255, 207, 92, 0.14);
