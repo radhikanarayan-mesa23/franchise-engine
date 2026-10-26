@@ -3,7 +3,7 @@ import type { Policy } from "@/lib/engine/policy";
 import type { RunResult } from "@/lib/engine/run";
 import type { FranchiseBentoData } from "@/components/ui/franchise-bento";
 import { render } from "@/lib/reasons/render";
-import { STATUS_ORDER } from "@/lib/ui";
+import { STATUS_ORDER, STATUS_VAR } from "@/lib/ui";
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -35,10 +35,10 @@ export function bentoData(decisions: Decision[], territories: RunResult["territo
     royalty: stream.map((s) => r2(((s.t1 + s.t2 + s.t3) * pct) / 100)),
     // Four calm groups instead of seven colours: placed, conditional, needs action, not placed.
     mix: [
-      { label: "Recommended", value: count(["Recommended for approval"]), color: "#1B7FDC" },
-      { label: "Conditional", value: count(["Conditionally approved"]), color: "#0DB8D3" },
-      { label: "Needs action", value: count(["Human review", "On hold", "Redirected"]), color: "rgba(255,255,255,.55)" },
-      { label: "Not placed", value: count(["Waitlisted", "Rejected"]), color: "rgba(255,255,255,.22)" },
+      { label: "Recommended", value: count(["Recommended for approval"]), color: STATUS_VAR["Recommended for approval"] },
+      { label: "Conditional", value: count(["Conditionally approved"]), color: STATUS_VAR["Conditionally approved"] },
+      { label: "Needs action", value: count(["Human review", "On hold", "Redirected"]), color: STATUS_VAR["Needs a human"] },
+      { label: "Not placed", value: count(["Waitlisted", "Rejected"]), color: STATUS_VAR["Not placed"] },
     ],
     brand: { totalLakh: r2(approved.reduce((a, d) => a + base(d).brandTotalLakh, 0)), feeLakh: r2(approved.reduce((a, d) => a + d.payback!.projection.franchiseFeeLakh, 0)),
       royaltyLakh: r2(approved.reduce((a, d) => a + base(d).royaltyLakh, 0)), royaltyPct: pct, months },

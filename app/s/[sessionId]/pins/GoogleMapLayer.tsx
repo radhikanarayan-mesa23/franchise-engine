@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { glassesDataUrl, type PinKind } from "@/components/glassesIcon";
 
 export interface GeoItem { id: string; lat: number; lng: number; kind: PinKind; title: string; contested: boolean; selected: boolean }
@@ -19,6 +20,16 @@ const STYLES: google.maps.MapTypeStyle[] = [
   { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
   { featureType: "water", elementType: "geometry", stylers: [{ color: "#0a2433" }] },
   { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#2a6b86" }] },
+];
+
+const LIGHT: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#eef6fa" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#35546b" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] }, { featureType: "transit", stylers: [{ visibility: "off" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#b9e3f0" }] },
+  { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#c6e4f2" }] },
 ];
 
 let loader: Promise<void> | null = null;
@@ -43,6 +54,8 @@ export default function GoogleMapLayer({ apiKey, items, halos, fitKey, onSelect,
   const map = useRef<google.maps.Map | null>(null);
   const layers = useRef<{ markers: google.maps.Marker[]; circles: google.maps.Circle[] }>({ markers: [], circles: [] });
   const [ready, setReady] = useState(false);
+  const { resolvedTheme } = useTheme();
+  useEffect(() => { map.current?.setOptions({ styles: resolvedTheme === "light" ? LIGHT : STYLES, backgroundColor: resolvedTheme === "light" ? "#eef6fa" : "#0b2230" }); }, [resolvedTheme, ready]);
   const handlers = useRef({ onSelect, onClear });
   handlers.current = { onSelect, onClear };
 
@@ -52,7 +65,8 @@ export default function GoogleMapLayer({ apiKey, items, halos, fitKey, onSelect,
     (window as unknown as { gm_authFailure?: () => void }).gm_authFailure = () => onFail();
     loadMaps(apiKey).then(() => {
       if (dead || !el.current) return;
-      map.current = new google.maps.Map(el.current, { center: { lat: 12.97, lng: 77.59 }, zoom: 12, styles: STYLES, disableDefaultUI: true, zoomControl: true, gestureHandling: "greedy", backgroundColor: "#0b2230" });
+      const light = document.documentElement.dataset.theme === "light";
+      map.current = new google.maps.Map(el.current, { center: { lat: 12.97, lng: 77.59 }, zoom: 12, styles: light ? LIGHT : STYLES, disableDefaultUI: true, zoomControl: true, gestureHandling: "greedy", backgroundColor: light ? "#eef6fa" : "#0b2230" });
       map.current.addListener("click", () => handlers.current.onClear());
       setReady(true);
     }).catch(() => onFail());

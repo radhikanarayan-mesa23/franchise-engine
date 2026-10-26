@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { STATUS_VAR } from "@/lib/ui";
 
 export interface Row { id: string; name: string; city: string; status: string; cls: string; group: number; owner: string; review: boolean; score: number | null; pin: string | null; appliedPin: string | null; reason: string; next: string; action: { label: string; href: string; tone: "approve" | "review" | "map" | "message" | "neutral" } }
 
@@ -19,7 +20,7 @@ export default function ApplicationsTable({ sessionId, rows, statuses }: { sessi
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <div className="chips">
           {["All", "Needs a human", ...statuses].filter((s) => count(s) > 0 || s === "All").map((s) => (
-            <button key={s} className={`chip ${filter === s ? "on" : ""}`} onClick={() => setFilter(s)}>{s} ({count(s)})</button>
+            <button key={s} className={`chip ${filter === s ? "on" : ""}`} onClick={() => setFilter(s)}>{STATUS_VAR[s] && <span className="sdot" style={{ background: STATUS_VAR[s] }} />}{s} ({count(s)})</button>
           ))}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -37,8 +38,8 @@ export default function ApplicationsTable({ sessionId, rows, statuses }: { sessi
             <td className="nowrap"><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.id)}`}>{r.id}</Link></td>
             <td>{r.name}<div className="muted small">{r.city}</div></td>
             <td><span className={`pill ${r.cls}`} title={r.status}>{({ "Recommended for approval": "Recommended", "Conditionally approved": "Conditional" } as Record<string, string>)[r.status] ?? r.status}</span>{r.review && <div className="small" style={{ color: "var(--accent-2)" }}>⚑ needs a human</div>}</td>
-            <td className="small">{r.owner}</td><td className="num">{r.score ?? "–"}</td><td>{r.pin && r.appliedPin && r.pin !== r.appliedPin ? <span title="Applied pin → offered pin"><s className="muted">{r.appliedPin}</s> → <b>{r.pin}</b></span> : r.pin ?? "–"}</td>
-            <td className="small reason">{r.reason}</td><td className="small muted">{r.next}</td>
+            <td className="small">{r.owner}</td><td className="num">{r.score ?? "–"}</td><td className="pin">{r.pin && r.appliedPin && r.pin !== r.appliedPin ? <span title="Applied pin → offered pin"><s className="muted">{r.appliedPin}</s> → <b>{r.pin}</b></span> : r.pin ?? "–"}</td>
+            <td className="small reason"><div className="clamp" title={r.reason} onClick={(e) => e.currentTarget.classList.toggle("open")}>{r.reason}</div></td><td className="small muted"><div className="clamp" title={r.next} onClick={(e) => e.currentTarget.classList.toggle("open")}>{r.next}</div></td>
             <td><Link className={`row-act tone-${r.action.tone}`} href={r.action.href}>{r.action.label}</Link></td>
           </tr>
         ))}</tbody>

@@ -30,7 +30,7 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
             </div>
             <div className="appr-kpis">
               <div><span>Investing</span><b>₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh}L</b></div>
-              <div><span>Brand rev · {(d.payback?.projection?.months ?? 0) / 12} yrs</span><b>₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh}L</b></div>
+              <div><span>Brand rev ({(d.payback?.projection?.months ?? 0) / 12}y)</span><b>₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh}L</b></div>
               <div><span>Break-even</span><b>{d.payback?.breakEvenMonth ? `M${d.payback.breakEvenMonth}` : "–"}</b></div>
             </div>
             <div className="appr-body small">

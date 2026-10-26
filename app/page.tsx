@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Bodoni_Moda } from "next/font/google";
 import { BeamsBackground } from "@/components/ui/beams-background";
 import GoToDashboard from "@/components/GoToDashboard";
+import ThemeToggle from "@/components/ThemeToggle";
 import Icon from "@/components/Icon";
 import brand from "@/config/brand.json";
 
@@ -15,7 +16,7 @@ export default function Landing() {
     <BeamsBackground intensity="strong">
       <header className="landing-top">
         <span className="brand" style={{ margin: 0 }}><span className="logo"><Icon name="glasses" /></span>{brand.name}</span>
-        <a href="/how">How this decides</a>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}><a href="/how">How this decides</a><ThemeToggle /></div>
       </header>
       <main className="landing-hero">
         <motion.p className="landing-kicker" {...rise(0.2)}>Welcome to</motion.p>

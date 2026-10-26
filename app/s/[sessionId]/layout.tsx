@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/repo";
 import Sidebar from "./Sidebar";
 import Crumbs from "./Crumbs";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 const APPROVED = ["Recommended for approval", "Conditionally approved"];
@@ -25,7 +26,7 @@ export default async function SessionLayout({ children, params }: { children: Re
       <div className="content">
         <header className="topbar">
           <Crumbs />
-          <span className="muted small">Session {sessionId.slice(0, 8)} · run #{snap?.runNo} · policy v{s.policyVersion}</span>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}><span className="muted small mono">Session {sessionId.slice(0, 8)} · run #{snap?.runNo} · policy v{s.policyVersion}</span><ThemeToggle /></div>
         </header>
         <main className="page">{children}</main>
       </div>
