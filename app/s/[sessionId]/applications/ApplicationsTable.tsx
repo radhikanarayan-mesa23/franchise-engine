@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { STATUS_VAR } from "@/lib/ui";
 
-export interface Row { id: string; name: string; city: string; status: string; cls: string; group: number; owner: string; review: boolean; score: number | null; pin: string | null; appliedPin: string | null; reason: string; next: string; action: { label: string; href: string; tone: "approve" | "review" | "map" | "message" | "neutral" } }
+export interface Row { id: string; name: string; orig?: string | null; note?: string | null; city: string; status: string; cls: string; group: number; owner: string; review: boolean; score: number | null; pin: string | null; appliedPin: string | null; reason: string; next: string; action: { label: string; href: string; tone: "approve" | "review" | "map" | "message" | "neutral" } }
 
 export default function ApplicationsTable({ sessionId, rows, statuses }: { sessionId: string; rows: Row[]; statuses: string[] }) {
   const [filter, setFilter] = useState<string>("All");
@@ -36,7 +36,7 @@ export default function ApplicationsTable({ sessionId, rows, statuses }: { sessi
         <tbody>{shown.map((r) => (
           <tr key={r.id}>
             <td className="nowrap"><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.id)}`}>{r.id}</Link></td>
-            <td>{r.name}<div className="muted small">{r.city}</div></td>
+            <td><span title={r.orig ? `Original: ${r.orig}` : undefined}>{r.name}</span><div className="muted small">{r.city}{r.note ? ` · ${r.note}` : ""}</div></td>
             <td><span className={`pill ${r.cls}`} title={r.status}>{({ "Recommended for approval": "Recommended", "Conditionally approved": "Conditional" } as Record<string, string>)[r.status] ?? r.status}</span>{r.review && <div className="small" style={{ color: "var(--accent-2)" }}>⚑ needs a human</div>}</td>
             <td className="small">{r.owner}</td><td className="num">{r.score ?? "–"}</td><td className="pin">{r.pin && r.appliedPin && r.pin !== r.appliedPin ? <span title="Applied pin → offered pin"><s className="muted">{r.appliedPin}</s> → <b>{r.pin}</b></span> : r.pin ?? "–"}</td>
             <td className="small reason"><div className="clamp" title={r.reason} onClick={(e) => e.currentTarget.classList.toggle("open")}>{r.reason}</div></td><td className="small muted"><div className="clamp" title={r.next} onClick={(e) => e.currentTarget.classList.toggle("open")}>{r.next}</div></td>

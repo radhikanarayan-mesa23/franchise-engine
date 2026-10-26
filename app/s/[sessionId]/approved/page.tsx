@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/cached";
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
-import { STATUS_CLASS } from "@/lib/ui";
+import { STATUS_CLASS, enName, enNote } from "@/lib/ui";
 import PipelineAction from "@/components/PipelineAction";
 
 export default async function ApprovedTab({ params }: { params: Promise<{ sessionId: string }> }) {
@@ -23,7 +23,7 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
           <div className="card appr" key={d.applicationId} id={d.applicationId}>
             <div className="appr-head">
               <div style={{ minWidth: 0 }}>
-                <div className="appr-name"><Link href={base}>{d.applicationId}</Link> {d.name}</div>
+                <div className="appr-name"><Link href={base}>{d.applicationId}</Link> {(() => { const a = s.applications.find((x) => x.id === d.applicationId); return a ? enName(a) : d.name; })()}</div>
                 <div className="small muted">{d.territoryId} · pin {d.assignedPin} · score {d.score?.total}</div>
               </div>
               <span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status === "Recommended for approval" ? "Recommended" : "Conditional"}</span>

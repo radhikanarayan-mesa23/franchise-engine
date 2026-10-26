@@ -4,6 +4,7 @@ import { DEFAULT_POLICY, clonePolicy } from "@/lib/engine/policy";
 import { runEngine } from "@/lib/engine/run";
 import { createSession } from "@/lib/db/repo";
 import { signalsFor } from "@/lib/ai/signals";
+import { englishFor } from "@/lib/ai/translator";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
     const data = ingest(Buffer.from(await file.arrayBuffer()), policy);
     if (!data.applications.length) return NextResponse.json({ error: "No applications found. Is the Applications sheet in the template format?" }, { status: 400 });
     const today = new Date().toISOString().slice(0, 10);
+    await englishFor(data.applications).catch(() => []); // Kannada/Hindi text gets an English rendering
     // AI reads free text only; failures leave rows unread and the engine decides without them.
     const ai = await signalsFor(data.applications).catch(() => ({ signals: {}, notRead: data.applications.map((a) => a.id), calls: 0 }));
     const run = runEngine({ ...data, signals: ai.signals, policy, policyVersion: policy.meta.version, today });

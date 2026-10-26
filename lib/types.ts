@@ -31,6 +31,8 @@ export interface Application {
   notes: string | null; source: "upload" | "chat" | "update_link";
   /** Optional contact address (workbook "Email" column or entered by the team); never sent to AI. */ email?: string | null;
   row?: number; originalId?: string;
+  /** English rendering of Kannada/Hindi text (originals kept in name/business/notes). */
+  en?: { from: "Kannada" | "Hindi"; hash: string; name?: string | null; business?: string | null; notes?: string | null };
 }
 
 export interface Territory {

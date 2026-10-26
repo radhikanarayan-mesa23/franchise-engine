@@ -1,7 +1,7 @@
 import { getChat, getSession, latestSnapshots } from "@/lib/db/cached";
 import { diffDecisions } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
-import { STATUS_CLASS, STATUS_ORDER } from "@/lib/ui";
+import { STATUS_CLASS, STATUS_ORDER, enName, enNote } from "@/lib/ui";
 import ChatPanel from "../ChatPanel";
 import { FranchiseBento } from "@/components/ui/franchise-bento";
 import { bentoData } from "@/lib/bento";
@@ -14,6 +14,7 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   const ds = snap.decisions;
   const diff = prev ? diffDecisions(prev.decisions, ds) : [];
   const city = new Map(s.applications.map((a) => [a.id, a.city]));
+  const appOf = new Map(s.applications.map((a) => [a.id, a]));
   const applied = new Map(s.applications.map((a) => [a.id, a.pin]));
   const base = `/s/${sessionId}`;
   // Where each case is handled: one button per row.
@@ -30,7 +31,8 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
     }
   };
   const rows: Row[] = ds.map((d) => ({
-    id: d.applicationId, name: d.name, city: city.get(d.applicationId) ?? "", status: d.status, cls: STATUS_CLASS[d.status], group: STATUS_ORDER.indexOf(d.status),
+    id: d.applicationId, name: appOf.get(d.applicationId) ? enName(appOf.get(d.applicationId)!) : d.name,
+    orig: appOf.get(d.applicationId)?.en ? appOf.get(d.applicationId)!.name : null, note: appOf.get(d.applicationId) ? enNote(appOf.get(d.applicationId)!) : null, city: city.get(d.applicationId) ?? "", status: d.status, cls: STATUS_CLASS[d.status], group: STATUS_ORDER.indexOf(d.status),
     owner: d.owner, review: d.humanReview, score: d.score?.total ?? null, pin: d.assignedPin, appliedPin: applied.get(d.applicationId) ?? null, action: action(d), reason: d.reasons[0] ? render(d.reasons[0]) : "", next: render(d.nextStep),
   }));
   return (

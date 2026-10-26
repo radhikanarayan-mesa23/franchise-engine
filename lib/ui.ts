@@ -11,4 +11,9 @@ export const STATUS_VAR: Record<string, string> = {
   Waitlisted: "var(--st-wait)", Redirected: "var(--st-redir)", "Human review": "var(--st-review)", Rejected: "var(--st-rej)",
   "Needs a human": "var(--st-review)", "Not placed": "var(--st-none)",
 };
+/** English text for display (Kannada/Hindi originals are translated at ingest), and a label saying so. */
+export const enName = (a: { name: string; en?: { name?: string | null } }) => a.en?.name ?? a.name;
+export const enField = (a: { business: string | null; notes: string | null; en?: { business?: string | null; notes?: string | null } }, f: "business" | "notes") => a.en?.[f] ?? a[f];
+export const enNote = (a: { en?: { from: string } }) => (a.en ? `translated from ${a.en.from}` : null);
+
 export const STATUS_ORDER: Status[] = ["Recommended for approval", "Conditionally approved", "Human review", "Redirected", "On hold", "Waitlisted", "Rejected"];

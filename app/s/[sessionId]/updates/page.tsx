@@ -7,7 +7,7 @@ import { EMAIL_NOTE, updateMessage } from "@/lib/session/notify";
 import { EmailControls, SendAll } from "./EmailControls";
 import { fieldsToRequest } from "@/lib/session/updateLink";
 import { render } from "@/lib/reasons/render";
-import { STATUS_CLASS } from "@/lib/ui";
+import { STATUS_CLASS, enName, enNote } from "@/lib/ui";
 import CopyButton from "@/components/CopyButton";
 import UpdateLinkButton from "../a/[appId]/UpdateLinkButton";
 import CreateAllLinks from "./CreateAllLinks";
@@ -46,8 +46,8 @@ export default async function UpdatesTab({ params }: { params: Promise<{ session
           <div className="card appr" key={r.d.applicationId} id={r.d.applicationId}>
             <div className="appr-head">
               <div style={{ minWidth: 0 }}>
-                <div className="appr-name"><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.d.applicationId)}`}>{r.d.applicationId}</Link> {r.d.name}</div>
-                <div className="small muted">{r.app.city} · prefers {r.app.language}{due(r) ? ` · due ${due(r)}` : ""}</div>
+                <div className="appr-name"><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.d.applicationId)}`}>{r.d.applicationId}</Link> {enName(r.app)}</div>
+                <div className="small muted">{r.app.city}{enNote(r.app) ? ` · ${enNote(r.app)}` : ""} · prefers {r.app.language}{due(r) ? ` · due ${due(r)}` : ""}</div>
               </div>
               <span className={`pill ${STATUS_CLASS[r.d.status]}`}>{r.d.status === "Conditionally approved" ? "Conditional" : r.d.status}</span>
             </div>

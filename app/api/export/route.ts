@@ -19,6 +19,7 @@ export async function GET(req: Request) {
     const { application_id, ...fields } = payload(a) as Record<string, unknown>;
     const d = byId.get(a.id);
     return { "Application ID": a.originalId ?? application_id, ...fields,
+      "Name (English)": a.en?.name ?? a.name, "Business (English)": a.en?.business ?? a.business ?? "", "Notes (English)": a.en?.notes ?? a.notes ?? "", "Translated from": a.en?.from ?? "",
       Status: d?.status ?? "", Owner: d?.owner ?? "", Reason: d?.reasons[0] ? render(d.reasons[0]) : "",
       "Next step": d ? render(d.nextStep) : "", Score: d?.score?.total ?? "", "Assigned pin": d?.assignedPin ?? "", "Human review": d?.humanReview ? "Yes" : "No" };
   });

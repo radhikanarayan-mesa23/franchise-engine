@@ -3,6 +3,8 @@ import { db } from "@/lib/db/neon";
 import { chatCompletion, geminiEnabled } from "./gemini";
 import { translateLines, type TextCache } from "./translate";
 import { writeLetter } from "./planWriter";
+import { addEnglish } from "./english";
+import type { Application } from "@/lib/types";
 import type { Decision } from "@/lib/types";
 
 const mem = ((globalThis as unknown as { __feTr?: Map<string, string[]> }).__feTr ??= new Map());
@@ -28,6 +30,9 @@ const textCall = geminiEnabled()
 
 /** AI partner message for an approved applicant, checked against the plan; null means use the template. */
 export const partnerLetter = (d: Decision, language: string, marginPct: number) => writeLetter(d, language, marginPct, { cache, call: textCall });
+
+/** Fill in English for Kannada/Hindi applicant text; returns the applications that changed. */
+export const englishFor = (apps: Application[]) => addEnglish(apps, { cache, call: textCall });
 
 export function translate(lines: string[], language: string) {
   return translateLines(lines, language, {
