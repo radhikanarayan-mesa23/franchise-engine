@@ -129,8 +129,9 @@ function mount(root, data, opts) {
     const lay = D.map((p) => { const q = (half * 2 / mx) * g / 2; return { a: p.t1 * q, ab: (p.t1 + p.t2) * q, abc: total(p) * q }; });
     const band = (k) => smooth(D.map((p, i) => [X(i), mid - lay[i][k]])) + smooth(D.map((p, i) => [X(i), mid + lay[i][k]]).reverse(), false) + "Z";
     const marks = [Math.round((n - 1) * .2), Math.round((n - 1) * .6), n - 1];
-    svg.innerHTML = `<defs><linearGradient id="frf" x1="0" x2="1"><stop offset="0" stop-color=INK stop-opacity="0"/><stop offset=".2" stop-color=INK stop-opacity="1"/></linearGradient><mask id="frm"><rect width="${W}" height="${Hh}" fill="url(#frf)"/></mask></defs>
+    svg.innerHTML = `<defs><linearGradient id="frf" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".2" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="frm"><rect width="${W}" height="${Hh}" fill="url(#frf)"/></mask></defs>
       <g mask="url(#frm)"><path d="${band("abc")}" fill="${COL.t3}" opacity=".9"/><path d="${band("ab")}" fill="${COL.t2}"/><path d="${band("a")}" fill="${COL.t1}"/></g>
+      <path d="${smooth(D.map((p, i) => [X(i), mid - lay[i].abc]))}" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" opacity=".9"/>
       ${marks.map((i, k) => { const x = Math.min(W - 40, Math.max(40, X(i))); return `<g style="opacity:${g > .6 ? 1 : 0};transition:opacity .4s ${k * .08}s">
         <line x1="${x}" x2="${x}" y1="${top - 4}" y2="${Hh - bot + 4}" stroke=fgA(.25) stroke-width="1.2"/>
         <rect x="${x - 38}" y="${top - 14}" width="76" height="22" rx="11" fill="${PANEL}"/><text x="${x}" y="${top + 1}" text-anchor="middle" font-size="11" font-weight="600" fill="${INK}">${lakh(total(D[i]))}/mo</text>
@@ -141,7 +142,7 @@ function mount(root, data, opts) {
         <text x="8" y="${mid - 4}" font-size="10" fill="${fgA(.6)}" class="mono">baseline</text>
         <circle cx="${X(n - 1) - 22}" cy="${mid - lay[n - 1].abc}" r="4" fill="${COL.t1}" stroke="${INK}" stroke-width="1.5"/>
       </g>
-      <line class="hl" y1="${top}" y2="${Hh - bot}" stroke=INK stroke-width="1.5" opacity="0"/><rect width="${W}" height="${Hh}" fill="transparent" class="hit"/>`;
+      <line class="hl" y1="${top}" y2="${Hh - bot}" stroke="${INK}" stroke-width="1.5" opacity="0"/><rect width="${W}" height="${Hh}" fill="transparent" class="hit"/>`;
     const hit = svg.querySelector(".hit"), hl = svg.querySelector(".hl");
     hit.onpointermove = (e) => { const r = svg.getBoundingClientRect(), z = r.width / W, x = (e.clientX - r.left) / z; const i = Math.max(0, Math.min(n - 1, Math.round((x + 20) / (W + 40) * (n - 1)))); const p = D[i];
       hl.setAttribute("x1", X(i)); hl.setAttribute("x2", X(i)); hl.setAttribute("opacity", 1);
