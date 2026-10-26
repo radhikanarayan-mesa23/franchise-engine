@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Bodoni_Moda } from "next/font/google";
 import { BeamsBackground } from "@/components/ui/beams-background";
-import UploadForm from "@/components/UploadForm";
+import GoToDashboard from "@/components/GoToDashboard";
 import Icon from "@/components/Icon";
 import brand from "@/config/brand.json";
 
@@ -21,13 +21,7 @@ export default function Landing() {
         <motion.p className="landing-kicker" {...rise(0.2)}>Welcome to</motion.p>
         <motion.h1 className={`wordmark ${display.className}`} {...rise(0.35)} data-text={brand.name}>{brand.name}</motion.h1>
         <motion.p className="landing-tag" {...rise(0.55)}>{brand.tagline}</motion.p>
-        <motion.p className="landing-sub" {...rise(0.7)}>
-          Upload the applications workbook. Every applicant gets a clear decision, the reason behind it, an owner and the next step, and approved partners get a ready-to-ship profile.
-        </motion.p>
-        <motion.div className="landing-card glass" {...rise(0.9)}>
-          <UploadForm />
-          <p className="muted small" style={{ margin: "10px 0 0" }}>No login. Each upload opens its own private session.</p>
-        </motion.div>
+        <motion.div style={{ marginTop: 34 }} {...rise(0.8)}><GoToDashboard /></motion.div>
       </main>
     </BeamsBackground>
   );

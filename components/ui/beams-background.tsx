@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 /* Beams background, adapted from the "BeamsBackground" component: same drifting, pulsing,
    blurred light beams on a canvas. Changes: plain CSS (no Tailwind), renders children,
-   tuned for our light icy-blue theme (deeper blues, more opacity), DPR handled without
+   tuned to the Arctic Depths palette (cyan to blue beams), DPR handled without
    compounding scale on resize, and motion paused for reduced-motion users. For speed the blur
    is a single CSS filter on the canvas instead of a per-frame canvas blur plus a backdrop blur.
    framer-motion is the same API as the `motion` package, which this project already ships. */
@@ -16,7 +16,7 @@ const createBeam = (w: number, h: number): Beam => ({
   x: Math.random() * w * 1.5 - w * 0.25, y: Math.random() * h * 1.5 - h * 0.25,
   width: 30 + Math.random() * 60, length: h * 2.5, angle: -35 + Math.random() * 10,
   speed: 0.6 + Math.random() * 1.2, opacity: 0.12 + Math.random() * 0.16,
-  hue: 195 + Math.random() * 45, pulse: Math.random() * Math.PI * 2, pulseSpeed: 0.02 + Math.random() * 0.03,
+  hue: 185 + Math.random() * 30, pulse: Math.random() * Math.PI * 2, pulseSpeed: 0.02 + Math.random() * 0.03,
 });
 
 export function BeamsBackground({ className = "", children, intensity = "strong" }: { className?: string; children?: React.ReactNode; intensity?: "subtle" | "medium" | "strong" }) {
@@ -46,13 +46,13 @@ export function BeamsBackground({ className = "", children, intensity = "strong"
       const spacing = W / 3;
       b.y = H + 100; b.x = (i % 3) * spacing + spacing / 2 + (Math.random() - 0.5) * spacing * 0.5;
       b.width = 100 + Math.random() * 100; b.speed = 0.5 + Math.random() * 0.4;
-      b.hue = 195 + (i * 45) / n; b.opacity = 0.2 + Math.random() * 0.1;
+      b.hue = 185 + (i * 30) / n; b.opacity = 0.2 + Math.random() * 0.1;
     };
     const draw = (b: Beam) => {
       ctx.save(); ctx.translate(b.x, b.y); ctx.rotate((b.angle * Math.PI) / 180);
       const a = b.opacity * (0.8 + Math.sin(b.pulse) * 0.2) * opacity;
       const g = ctx.createLinearGradient(0, 0, 0, b.length);
-      const c = (k: number) => `hsla(${b.hue}, 88%, 56%, ${k})`;
+      const c = (k: number) => `hsla(${b.hue}, 85%, 62%, ${k})`;
       g.addColorStop(0, c(0)); g.addColorStop(0.1, c(a * 0.5)); g.addColorStop(0.4, c(a)); g.addColorStop(0.6, c(a)); g.addColorStop(0.9, c(a * 0.5)); g.addColorStop(1, c(0));
       ctx.fillStyle = g; ctx.fillRect(-b.width / 2, 0, b.width, b.length); ctx.restore();
     };

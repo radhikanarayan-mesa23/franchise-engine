@@ -44,7 +44,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       <p><b>Owner:</b> {d.owner} · <b>Next step:</b> {render(d.nextStep)}</p>
       <p><b>Territory:</b> {d.territoryId ?? "none"} · <b>Assigned pin:</b> {d.assignedPin ?? "none"} · <b>Applied pin:</b> {app.pin}</p>
 
-      {needsApplicant && (<section style={{ background: "rgba(13,43,69,0.05)", padding: 8, borderRadius: 6 }}>
+      {needsApplicant && (<section style={{ background: "rgba(255,255,255,0.05)", padding: 8, borderRadius: 6 }}>
         <b>Drafted update message ({app.language}, not sent):</b>
         <div style={{ whiteSpace: "pre-wrap" }}>{draftLines.join("\n")}</div>
         {linkUrl ? <p>Update link: <a href={linkUrl}>{linkUrl}</a></p> : <UpdateLinkButton sessionId={sessionId} applicationId={id} />}

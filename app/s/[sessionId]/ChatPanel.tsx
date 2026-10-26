@@ -27,7 +27,7 @@ export default function ChatPanel({ sessionId, initial }: { sessionId: string; i
       <p style={{ color: "var(--muted)", marginTop: 0 }}>e.g. “Why is APP-007 on hold?”, “APP-012 has now found a ground-floor space”, “What if Tier 2 needed 30 lakh?”. The engine decides; chat explains and passes new facts to it.</p>
       <div style={{ maxHeight: 360, overflowY: "auto", display: "grid", gap: 8 }}>
         {msgs.map((m, i) => (
-          <div key={i} style={{ whiteSpace: "pre-wrap", background: m.role === "user" ? "rgba(30,136,216,0.14)" : "rgba(13,43,69,0.06)", padding: 8, borderRadius: 6 }}>
+          <div key={i} style={{ whiteSpace: "pre-wrap", background: m.role === "user" ? "rgba(13,184,211,0.14)" : "rgba(255,255,255,0.06)", padding: 8, borderRadius: 6 }}>
             <b>{m.role === "user" ? "You" : "Assistant"}:</b> {m.content}
           </div>
         ))}
