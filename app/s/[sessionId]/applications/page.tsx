@@ -19,14 +19,14 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   // Where each case is handled: one button per row.
   const action = (d: (typeof ds)[number]): Row["action"] => {
     const id = encodeURIComponent(d.applicationId);
-    if (d.humanReview && d.status !== "Recommended for approval" && d.status !== "Conditionally approved") return { label: "Review ⚑", href: `${base}/review#${id}` };
+    if (d.humanReview && d.status !== "Recommended for approval" && d.status !== "Conditionally approved") return { label: "Review", href: `${base}/review#${id}`, tone: "review" };
     switch (d.status) {
-      case "Recommended for approval": case "Conditionally approved": return { label: "Approve →", href: `${base}/approved#${id}` };
-      case "Redirected": return { label: "See on map →", href: `${base}/pins?t=${d.territoryId}&p=${d.assignedPin}` };
-      case "On hold": return { label: "Message & link →", href: `${base}/a/${id}#message` };
-      case "Waitlisted": return { label: "Territory →", href: `${base}/pins?t=${d.territoryId ?? ""}` };
-      case "Human review": return { label: "Review ⚑", href: `${base}/review#${id}` };
-      default: return { label: "Why →", href: `${base}/a/${id}` };
+      case "Recommended for approval": case "Conditionally approved": return { label: "Approve", href: `${base}/approved#${id}`, tone: "approve" };
+      case "Redirected": return { label: "View on map", href: `${base}/pins?t=${d.territoryId}&p=${d.assignedPin}`, tone: "map" };
+      case "On hold": return { label: "Send update", href: `${base}/a/${id}#message`, tone: "message" };
+      case "Waitlisted": return { label: "Territory", href: `${base}/pins?t=${d.territoryId ?? ""}`, tone: "neutral" };
+      case "Human review": return { label: "Review", href: `${base}/review#${id}`, tone: "review" };
+      default: return { label: "Details", href: `${base}/a/${id}`, tone: "neutral" };
     }
   };
   const rows: Row[] = ds.map((d) => ({
