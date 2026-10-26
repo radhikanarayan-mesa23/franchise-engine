@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEFAULT_POLICY, fastestLaunch } from "@/lib/engine/policy";
+import { DEFAULT_POLICY, fastestLaunch, orderedWeights } from "@/lib/engine/policy";
 import { getSession } from "@/lib/db/cached";
 import { factorLabel } from "@/lib/engine/score";
 import cities from "@/config/cities.json";
@@ -26,7 +26,7 @@ export default async function How({ searchParams }: { searchParams: Promise<{ s?
         <li><b>Read and check the file.</b> Pins become 6-digit text. Broken data (wrong city for pin, invalid pin, duplicate ID, state outside {cities[0].state}, missing required field) puts the application <i>On hold</i>; nothing is guessed.</li>
         <li><b>Match territory by pin.</b> Real capacity = open slots, capped by territory pins with no existing store. A pin in two territories belongs to the higher-priority one.</li>
         <li><b>Gates.</b> G1 pin in no territory → redirect within the city or reject. G2 pin already has a store → redirect to a free pin or waitlist. G3 investment below {P.gates.reject_below_investment_pct}% of the tier minimum → reject. G4 below 100% → on hold with the gap shown.</li>
-        <li><b>Readiness score out of {Object.values(P.scoring.weights).reduce((a, b) => a + b, 0)}.</b> {Object.keys(P.scoring.weights).map(factorLabel).join(", ")}; each factor is its weight × a policy percentage. Business relevance comes from AI and is neutral if unread.</li>
+        <li><b>Readiness score out of {Object.values(P.scoring.weights).reduce((a, b) => a + b, 0)}.</b> {orderedWeights(P.scoring.weights).map(([k]) => factorLabel(k)).join(", ")}; each factor is its weight × a policy percentage. Business relevance comes from AI and is neutral if unread.</li>
         <li><b>Allocation.</b> Territories in priority order; applicants ranked by score, ties broken by distance from the nearest store, earlier launch, then lower ID. Each pin is used once. Never two stores in one pin.</li>
         <li><b>Decision.</b> Recommended (score ≥ {P.bands.approve_min_score}, slot won, nothing open), Conditionally approved (slot won with a fixable gap), On hold, Waitlisted, Redirected, or Rejected (below {P.bands.reject_below_score}). Every decision names an owner, its reasons with numbers, conditions with deadlines and what would change it.</li>
         <li><b>Human review.</b> Scores within ±{P.bands.human_review_margin} of a line, AI risk flags, contradictions between text and fields, and ties go to the review queue.</li>
@@ -39,7 +39,7 @@ export default async function How({ searchParams }: { searchParams: Promise<{ s?
         <tbody>{tiers.map(([t, v]) => <tr key={t}><td>{t}</td><td>₹{v.min_investment_lakh} lakh</td><td>{v.min_space_sqft} sq ft</td></tr>)}</tbody></table>
       <ul>
         <li>Acceptable floors: {P.space.acceptable_floors.join(", ")}; conditional: {P.space.conditional_floors.join(", ")}.</li>
-        <li>Score weights: {Object.entries(P.scoring.weights).map(([k, v]) => `${factorLabel(k)} ${v}`).join(", ")} (total {Object.values(P.scoring.weights).reduce((a, b) => a + b, 0)}).</li>
+        <li>Score weights: {orderedWeights(P.scoring.weights).map(([k, v]) => `${factorLabel(k)} ${v}`).join(", ")} (total {Object.values(P.scoring.weights).reduce((a, b) => a + b, 0)}).</li>
         <li>Cannibalisation: an applicant within {P.proximity.flag_radius_km} km of an existing store gets an advisory “near existing store” flag; it never changes the decision.</li>
         <li>Fastest launch, derived from onboarding steps: {withSpace.weeks} weeks with space, {noSpace.weeks} weeks without.</li>
         <li>Deadlines: {P.deadlines_days.hold_to_fix} days to fix a hold, {P.deadlines_days.conditional_to_meet} days to meet conditions.</li>

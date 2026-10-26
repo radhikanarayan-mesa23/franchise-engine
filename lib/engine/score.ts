@@ -1,5 +1,5 @@
 import type { AiSignals, Application, Flag, Tier } from "@/lib/types";
-import { fastestLaunch, type Policy } from "./policy";
+import { fastestLaunch, orderedWeights, type Policy } from "./policy";
 import { round } from "./gates";
 
 export const hasSpace = (a: Application) => a.space === "Owned" || a.space === "Rented" || a.space === "Identified - tenure unknown";
@@ -53,5 +53,5 @@ export const factorLabel = (key: string) => key.replace(/_/g, " ");
  * so a factor the policy no longer has can never appear, and the maxes always sum to the weights' total.
  */
 export function scoreBreakdown(parts: Record<string, number>, weights: Record<string, number>) {
-  return Object.entries(weights).map(([key, max]) => ({ key, label: factorLabel(key), value: parts[key] ?? 0, max }));
+  return orderedWeights(weights).map(([key, max]) => ({ key, label: factorLabel(key), value: parts[key] ?? 0, max }));
 }

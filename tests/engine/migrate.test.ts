@@ -20,6 +20,12 @@ describe("policy migration (sessions saved before payback was removed)", () => {
     expect(JSON.stringify(policy)).not.toMatch(/payback|royalt|monthly_sales|sales_cut/);
   });
 
+  it("gives the same weights whatever order the stored keys come back in (Postgres jsonb reorders them)", () => {
+    const shuffled = structuredClone(oldPolicy);
+    shuffled.scoring.weights = Object.fromEntries(Object.entries(oldPolicy.scoring.weights).sort(([a], [b]) => a.length - b.length || a.localeCompare(b))) as typeof shuffled.scoring.weights;
+    expect(migratePolicy(shuffled).policy.scoring.weights).toEqual(DEFAULT_POLICY.scoring.weights);
+  });
+
   it("leaves a current policy untouched", () => {
     expect(migratePolicy(DEFAULT_POLICY)).toEqual({ policy: DEFAULT_POLICY, changed: false });
   });

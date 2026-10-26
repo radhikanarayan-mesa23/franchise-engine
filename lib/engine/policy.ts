@@ -8,14 +8,23 @@ export const clonePolicy = (p: Policy): Policy => JSON.parse(JSON.stringify(p));
 /** Settings that fed the removed financial forecast. Sessions saved before the removal still carry them. */
 const RETIRED_TOP = ["payback", "brand_economics", "investment_split_pct"] as const;
 
-/** Rescale weights to sum to 100, keeping proportions (largest remainder; ties go to the earlier key). */
+/** Canonical factor order (the default policy's). Postgres jsonb reorders keys, so never rely on stored order. */
+export const FACTOR_ORDER = Object.keys(DEFAULT_POLICY.scoring.weights);
+const rank = (k: string) => { const i = FACTOR_ORDER.indexOf(k); return i < 0 ? FACTOR_ORDER.length : i; };
+
+/** Weights in canonical factor order (unknown keys last, alphabetically). */
+export function orderedWeights(w: Record<string, number>): [string, number][] {
+  return Object.entries(w).sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b));
+}
+
+/** Rescale weights to sum to 100, keeping proportions (largest remainder; ties go to the earlier factor in canonical order). */
 export function renormaliseWeights(w: Record<string, number>): Record<string, number> {
-  const keys = Object.keys(w), total = keys.reduce((a, k) => a + Number(w[k]), 0);
-  if (!total) return { ...w };
-  const exact = keys.map((k) => (Number(w[k]) * 100) / total), out = exact.map(Math.floor);
+  const entries = orderedWeights(w), total = entries.reduce((a, [, v]) => a + Number(v), 0);
+  if (!total) return Object.fromEntries(entries);
+  const exact = entries.map(([, v]) => (Number(v) * 100) / total), out = exact.map(Math.floor);
   let left = 100 - out.reduce((a, b) => a + b, 0);
   for (const i of exact.map((x, i) => i).sort((a, b) => (exact[b] - out[b]) - (exact[a] - out[a]) || a - b)) { if (left-- <= 0) break; out[i]++; }
-  return Object.fromEntries(keys.map((k, i) => [k, out[i]]));
+  return Object.fromEntries(entries.map(([k], i) => [k, out[i]]));
 }
 
 /**
