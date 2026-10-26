@@ -1,4 +1,4 @@
-import { getSession, latestSnapshots } from "@/lib/db/repo";
+import { getSession, latestSnapshots } from "@/lib/db/cached";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS } from "@/lib/ui";
 import { resolveTerritories } from "@/lib/engine/territory";

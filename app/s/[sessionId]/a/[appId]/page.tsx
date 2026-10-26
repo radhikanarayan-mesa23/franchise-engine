@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTokenFor } from "@/lib/db/repo";
+import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTokenFor } from "@/lib/db/cached";
 import { headers } from "next/headers";
 import { translate } from "@/lib/ai/translator";
 import UpdateLinkButton from "./UpdateLinkButton";

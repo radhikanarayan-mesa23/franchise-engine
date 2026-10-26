@@ -7,7 +7,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import Icon from "@/components/Icon";
 import brand from "@/config/brand.json";
 
-const display = Bodoni_Moda({ subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"] });
+const display = Bodoni_Moda({ subsets: ["latin"], weight: ["700", "800"], display: "swap", preload: true });
 
 const rise = (delay: number) => ({ initial: { opacity: 0, y: 22 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.9, ease: [0.22, 1, 0.36, 1] as const } });
 

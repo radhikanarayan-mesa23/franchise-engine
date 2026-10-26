@@ -1,6 +1,6 @@
 import type React from "react";
 import { notFound } from "next/navigation";
-import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/cached";
 import Sidebar from "./Sidebar";
 import Crumbs from "./Crumbs";
 import ThemeToggle from "@/components/ThemeToggle";

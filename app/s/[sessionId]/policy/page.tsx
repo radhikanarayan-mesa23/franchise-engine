@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSession } from "@/lib/db/repo";
+import { getSession } from "@/lib/db/cached";
 import { numericLeaves } from "@/lib/session/policyEdit";
 import PolicyForm from "./PolicyForm";
 

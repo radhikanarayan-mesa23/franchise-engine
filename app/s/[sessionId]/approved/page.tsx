@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/cached";
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
 import { STATUS_CLASS } from "@/lib/ui";

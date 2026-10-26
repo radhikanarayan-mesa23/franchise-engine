@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/cached";
 import { render } from "@/lib/reasons/render";
 import ReviewForm from "./ReviewForm";
 

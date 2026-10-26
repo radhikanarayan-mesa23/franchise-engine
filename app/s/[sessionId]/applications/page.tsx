@@ -1,4 +1,4 @@
-import { getChat, getSession, latestSnapshots } from "@/lib/db/repo";
+import { getChat, getSession, latestSnapshots } from "@/lib/db/cached";
 import { diffDecisions } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS, STATUS_ORDER } from "@/lib/ui";

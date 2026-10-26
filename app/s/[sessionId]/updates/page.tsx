@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getSession, latestSnapshots, latestTokenFor } from "@/lib/db/repo";
+import { getSession, latestSnapshots, latestTokenFor } from "@/lib/db/cached";
 import { fieldsToRequest } from "@/lib/session/updateLink";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS } from "@/lib/ui";

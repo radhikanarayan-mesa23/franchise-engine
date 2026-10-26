@@ -1,4 +1,4 @@
-import { getSession, latestSnapshots } from "@/lib/db/repo";
+import { getSession, latestSnapshots } from "@/lib/db/cached";
 import UploadForm from "@/components/UploadForm";
 
 export default async function UploadTab({ params }: { params: Promise<{ sessionId: string }> }) {

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import en from "@/config/i18n/en.json";
 import kn from "@/config/i18n/kn.json";
 import hi from "@/config/i18n/hi.json";
-import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
+import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/cached";
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
 import { partnerLetter, translate } from "@/lib/ai/translator";
