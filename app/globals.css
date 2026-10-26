@@ -135,9 +135,19 @@ details summary { cursor: pointer; color: var(--muted); } details[open] summary 
 .appr-body { display: grid; gap: 6px; }
 .appr-cond { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .appr-foot { margin-top: auto; display: flex; gap: 8px; align-items: center; }
-.appr-foot .app-table { table-layout: fixed; font-size: 14px; }
+.appr-foot .app-table { table-layout: fixed; font-size: 14px; font-weight: 600; color: #ffffff; }
+.card:has(> .app-table), .card:has(.app-table) { background: linear-gradient(160deg, rgba(6,25,38,.72), rgba(6,25,38,.55)); }
+.app-table th { color: #cfe6f0; font-weight: 700; }
+.app-table td { text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.app-table td a { color: #7fe7f7; font-weight: 700; }
+.app-table td .muted { color: #b9d4e0 !important; font-weight: 500; }
+.app-table td.muted { color: #d4e7ef !important; font-weight: 500; }
+.app-table .pill { font-weight: 800; text-shadow: none; }
+.app-table .s-rec { background: rgba(63,217,160,.28); color: #b4ffe0; } .app-table .s-cond { background: rgba(63,217,160,.18); color: #c9fbe6; }
+.app-table .s-hold { background: rgba(255,207,92,.28); color: #ffe7a8; } .app-table .s-redir { background: rgba(13,184,211,.3); color: #c8f6ff; }
+.app-table .s-wait { background: rgba(179,185,255,.3); color: #e1e4ff; } .app-table .s-rej { background: rgba(255,138,138,.3); color: #ffd6d6; }
 .app-table td { vertical-align: middle; padding: 14px 10px; line-height: 1.45; }
-.app-table td.small { font-size: 13px; } .app-table .reason { color: var(--ink); }
+.app-table td.small { font-size: 13.5px; } .app-table .reason { color: #ffffff; font-weight: 600; }
 .app-table .nowrap, .app-table .pill { white-space: nowrap; } .app-table .num { font-variant-numeric: tabular-nums; font-weight: 600; }
 .row-act { display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 34px; border-radius: 10px; font-size: 13px; font-weight: 700;
   color: #fff !important; text-decoration: none !important; white-space: nowrap; box-shadow: 0 4px 14px rgba(4,20,32,.35); transition: transform .15s, filter .15s; }
