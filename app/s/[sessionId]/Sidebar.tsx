@@ -36,7 +36,7 @@ export default function Sidebar({ sessionId, counts, pinned }: { sessionId: stri
         </Link>
       ))}
       <div style={{ flex: 1 }} />
-      <Link href="/how" className="side-item"><Icon name="book" /> How this decides</Link>
+      <Link href={`/how?s=${sessionId}`} className="side-item"><Icon name="book" /> How this decides</Link>
     </aside>
   );
 }

@@ -1,0 +1,343 @@
+{
+  "meta": {
+    "version": 1,
+    "label": "Default brand policy (assumed - the brief gives no numbers)",
+    "currency_unit": "lakh",
+    "note": "Fastest realistic launch is derived from onboarding_steps, not set here."
+  },
+  "tiers": {
+    "Tier 1": {
+      "min_investment_lakh": 35,
+      "min_space_sqft": 400,
+      "monthly_sales_lakh": 6.0
+    },
+    "Tier 2": {
+      "min_investment_lakh": 25,
+      "min_space_sqft": 350,
+      "monthly_sales_lakh": 4.0
+    },
+    "Tier 3": {
+      "min_investment_lakh": 18,
+      "min_space_sqft": 300,
+      "monthly_sales_lakh": 2.5
+    }
+  },
+  "space": {
+    "acceptable_floors": [
+      "Ground",
+      "Mall unit"
+    ],
+    "conditional_floors": [
+      "Upper",
+      "Not known"
+    ],
+    "tenure_unknown_value": "Identified - tenure unknown"
+  },
+  "gates": {
+    "reject_below_investment_pct": 70,
+    "hold_below_investment_pct": 100
+  },
+  "scoring": {
+    "weights": {
+      "investment": 25,
+      "experience": 15,
+      "business_relevance": 5,
+      "space_status": 10,
+      "floor": 10,
+      "size": 5,
+      "timeline": 10,
+      "payback": 10,
+      "completeness": 10
+    },
+    "investment_multiples": [
+      {
+        "at_least": 1.5,
+        "pct_of_weight": 100
+      },
+      {
+        "at_least": 1.2,
+        "pct_of_weight": 80
+      },
+      {
+        "at_least": 1.0,
+        "pct_of_weight": 60
+      }
+    ],
+    "experience_years": [
+      {
+        "at_least": 6,
+        "pct_of_weight": 100
+      },
+      {
+        "at_least": 3,
+        "pct_of_weight": 80
+      },
+      {
+        "at_least": 1,
+        "pct_of_weight": 55
+      },
+      {
+        "at_least": 0,
+        "pct_of_weight": 20
+      }
+    ],
+    "business_relevance": {
+      "direct_retail": 100,
+      "related": 60,
+      "none": 0,
+      "not_read": 0,
+      "unread": 60
+    },
+    "space_status": {
+      "Owned": 100,
+      "Rented": 90,
+      "Identified - tenure unknown": 85,
+      "Not yet identified": 0
+    },
+    "floor": {
+      "Ground": 100,
+      "Mall unit": 90,
+      "Not known": 40,
+      "Upper": 30,
+      "blank": 40
+    },
+    "size": {
+      "meets_min": 100,
+      "below_min": 40,
+      "blank": 0
+    },
+    "timeline": {
+      "realistic": 100,
+      "one_month_short": 50,
+      "impossible": 20,
+      "blank": 60
+    },
+    "payback_months": [
+      {
+        "at_most": 18,
+        "pct_of_weight": 100
+      },
+      {
+        "at_most": 30,
+        "pct_of_weight": 60
+      },
+      {
+        "at_most": 999,
+        "pct_of_weight": 20
+      }
+    ],
+    "completeness_penalty_per_blank": 2,
+    "completeness_fields": [
+      "Floor",
+      "Space size (sq ft)",
+      "Target launch (months)",
+      "Preferred language"
+    ]
+  },
+  "bands": {
+    "approve_min_score": 70,
+    "reject_below_score": 45,
+    "human_review_margin": 3,
+    "ai_risk_flags_need_review": true
+  },
+  "payback": {
+    "margin_pct": 15,
+    "cannibalisation_radius_km": 2,
+    "cannibalisation_sales_cut_pct": 20,
+    "sales_ramp_pct_by_month": [
+      40,
+      55,
+      70,
+      80,
+      90,
+      100
+    ],
+    "scenarios": [
+      {
+        "name": "Low",
+        "sales_pct": 80
+      },
+      {
+        "name": "Base",
+        "sales_pct": 100
+      },
+      {
+        "name": "High",
+        "sales_pct": 120
+      }
+    ],
+    "setup_cost_basis": "tier_min_investment",
+    "ramp_pct_by_month": [
+      40,
+      60,
+      80,
+      100
+    ],
+    "horizon_months": 120
+  },
+  "investment_split_pct": {
+    "Fit-out and interiors": 45,
+    "Opening stock": 30,
+    "Franchise fee": 15,
+    "Working capital": 10
+  },
+  "onboarding_steps": [
+    {
+      "id": "agreement",
+      "label": "Sign franchise agreement and pay fee",
+      "weeks": 1,
+      "owner": "Partner"
+    },
+    {
+      "id": "site_check",
+      "label": "Brand site inspection",
+      "weeks": 1,
+      "owner": "Expansion team"
+    },
+    {
+      "id": "find_space",
+      "label": "Find and confirm store space",
+      "weeks": 6,
+      "owner": "Partner",
+      "only_if": "no_space"
+    },
+    {
+      "id": "fit_out",
+      "label": "Store fit-out to brand design",
+      "weeks": 5,
+      "owner": "Partner + brand vendor"
+    },
+    {
+      "id": "hiring",
+      "label": "Hire store staff",
+      "weeks": 3,
+      "owner": "Partner",
+      "parallel_with": "fit_out"
+    },
+    {
+      "id": "training",
+      "label": "Owner and staff training",
+      "weeks": 2,
+      "owner": "Brand trainer"
+    },
+    {
+      "id": "inventory",
+      "label": "Stock and systems setup",
+      "weeks": 1,
+      "owner": "Brand ops"
+    },
+    {
+      "id": "launch",
+      "label": "Soft launch",
+      "weeks": 1,
+      "owner": "Partner + brand"
+    }
+  ],
+  "pipeline_stages": [
+    {
+      "id": "confirmed",
+      "label": "Confirmed by expansion manager",
+      "owner": "Expansion manager",
+      "step": null
+    },
+    {
+      "id": "agreement_signed",
+      "label": "Agreement signed",
+      "owner": "Partner",
+      "step": "agreement"
+    },
+    {
+      "id": "site_checked",
+      "label": "Site checked",
+      "owner": "Expansion team",
+      "step": "site_check"
+    },
+    {
+      "id": "fit_out",
+      "label": "Fit-out done",
+      "owner": "Partner + brand vendor",
+      "step": "fit_out"
+    },
+    {
+      "id": "staff_hired",
+      "label": "Staff hired",
+      "owner": "Partner",
+      "step": "hiring"
+    },
+    {
+      "id": "trained",
+      "label": "Trained",
+      "owner": "Brand trainer",
+      "step": "training"
+    },
+    {
+      "id": "open",
+      "label": "Store open",
+      "owner": "Partner + brand",
+      "step": "launch"
+    }
+  ],
+  "training": {
+    "languages": [
+      "Kannada",
+      "English",
+      "Hindi"
+    ],
+    "default_language": "English",
+    "core_modules": [
+      "Brand and products",
+      "Store operations",
+      "POS and inventory system",
+      "Customer service"
+    ],
+    "first_timer_modules": [
+      "Retail basics",
+      "Staff management",
+      "Daily cash and accounts"
+    ],
+    "first_timer_max_years": 2
+  },
+  "document_checklist": [
+    "ID and address proof",
+    "Lease or ownership papers for the store space",
+    "GST registration",
+    "Shop and Establishment registration",
+    "Bank account details",
+    "Proof of funds for the investment amount"
+  ],
+  "deadlines_days": {
+    "hold_to_fix": 14,
+    "conditional_to_meet": 45
+  },
+  "allocation": {
+    "priority_order": [
+      "High",
+      "Medium",
+      "Low"
+    ],
+    "tie_breakers": [
+      "distance_from_nearest_store_desc",
+      "realistic_launch_asc",
+      "application_id_asc"
+    ],
+    "duplicate_pin_territory_rule": "higher_priority_wins"
+  },
+  "translation": {
+    "keep_in_english": [
+      "POS",
+      "GST",
+      "fit-out",
+      "franchise fee"
+    ]
+  },
+  "calendar": {
+    "days_per_week": 7,
+    "weeks_per_month": 4.33,
+    "months_per_year": 12
+  },
+  "brand_economics": {
+    "royalty_pct_of_sales": 6,
+    "projection_months": 36,
+    "franchise_fee_item": "Franchise fee"
+  }
+}

@@ -1,3 +1,4 @@
+import { scoreBreakdown } from "@/lib/engine/score";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTokenFor } from "@/lib/db/cached";
@@ -60,7 +61,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       {d.whatWouldChange.length > 0 && (<><h3>What would change this</h3><ul>{d.whatWouldChange.map((r, i) => <li key={i}>{render(r)}</li>)}</ul></>)}
 
       {d.score && (<><h3>Score {d.score.total}/100</h3>
-        <table cellPadding={4}><tbody>{Object.entries(d.score.parts).map(([k, v]) => <tr key={k}><td>{k.replace(/_/g, " ")}</td><td>{v} / {w[k]}</td></tr>)}</tbody></table></>)}
+        <table cellPadding={4}><tbody>{scoreBreakdown(d.score.parts, w).map((r) => <tr key={r.key}><td>{r.label}</td><td>{r.value} / {r.max}</td></tr>)}</tbody></table></>)}
 
       {d.proximity && <p className="small"><b>Nearest existing store:</b> {d.proximity.storeId}, ~{d.proximity.km} km{d.proximity.near ? " — inside the cannibalisation radius (advisory flag, does not change the decision)" : ""}</p>}
 

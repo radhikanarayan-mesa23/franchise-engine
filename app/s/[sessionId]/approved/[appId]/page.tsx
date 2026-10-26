@@ -1,3 +1,4 @@
+import { scoreBreakdown } from "@/lib/engine/score";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildProfile } from "@/lib/profile";
@@ -57,7 +58,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
 
       <div className="strip" style={{ marginBottom: 16 }}>
         <div className="stat"><div><span className="label">{T("Investment committed")}</span><b>{L(p.investment?.committedLakh)}</b><span className="small muted">{p.investment ? `${p.investment.multiple}× the ${t?.tier} minimum of ${L(p.investment.tierMinimumLakh)}` : ""}</span></div></div>
-        <div className="stat"><div><span className="label">{T("Readiness score")}</span><b>{d.score?.total ?? "–"}/100</b><span className="small muted">{d.score ? `${Object.keys(d.score.parts).length} weighted factors` : "not scored"}</span></div></div>
+        <div className="stat"><div><span className="label">{T("Readiness score")}</span><b>{d.score?.total ?? "–"}/100</b><span className="small muted">{d.score ? `${Object.keys(p.weights).length} weighted factors` : "not scored"}</span></div></div>
         <div className="stat"><div><span className="label">{T("Territory")}</span><b>{t?.id ?? "–"} · pin {d.assignedPin ?? "–"}</b><span className="small muted">{t ? `${t.city}, ${t.tier}` : ""}{d.proximity ? ` · nearest store ${d.proximity.storeId} ~${d.proximity.km} km` : ""}</span></div></div>
         <div className="stat"><div><span className="label">{T("Launch")}</span><b>{p.pipeline?.launchDate ?? d.plan?.launchDate ?? "–"}</b><span className="small muted">{p.pipeline?.current ? p.pipeline.stages.find((x) => x.id === p.pipeline!.current)!.label : "Not started"}</span></div></div>
       </div>
@@ -71,7 +72,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
         </div>
         <div className="card">
           <h3 style={{ marginTop: 0 }}>{T("Readiness score")} {d.score?.total ?? "–"}/100</h3>
-          {d.score && <Bars rows={Object.entries(d.score.parts).map(([k, v]) => ({ label: k.replace(/_/g, " "), value: v, max: p.weights[k] }))} />}
+          {d.score && <Bars rows={scoreBreakdown(d.score.parts, p.weights)} />}
         </div>
         <div className="card">
           <h3 style={{ marginTop: 0 }}>{T("Applicant details")}</h3>

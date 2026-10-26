@@ -1,3 +1,4 @@
+import { scoreBreakdown } from "@/lib/engine/score";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import en from "@/config/i18n/en.json";
@@ -92,7 +93,7 @@ export default async function Pack({ params, searchParams }: { params: Promise<{
       {pipe && <section><h2>{t.current_stage}</h2><p>{pipe.current ? pipe.stages.find((s) => s.id === pipe.current)!.label : t.not_started}{pipe.slipped ? ` (+${pipe.slipDays} days)` : ""}</p></section>}
 
       {team && <>
-        {d.score && <section><h2>{t.score}</h2><table><tbody>{Object.entries(d.score.parts).map(([key, v]) => <tr key={key}><td>{key.replace(/_/g, " ")}</td><td>{v}</td></tr>)}
+        {d.score && <section><h2>{t.score}</h2><table><tbody>{scoreBreakdown(d.score.parts, session.policy.scoring.weights).map((r) => <tr key={r.key}><td>{r.label}</td><td>{r.value} / {r.max}</td></tr>)}
           <tr><td><b>Total</b></td><td><b>{d.score.total}</b></td></tr></tbody></table></section>}
         {d.flags.length > 0 && <section><h2>{t.flags}</h2><ul>{d.flags.map((f, i) => <li key={i}>[{f.severity}] {f.code} {f.field ?? ""}</li>)}</ul></section>}
         <section><h2>{t.history}</h2><ul>{reviews.filter((r) => r.applicationId === id).map((r, i) => <li key={i}>{r.action}: {r.reason || "-"} ({r.at.slice(0, 10)})</li>)}

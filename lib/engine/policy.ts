@@ -5,6 +5,40 @@ export const DEFAULT_POLICY: Policy = defaultPolicyJson;
 
 export const clonePolicy = (p: Policy): Policy => JSON.parse(JSON.stringify(p));
 
+/** Settings that fed the removed financial forecast. Sessions saved before the removal still carry them. */
+const RETIRED_TOP = ["payback", "brand_economics", "investment_split_pct"] as const;
+
+/** Rescale weights to sum to 100, keeping proportions (largest remainder; ties go to the earlier key). */
+export function renormaliseWeights(w: Record<string, number>): Record<string, number> {
+  const keys = Object.keys(w), total = keys.reduce((a, k) => a + Number(w[k]), 0);
+  if (!total) return { ...w };
+  const exact = keys.map((k) => (Number(w[k]) * 100) / total), out = exact.map(Math.floor);
+  let left = 100 - out.reduce((a, b) => a + b, 0);
+  for (const i of exact.map((x, i) => i).sort((a, b) => (exact[b] - out[b]) - (exact[a] - out[a]) || a - b)) { if (left-- <= 0) break; out[i]++; }
+  return Object.fromEntries(keys.map((k, i) => [k, out[i]]));
+}
+
+/**
+ * Bring a stored session policy up to the current shape: drop forecast-only settings and the payback
+ * score factor, rescale the remaining weights to 100, and fill settings added since (e.g. proximity).
+ * Pure; returns the input unchanged (changed: false) when it is already current.
+ */
+export function migratePolicy(raw: unknown): { policy: Policy; changed: boolean } {
+  const p = JSON.parse(JSON.stringify(raw)) as Record<string, any>;
+  let changed = false;
+  for (const k of RETIRED_TOP) if (k in p) { delete p[k]; changed = true; }
+  for (const t of Object.values<Record<string, unknown>>(p.tiers ?? {})) if ("monthly_sales_lakh" in t) { delete t.monthly_sales_lakh; changed = true; }
+  if (p.calendar && "months_per_year" in p.calendar) { delete p.calendar.months_per_year; changed = true; }
+  if (p.scoring && "payback_months" in p.scoring) { delete p.scoring.payback_months; changed = true; }
+  if (p.scoring?.weights && "payback" in p.scoring.weights) {
+    const { payback: _drop, ...rest } = p.scoring.weights;
+    p.scoring.weights = renormaliseWeights(rest);
+    changed = true;
+  }
+  for (const k of Object.keys(DEFAULT_POLICY) as (keyof Policy)[]) if (!(k in p)) { p[k] = clonePolicy(DEFAULT_POLICY)[k]; changed = true; }
+  return { policy: changed ? (p as Policy) : (raw as Policy), changed };
+}
+
 /** Returns a list of human-readable problems; empty means valid. */
 export function validatePolicy(p: Policy): string[] {
   const errs: string[] = [];

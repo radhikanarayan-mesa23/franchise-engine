@@ -45,3 +45,13 @@ export function scoreApplication(a: Application, tier: Tier, flags: Flag[], sign
   const total = round(Object.values(parts).reduce((x, y) => x + y, 0));
   return { total, parts, multiple: round(multiple, 2), relevance, blanks, softCount };
 }
+
+export const factorLabel = (key: string) => key.replace(/_/g, " ");
+
+/**
+ * Score breakdown rows driven by the policy's weights (the same object "How this decides" lists),
+ * so a factor the policy no longer has can never appear, and the maxes always sum to the weights' total.
+ */
+export function scoreBreakdown(parts: Record<string, number>, weights: Record<string, number>) {
+  return Object.entries(weights).map(([key, max]) => ({ key, label: factorLabel(key), value: parts[key] ?? 0, max }));
+}

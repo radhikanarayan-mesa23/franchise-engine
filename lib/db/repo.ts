@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Application, Decision, Store, Territory } from "@/lib/types";
-import type { Policy } from "@/lib/engine/policy";
+import { migratePolicy, type Policy } from "@/lib/engine/policy";
 import type { RunResult } from "@/lib/engine/run";
 import { db } from "./neon";
 
@@ -46,7 +46,7 @@ export async function getSession(id: string): Promise<SessionData | null> {
     sql`select data from territories where session_id = ${id} order by id`,
     sql`select data from stores where session_id = ${id} order by id`,
   ]);
-  return { id, policyVersion: v, policy: p[0].policy, applications: a.map((r) => r.data), territories: t.map((r) => r.data), stores: st.map((r) => r.data) };
+  return { id, policyVersion: v, policy: migratePolicy(p[0].policy).policy, applications: a.map((r) => r.data), territories: t.map((r) => r.data), stores: st.map((r) => r.data) };
 }
 
 function snapshotInsert(id: string, runNo: number | null, policyVersion: number, run: RunResult, trigger: string, ms: number | null = null) {
