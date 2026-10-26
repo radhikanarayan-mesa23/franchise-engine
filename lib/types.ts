@@ -81,5 +81,8 @@ export interface Decision {
   reasons: Reason[]; conditions: { text: Reason; dueDate: string }[];
   whatWouldChange: Reason[]; nextStep: Reason; payback: Payback | null; plan: Plan | null;
   flags: Flag[]; signals: AiSignals | null;
+  /** Manager decision that overrides the engine, if any. */ override?: { status: Status; reason: string } | null;
+  /** First run date this applicant held a reserved slot / became an approved mover (keeps deadlines and plan dates stable). */
+  reservedSince?: string | null; approvedSince?: string | null;
   policyVersion: number; computedAt: string;
 }

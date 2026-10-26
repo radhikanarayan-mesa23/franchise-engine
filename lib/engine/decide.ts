@@ -17,6 +17,7 @@ export interface DecideInput {
   score: { total: number; parts: Record<string, number> } | null; payback: Payback | null;
   alloc: Allocation | undefined; signals: AiSignals | null; tie: { other: string } | null;
   territoryCapacity: number;
+  planStart?: string;
 }
 
 /** Fixable gaps that turn a slot win into a conditional approval. */
@@ -149,7 +150,7 @@ export function decide(d: DecideInput): Decision {
     owner: review.length && status !== "Rejected" ? "Expansion manager" : OWNER[status],
     territoryId: territory?.id ?? null, assignedPin,
     score: d.score, reasons: reasons.sort((x, y) => y.impact - x.impact), conditions, whatWouldChange: status === "Recommended for approval" ? [] : wwc,
-    nextStep, payback: d.payback, plan: movers.includes(status) ? buildPlan(app, policy, today) : null,
+    nextStep, payback: d.payback, plan: movers.includes(status) ? buildPlan(app, policy, d.planStart ?? today) : null,
     flags: d.flags, signals: d.signals, policyVersion: d.policyVersion, computedAt: today,
   };
 }

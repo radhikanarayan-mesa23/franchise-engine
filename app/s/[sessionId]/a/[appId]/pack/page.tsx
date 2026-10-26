@@ -6,7 +6,7 @@ import hi from "@/config/i18n/hi.json";
 import { getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
-import { translate } from "@/lib/ai/translator";
+import { partnerLetter, translate } from "@/lib/ai/translator";
 import { costSplit } from "@/lib/pack";
 import PrintButton from "./PrintButton";
 
@@ -38,7 +38,7 @@ export default async function Pack({ params, searchParams }: { params: Promise<{
   // Applicant-specific prose: rendered in English from codes, then translated with placeholder checks.
   const prose = [d.status, render(d.nextStep), ...d.reasons.map(render), ...d.conditions.map((c) => render(c.text)),
     ...(d.plan?.steps.flatMap((s) => [s.label, s.owner]) ?? []), ...(d.plan?.modules ?? [])];
-  const tr = await translate(prose, lang);
+  const [tr, letter] = await Promise.all([translate(prose, lang), partnerLetter(d, lang, session.policy.payback.margin_pct)]);
   let k = 0;
   const next = () => tr.lines[k++];
   const status = next(), nextStep = next();
@@ -73,6 +73,8 @@ export default async function Pack({ params, searchParams }: { params: Promise<{
       <h1>{t.pack_title}: {d.name} ({d.applicationId})</h1>
       <p style={{ color: "#555" }}>{t.stamp.replace("{v}", String(d.policyVersion)).replace("{r}", String(pinned?.runNo ?? latest.runNo)).replace("{d}", today)} · {team ? t.team_view : t.partner_view}</p>
       {tr.fallback.length > 0 && lang !== "English" && <p style={{ color: "#555" }}>{t.translated_note}</p>}
+
+      {letter && <section><p style={{ whiteSpace: "pre-wrap", lineHeight: 1.6, fontSize: 15 }}>{letter}</p><p style={{ color: "#777", fontSize: 12 }}>AI-drafted from the plan below and checked against its dates.</p></section>}
 
       <section><h2>{t.decision}</h2>
         <p><b>{t.status}:</b> {status}</p><p><b>{t.next_step}:</b> {nextStep}</p>

@@ -43,6 +43,10 @@
     "wwc_investment": 100,
     "wwc_score": 100,
     "wwc_slot": 100,
-    "wwc_territory": 100
+    "wwc_territory": 100,
+    "human_override": 120,
+    "reservation_expired": 95,
+    "wwc_override": 100,
+    "next_override": 0
   }
 }

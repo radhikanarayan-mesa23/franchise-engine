@@ -11,7 +11,7 @@ export default async function Review({ params }: { params: Promise<{ sessionId: 
   if (!(await getSession(sessionId))) notFound();
   const [[snap], actions] = await Promise.all([latestSnapshots(sessionId, 1), getReviewActions(sessionId)]);
   const done = new Map(actions.map((a) => [a.applicationId, a]));
-  const queue = snap.decisions.filter((d) => d.humanReview || d.status === "Recommended for approval");
+  const queue = snap.decisions.filter((d) => d.humanReview || d.status === "Recommended for approval" || d.override || done.has(d.applicationId));
   return (
     <main>
       <h1>Human review queue</h1>
@@ -24,8 +24,8 @@ export default async function Review({ params }: { params: Promise<{ sessionId: 
           <section key={d.applicationId} id={d.applicationId} className="review-item">
             <b><Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}`}>{d.applicationId}</Link> {d.name}</b> — {d.status} (score {d.score?.total ?? "–"})
             <ul>{questions.map((q, i) => <li key={i}>{q}</li>)}</ul>
-            {a ? <p>✔ {a.action === "confirm" ? "Confirmed" : "Overridden"}{a.reason ? `: ${a.reason}` : ""} ({a.at.slice(0, 16).replace("T", " ")})</p>
-              : <ReviewForm sessionId={sessionId} applicationId={d.applicationId} canConfirm={d.status === "Recommended for approval" || d.status === "Conditionally approved"} />}
+            {a ? <p>✔ {a.action === "confirm" ? "Confirmed" : `Overridden → ${a.action.replace("override:", "")}`}{a.reason ? `: ${a.reason}` : ""} ({a.at.slice(0, 16).replace("T", " ")})</p>
+              : <ReviewForm sessionId={sessionId} applicationId={d.applicationId} canConfirm={d.status === "Recommended for approval" || d.status === "Conditionally approved"} canApprove={Boolean(d.assignedPin)} />}
           </section>
         );
       })}

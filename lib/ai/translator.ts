@@ -2,6 +2,8 @@ import "server-only";
 import { db } from "@/lib/db/neon";
 import { chatCompletion, geminiEnabled } from "./gemini";
 import { translateLines, type TextCache } from "./translate";
+import { writeLetter } from "./planWriter";
+import type { Decision } from "@/lib/types";
 
 const mem = ((globalThis as unknown as { __feTr?: Map<string, string[]> }).__feTr ??= new Map());
 
@@ -19,6 +21,13 @@ const cache: TextCache = {
     await sql`insert into ai_signals (text_hash, signals, model) values (${key}, ${JSON.stringify(lines)}::jsonb, 'translate') on conflict do nothing`;
   },
 };
+
+const textCall = geminiEnabled()
+  ? async (system: string, user: string) => String((await chatCompletion({ temperature: 0, messages: [{ role: "system", content: system }, { role: "user", content: user }] })).content ?? "")
+  : null;
+
+/** AI partner message for an approved applicant, checked against the plan; null means use the template. */
+export const partnerLetter = (d: Decision, language: string, marginPct: number) => writeLetter(d, language, marginPct, { cache, call: textCall });
 
 export function translate(lines: string[], language: string) {
   return translateLines(lines, language, {

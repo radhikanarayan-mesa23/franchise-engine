@@ -49,6 +49,10 @@ export const CATALOG: Record<string, string> = {
   next_redirect: "Applicant to accept or decline pin {pin}.",
   next_rejected: "No action; kept on file.",
   next_review: "Expansion manager to review: {question}",
+  human_override: "Expansion manager set this to {status}: \"{reason}\".",
+  reservation_expired: "The slot reservation ended on {date}; the slot went back to the next applicant.",
+  wwc_override: "The expansion manager can revert the override in the review queue.",
+  next_override: "Decided by the expansion manager ({status}); no engine action pending.",
   text_not_read: "Free text was not read by AI; business relevance given neutral credit.",
 };
 

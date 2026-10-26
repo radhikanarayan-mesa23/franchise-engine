@@ -1,6 +1,7 @@
 import "server-only";
 import { signalsFor } from "@/lib/ai/signals";
-import { getSession, latestSnapshots, saveSnapshot } from "@/lib/db/repo";
+import { getReviewActions, getSession, latestSnapshots, saveSnapshot } from "@/lib/db/repo";
+import type { Status } from "@/lib/types";
 import { diffDecisions } from "@/lib/engine/diff";
 import { runEngine } from "@/lib/engine/run";
 
@@ -11,8 +12,13 @@ export async function rerun(sessionId: string, trigger: string) {
   const s = await getSession(sessionId);
   if (!s) throw new Error("Session not found");
   const [prev] = await latestSnapshots(sessionId, 1);
-  const ai = await signalsFor(s.applications).catch(() => ({ signals: {}, notRead: [], calls: 0 }));
-  const run = runEngine({ applications: s.applications, territories: s.territories, stores: s.stores, signals: ai.signals, policy: s.policy, policyVersion: s.policyVersion, today: todayIso() });
-  await saveSnapshot(sessionId, s.policyVersion, run, trigger);
+  const t0 = Date.now();
+  const [ai, reviews] = await Promise.all([signalsFor(s.applications).catch(() => ({ signals: {}, notRead: [], calls: 0 })), getReviewActions(sessionId)]);
+  // Latest review action per applicant: an override ("override:<status>") stands until replaced by a confirm.
+  const overrides: Record<string, { status: Status; reason: string }> = {};
+  for (const r of reviews) { if (r.action.startsWith("override:")) overrides[r.applicationId] = { status: r.action.slice(9) as Status, reason: r.reason }; else delete overrides[r.applicationId]; }
+  const since = Object.fromEntries((prev?.decisions ?? []).map((d) => [d.applicationId, { reserved: d.reservedSince ?? null, approved: d.approvedSince ?? null }]));
+  const run = runEngine({ applications: s.applications, territories: s.territories, stores: s.stores, signals: ai.signals, policy: s.policy, policyVersion: s.policyVersion, today: todayIso(), overrides, since });
+  await saveSnapshot(sessionId, s.policyVersion, run, trigger, Date.now() - t0);
   return { run, diff: diffDecisions(prev?.decisions ?? [], run.decisions) };
 }

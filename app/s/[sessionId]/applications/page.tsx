@@ -36,7 +36,7 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   return (
     <>
       <div style={{ marginBottom: 16 }}>
-        <FranchiseBento data={bentoData(ds, snap.territories, s.policy, new Date().toISOString().slice(0, 10))} title="Network overview" subtitle={`run #${snap.runNo} · estimates from policy v${snap.policyVersion}`} />
+        <FranchiseBento data={bentoData(ds, snap.territories, s.policy, new Date().toISOString().slice(0, 10))} title="Network overview" subtitle={`run #${snap.runNo}${snap.decisionMs != null ? ` · ${ds.length} decided in ${(snap.decisionMs / 1000).toFixed(1)} s` : ""} · estimates from policy v${snap.policyVersion}`} />
       </div>
       {diff.length > 0 && <div className="diff" style={{ marginBottom: 16 }}><b>Changed in the last run ({snap.trigger}):</b>
         <ul style={{ margin: "4px 0" }}>{diff.map((x) => <li key={x.applicationId}>{x.applicationId} {x.name}: {x.from ?? "new"} → {x.to ?? "removed"}{x.scoreFrom !== x.scoreTo ? ` (score ${x.scoreFrom ?? "–"} → ${x.scoreTo ?? "–"})` : ""}</li>)}</ul></div>}

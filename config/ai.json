@@ -26,5 +26,7 @@
     "PDF"
   ],
   "translate_prompt_version": 2,
-  "extract_budget_ms": 15000
+  "extract_budget_ms": 15000,
+  "plan_max_words": 250,
+  "plan_prompt_version": 1
 }

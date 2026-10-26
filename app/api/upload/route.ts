@@ -8,6 +8,7 @@ import { signalsFor } from "@/lib/ai/signals";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  const t0 = Date.now();
   const form = await req.formData();
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "Attach an .xlsx file." }, { status: 400 });
@@ -19,7 +20,8 @@ export async function POST(req: Request) {
     // AI reads free text only; failures leave rows unread and the engine decides without them.
     const ai = await signalsFor(data.applications).catch(() => ({ signals: {}, notRead: data.applications.map((a) => a.id), calls: 0 }));
     const run = runEngine({ ...data, signals: ai.signals, policy, policyVersion: policy.meta.version, today });
-    const id = await createSession({ ...data, policy, policyVersion: policy.meta.version }, run, "upload");
+    const decisionMs = Date.now() - t0;
+    const id = await createSession({ ...data, policy, policyVersion: policy.meta.version }, run, "upload", decisionMs);
     return NextResponse.json({ sessionId: id, aiCalls: ai.calls, textNotRead: ai.notRead.length });
   } catch (e) {
     return NextResponse.json({ error: `Could not read the file: ${(e as Error).message}` }, { status: 400 });
