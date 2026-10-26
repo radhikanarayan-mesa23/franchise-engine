@@ -67,7 +67,7 @@ export default function GoogleMapLayer({ apiKey, items, halos, fitKey, onSelect,
     layers.current.circles = halos.map((h) => new google.maps.Circle({ map: m, center: { lat: h.lat, lng: h.lng }, radius: h.radiusM,
       strokeColor: "#0DB8D3", strokeOpacity: 0.55, strokeWeight: 1.2, fillColor: "#0DB8D3", fillOpacity: 0.05, clickable: false }));
     layers.current.markers = items.map((it) => {
-      const size = it.selected ? new google.maps.Size(58, 37) : new google.maps.Size(44, 28);
+      const size = it.selected ? new google.maps.Size(46, 46) : new google.maps.Size(36, 36);
       const mk = new google.maps.Marker({ map: m, position: { lat: it.lat, lng: it.lng }, title: it.title, zIndex: it.selected ? 1000 : it.kind === "taken" ? 500 : 100,
         icon: { url: glassesDataUrl(it.kind, it.selected, it.contested), scaledSize: size, anchor: new google.maps.Point(size.width / 2, size.height / 2) } });
       mk.addListener("click", () => handlers.current.onSelect(it.id));

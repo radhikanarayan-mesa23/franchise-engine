@@ -160,11 +160,11 @@ export default function MapView({ sessionId, territories, outside, stores, focus
             </g>
           ))}
           {view.sts.map(({ s, x, y }) => (
-            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><image className="core" href={glassesDataUrl("store")} x={-18} y={-11} width={36} height={23} /></g>
+            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><image className="core" href={glassesDataUrl("store")} x={-15} y={-15} width={30} height={30} /></g>
           ))}
           {view.outs.map(({ o, x, y }) => (
             <g key={o.id} className={`marker ${sel?.kind === "out" && sel.id === o.id ? "sel" : ""}`} transform={`translate(${x} ${y})`} onClick={(e) => { e.stopPropagation(); setSel({ kind: "out", id: o.id }); }}>
-              <circle className="pulse" r={14} fill="rgba(165,164,255,0.35)" /><image className="core" href={glassesDataUrl("outside", sel?.kind === "out" && sel.id === o.id)} x={-18} y={-11} width={36} height={23} />
+              <circle className="pulse" r={14} fill="rgba(165,164,255,0.35)" /><image className="core" href={glassesDataUrl("outside", sel?.kind === "out" && sel.id === o.id)} x={-15} y={-15} width={30} height={30} />
               <text y={24} textAnchor="middle" fontSize={10} fill="#c9c8ff">{o.id}</text>
             </g>
           ))}
@@ -177,7 +177,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
                 onClick={(e) => { e.stopPropagation(); setSel({ kind: "pin", t: t.id, pin: p.pin }); setOffer(""); }} style={{ animation: `rise .5s ease ${i * 40}ms both` }}>
                 <circle className="pulse" r={r} fill={p.state === "taken" ? "rgba(13,184,211,0.45)" : "rgba(255,255,255,0.25)"} />
                 {p.contested && <circle r={r + 7} fill="none" stroke="#ff9f5a" strokeWidth={1.5} strokeDasharray="3 4" />}
-                <image className="core" href={glassesDataUrl(p.state as PinKind, isSel, p.contested)} x={-r * 1.4} y={-r * 0.9} width={r * 2.8} height={r * 1.8} />
+                <image className="core" href={glassesDataUrl(p.state as PinKind, isSel, p.contested)} x={-r * 1.1} y={-r * 1.1} width={r * 2.2} height={r * 2.2} />
                 <text y={r + 16} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.8)">{p.pin}</text>
               </g>
               </g>
