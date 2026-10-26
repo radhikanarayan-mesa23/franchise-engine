@@ -8,9 +8,9 @@ import pinCoords from "@/config/pins.json";
 const coords = pinCoords as unknown as Record<string, [number, number] | string>;
 const at = (pin: string) => (Array.isArray(coords[pin]) ? (coords[pin] as [number, number]) : null);
 
-export default async function PinsTab({ params, searchParams }: { params: Promise<{ sessionId: string }>; searchParams: Promise<{ t?: string }> }) {
+export default async function PinsTab({ params, searchParams }: { params: Promise<{ sessionId: string }>; searchParams: Promise<{ t?: string; p?: string }> }) {
   const { sessionId } = await params;
-  const { t: focus } = await searchParams;
+  const { t: focus, p: focusPin } = await searchParams;
   const s = (await getSession(sessionId))!;
   const [snap] = await latestSnapshots(sessionId, 1);
   const byId = new Map(snap.decisions.map((d) => [d.applicationId, d]));
@@ -58,5 +58,5 @@ export default async function PinsTab({ params, searchParams }: { params: Promis
     return { id: a.id, name: a.name, city: a.city, pin: a.pin, coord: at(a.pin), status: d?.status ?? "", cls: d ? STATUS_CLASS[d.status] : "", reason: d?.reasons[0] ? render(d.reasons[0]) : "" };
   });
   const storeMarkers = s.stores.filter((st) => !inTerritories.has(st.pin)).map((st) => ({ id: st.id, city: st.city, pin: st.pin, coord: at(st.pin) }));
-  return <MapView sessionId={sessionId} territories={cards} outside={outside} stores={storeMarkers} focus={focus ?? null} />;
+  return <MapView sessionId={sessionId} territories={cards} outside={outside} stores={storeMarkers} focus={focus ?? null} focusPin={focusPin ?? null} />;
 }

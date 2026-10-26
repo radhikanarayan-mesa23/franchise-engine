@@ -33,11 +33,12 @@ function Streets({ seed }: { seed: string }) {
   );
 }
 
-export default function MapView({ sessionId, territories, outside, stores, focus }: { sessionId: string; territories: TerritoryCard[]; outside: OutsideMarker[]; stores: StoreMarker[]; focus: string | null }) {
+export default function MapView({ sessionId, territories, outside, stores, focus, focusPin = null }: { sessionId: string; territories: TerritoryCard[]; outside: OutsideMarker[]; stores: StoreMarker[]; focus: string | null; focusPin?: string | null }) {
   const router = useRouter();
   const cities = [...new Set([...territories.map((t) => t.city), ...outside.map((o) => o.city)])].filter(Boolean);
   const [city, setCity] = useState(territories.find((t) => t.id === focus)?.city ?? cities[0] ?? "");
-  const [sel, setSel] = useState<{ kind: "pin"; t: string; pin: string } | { kind: "out"; id: string } | null>(null);
+  const [sel, setSel] = useState<{ kind: "pin"; t: string; pin: string } | { kind: "out"; id: string } | null>(
+    focus && focusPin && territories.some((t) => t.id === focus && t.pins.some((p) => p.pin === focusPin)) ? { kind: "pin", t: focus, pin: focusPin } : null);
   const [q, setQ] = useState("");
   const [offer, setOffer] = useState("");
   const [edit, setEdit] = useState<Record<string, { openSlots: string; priority: string; pins: string }>>({});

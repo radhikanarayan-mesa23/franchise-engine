@@ -20,7 +20,7 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
         const p = pipelineFor(d, events, s.policy);
         const base = `/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}`;
         return (
-          <div className="card appr" key={d.applicationId}>
+          <div className="card appr" key={d.applicationId} id={d.applicationId}>
             <div className="appr-head">
               <div style={{ minWidth: 0 }}>
                 <div className="appr-name"><Link href={base}>{d.applicationId}</Link> {d.name}</div>

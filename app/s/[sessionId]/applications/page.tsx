@@ -14,9 +14,24 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   const ds = snap.decisions;
   const diff = prev ? diffDecisions(prev.decisions, ds) : [];
   const city = new Map(s.applications.map((a) => [a.id, a.city]));
+  const applied = new Map(s.applications.map((a) => [a.id, a.pin]));
+  const base = `/s/${sessionId}`;
+  // Where each case is handled: one button per row.
+  const action = (d: (typeof ds)[number]): Row["action"] => {
+    const id = encodeURIComponent(d.applicationId);
+    if (d.humanReview && d.status !== "Recommended for approval" && d.status !== "Conditionally approved") return { label: "Review ⚑", href: `${base}/review#${id}` };
+    switch (d.status) {
+      case "Recommended for approval": case "Conditionally approved": return { label: "Approve →", href: `${base}/approved#${id}` };
+      case "Redirected": return { label: "See on map →", href: `${base}/pins?t=${d.territoryId}&p=${d.assignedPin}` };
+      case "On hold": return { label: "Message & link →", href: `${base}/a/${id}#message` };
+      case "Waitlisted": return { label: "Territory →", href: `${base}/pins?t=${d.territoryId ?? ""}` };
+      case "Human review": return { label: "Review ⚑", href: `${base}/review#${id}` };
+      default: return { label: "Why →", href: `${base}/a/${id}` };
+    }
+  };
   const rows: Row[] = ds.map((d) => ({
     id: d.applicationId, name: d.name, city: city.get(d.applicationId) ?? "", status: d.status, cls: STATUS_CLASS[d.status], group: STATUS_ORDER.indexOf(d.status),
-    owner: d.owner, review: d.humanReview, score: d.score?.total ?? null, pin: d.assignedPin, reason: d.reasons[0] ? render(d.reasons[0]) : "", next: render(d.nextStep),
+    owner: d.owner, review: d.humanReview, score: d.score?.total ?? null, pin: d.assignedPin, appliedPin: applied.get(d.applicationId) ?? null, action: action(d), reason: d.reasons[0] ? render(d.reasons[0]) : "", next: render(d.nextStep),
   }));
   return (
     <>

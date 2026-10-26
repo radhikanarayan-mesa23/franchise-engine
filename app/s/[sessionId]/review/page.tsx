@@ -21,7 +21,7 @@ export default async function Review({ params }: { params: Promise<{ sessionId: 
         const a = done.get(d.applicationId);
         const questions = d.reviewReasons.length ? d.reviewReasons.map(render) : ["Confirm this recommendation before agreement and fee."];
         return (
-          <section key={d.applicationId} style={{ borderTop: "1px solid #ddd", padding: "12px 0" }}>
+          <section key={d.applicationId} id={d.applicationId} className="review-item">
             <b><Link href={`/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}`}>{d.applicationId}</Link> {d.name}</b> — {d.status} (score {d.score?.total ?? "–"})
             <ul>{questions.map((q, i) => <li key={i}>{q}</li>)}</ul>
             {a ? <p>✔ {a.action === "confirm" ? "Confirmed" : "Overridden"}{a.reason ? `: ${a.reason}` : ""} ({a.at.slice(0, 16).replace("T", " ")})</p>

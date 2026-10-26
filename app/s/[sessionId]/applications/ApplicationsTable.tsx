@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-export interface Row { id: string; name: string; city: string; status: string; cls: string; group: number; owner: string; review: boolean; score: number | null; pin: string | null; reason: string; next: string }
+export interface Row { id: string; name: string; city: string; status: string; cls: string; group: number; owner: string; review: boolean; score: number | null; pin: string | null; appliedPin: string | null; reason: string; next: string; action: { label: string; href: string } }
 
 export default function ApplicationsTable({ sessionId, rows, statuses }: { sessionId: string; rows: Row[]; statuses: string[] }) {
   const [filter, setFilter] = useState<string>("All");
@@ -30,14 +30,15 @@ export default function ApplicationsTable({ sessionId, rows, statuses }: { sessi
         </div>
       </div>
       <table>
-        <thead><tr><th>ID</th><th>Applicant</th><th>Status</th><th>Owner</th><th>Score</th><th>Pin</th><th>Main reason</th><th>Next step</th></tr></thead>
+        <thead><tr><th>ID</th><th>Applicant</th><th>Status</th><th>Owner</th><th>Score</th><th>Pin</th><th>Main reason</th><th>Next step</th><th></th></tr></thead>
         <tbody>{shown.map((r) => (
           <tr key={r.id}>
             <td><Link href={`/s/${sessionId}/a/${encodeURIComponent(r.id)}`}>{r.id}</Link></td>
             <td>{r.name}<div className="muted small">{r.city}</div></td>
             <td><span className={`pill ${r.cls}`}>{r.status}</span>{r.review && <div className="small" style={{ color: "var(--accent-2)" }}>⚑ needs a human</div>}</td>
-            <td>{r.owner}</td><td>{r.score ?? "–"}</td><td>{r.pin ?? "–"}</td>
+            <td>{r.owner}</td><td>{r.score ?? "–"}</td><td>{r.pin && r.appliedPin && r.pin !== r.appliedPin ? <span title="Applied pin → offered pin"><s className="muted">{r.appliedPin}</s> → <b>{r.pin}</b></span> : r.pin ?? "–"}</td>
             <td className="small">{r.reason}</td><td className="small">{r.next}</td>
+            <td><Link className="btn row-act" href={r.action.href}>{r.action.label}</Link></td>
           </tr>
         ))}</tbody>
       </table>

@@ -4,6 +4,7 @@ import { getReviewActions, getSession, getStageEvents, latestSnapshots, latestTo
 import { headers } from "next/headers";
 import { translate } from "@/lib/ai/translator";
 import UpdateLinkButton from "./UpdateLinkButton";
+import CopyButton from "@/components/CopyButton";
 import brand from "@/config/brand.json";
 import { pipelineFor } from "@/lib/session/stage";
 import { render } from "@/lib/reasons/render";
@@ -44,9 +45,10 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       <p><b>Owner:</b> {d.owner} · <b>Next step:</b> {render(d.nextStep)}</p>
       <p><b>Territory:</b> {d.territoryId ?? "none"} · <b>Assigned pin:</b> {d.assignedPin ?? "none"} · <b>Applied pin:</b> {app.pin}</p>
 
-      {needsApplicant && (<section style={{ background: "rgba(255,255,255,0.05)", padding: 8, borderRadius: 6 }}>
-        <b>Drafted update message ({app.language}, not sent):</b>
-        <div style={{ whiteSpace: "pre-wrap" }}>{draftLines.join("\n")}</div>
+      {needsApplicant && (<section id="message" className="card" style={{ padding: 14 }}>
+        <b>Message to applicant ({app.language})</b> <span className="muted small">— drafted, not sent automatically: the workbook has no email column, so copy it to email or WhatsApp.</span>
+        <div style={{ whiteSpace: "pre-wrap", margin: "8px 0" }}>{draftLines.join("\n")}</div>
+        <CopyButton text={draftLines.join("\n")} />
         {linkUrl ? <p>Update link: <a href={linkUrl}>{linkUrl}</a></p> : <UpdateLinkButton sessionId={sessionId} applicationId={id} />}
       </section>)}
 
