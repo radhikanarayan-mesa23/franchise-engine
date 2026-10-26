@@ -7,7 +7,7 @@ import { allocate, type Candidate } from "./allocate";
 import { decide } from "./decide";
 import { runGates } from "./gates";
 import { nearestStore } from "./geo";
-import { computePayback } from "./payback";
+import { proximityFor } from "./proximity";
 import { fastestLaunch, type Policy } from "./policy";
 import { hasSpace, scoreApplication } from "./score";
 import { resolveTerritories } from "./territory";
@@ -35,9 +35,11 @@ export function runEngine(input: RunInput) {
     const gate = runGates(app, flags, views, pinOwner, stores, policy);
     const territory = "territory" in gate ? gate.territory : null;
     const sig = signals[app.id] ?? null;
-    const payback = territory ? computePayback(territory.tier, app.pin, stores, policy) : null;
-    const score = territory && payback && gate.kind !== "hold_critical" ? scoreApplication(app, territory.tier, flags, payback, sig, policy) : null;
-    return { app, flags, gate, territory, sig, payback, score };
+    const proximity = proximityFor(app.pin, stores, policy);
+    // Advisory cannibalisation flag: shown to people, never used to change score or sales.
+    const allFlags = proximity?.near ? [...flags, { code: "near_existing_store", severity: "info" as const, field: "Pin code", params: { store: proximity.storeId, km: proximity.km } }] : flags;
+    const score = territory && gate.kind !== "hold_critical" ? scoreApplication(app, territory.tier, flags, sig, policy) : null;
+    return { app, flags: allFlags, gate, territory, sig, proximity, score };
   });
 
   const overrides = input.overrides ?? {};
@@ -64,7 +66,7 @@ export function runEngine(input: RunInput) {
     const tie = ties.find((t) => t.a === p.app.id || t.b === p.app.id);
     return decide({
       app: p.app, flags: p.flags, gate: p.gate, policy, today, policyVersion: input.policyVersion ?? policy.meta.version,
-      score: p.score ? { total: p.score.total, parts: p.score.parts } : null, payback: p.payback,
+      score: p.score ? { total: p.score.total, parts: p.score.parts } : null, proximity: p.proximity,
       alloc: alloc.get(p.app.id), signals: p.sig, tie: tie ? { other: tie.a === p.app.id ? tie.b : tie.a } : null,
       territoryCapacity: p.territory?.realCapacity ?? 0, planStart: since[p.app.id]?.approved ?? undefined,
     });

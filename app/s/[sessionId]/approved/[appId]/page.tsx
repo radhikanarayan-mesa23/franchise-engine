@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildProfile } from "@/lib/profile";
 import { STATUS_CLASS } from "@/lib/ui";
-import { Bars, ProjectionChart, SplitBar, Timeline } from "@/components/charts";
+import { Bars, Timeline } from "@/components/charts";
 import SnapshotActions from "./SnapshotActions";
 import PipelineAction from "@/components/PipelineAction";
 import brand from "@/config/brand.json";
@@ -20,8 +20,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
   // Language toggle (this view only): fixed labels and the engine's prose, translated with placeholder checks; numbers stay as-is.
   const want = (await searchParams).lang;
   const lang = (["English", "Kannada", "Hindi"] as const).find((l) => l === want) ?? "English";
-  const LABELS = ["Investment committed", "Projected partner sales", "Projected brand revenue", "Partner break-even", "Partner profit vs investment (₹ lakh, estimate)",
-    "What the brand earns", "Scenario", "Partner sales", "Royalty", "Brand total", "Partner payback by scenario", "Investment", "Setup cost split", "Readiness score",
+  const LABELS = ["Investment committed", "Readiness score", "Territory", "Launch", "Investment", "Nearest existing store",
     "Applicant details", "Why approved", "Conditions", "Risks and review", "Next step:", "Onboarding plan", "Training", "Retail experience", "Current / past business",
     "Space", "Space size", "Floor", "Target launch", "Preferred language", "Notes", "AI summary", "Business relevance", "Status", "No open risks."];
   const prose = [...p.reasons, ...p.conditions.map((c) => c.text), p.nextStep, d.status, ...(d.plan?.modules ?? [])];
@@ -30,11 +29,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
   const tmap = new Map(all.map((x, i) => [x, tr?.lines[i] ?? x]));
   const T = (x: string) => tmap.get(x) ?? x;
   const self = `/s/${sessionId}/approved/${encodeURIComponent(id)}`;
-  // Snapshots saved before projections existed lack these fields; show what is there.
-  const pb = d.payback?.projection?.cumulativeProfit ? d.payback : null;
-  const base = pb?.projection.scenarios.find((s) => s.name === "Base") ?? pb?.projection.scenarios[0];
   const enc = encodeURIComponent(id);
-  const years = pb ? pb.projection.months / 12 : 0;
   return (
     <div className="snapshot">
       <div className="noprint chips" style={{ justifyContent: "flex-end", margin: "0 0 10px" }}>
@@ -57,31 +52,14 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
         </div>
         {p.approved && <div className="noprint"><PipelineAction sessionId={sessionId} applicationId={id} confirmed={p.confirmed}
           next={p.pipeline?.next ? { id: p.pipeline.next.id, label: p.pipeline.next.label, owner: p.pipeline.next.owner } : null} /></div>}
-        <SnapshotActions jsonHref={`/api/profile?sessionId=${sessionId}&appId=${enc}`} xlsxHref={`/api/pack-xlsx?sessionId=${sessionId}&appId=${enc}`} packHref={`/s/${sessionId}/a/${enc}/pack`} />
+        <SnapshotActions jsonHref={`/api/profile?sessionId=${sessionId}&appId=${enc}`} packHref={`/s/${sessionId}/a/${enc}/pack`} />
       </div>
 
       <div className="strip" style={{ marginBottom: 16 }}>
         <div className="stat"><div><span className="label">{T("Investment committed")}</span><b>{L(p.investment?.committedLakh)}</b><span className="small muted">{p.investment ? `${p.investment.multiple}× the ${t?.tier} minimum of ${L(p.investment.tierMinimumLakh)}` : ""}</span></div></div>
-        <div className="stat"><div><span className="label">{T("Projected partner sales")} ({years} yrs, base)</span><b>{L(base?.salesLakh)}</b><span className="small muted">Year 1: {L(pb?.projection.year1.salesLakh)}</span></div></div>
-        <div className="stat"><div><span className="label">{T("Projected brand revenue")} ({years} yrs)</span><b>{L(base?.brandTotalLakh)}</b><span className="small muted">Fee {L(pb?.projection.franchiseFeeLakh)} + {p.assumptions.royaltyPct}% royalty</span></div></div>
-        <div className="stat"><div><span className="label">{T("Partner break-even")}</span><b>{pb?.breakEvenMonth ? `Month ${pb.breakEvenMonth}` : "Beyond horizon"}</b><span className="small muted">Readiness score {d.score?.total ?? "–"}/100</span></div></div>
-      </div>
-
-      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "minmax(0,1.6fr) minmax(0,1fr)" }} className="snap-row">
-        <div className="card">
-          <h3 style={{ marginTop: 0 }}>{T("Partner profit vs investment (₹ lakh, estimate)")}</h3>
-          {!pb && <p className="muted">This run predates revenue projections. Make any change (or re-upload) to recompute.</p>}
-          {pb && <ProjectionChart monthly={pb.projection.cumulativeProfit} breakEven={pb.breakEvenMonth} target={pb.setupCostLakh} />}
-          <p className="small muted">Orange: cumulative profit, base scenario; shaded band: low to high. The partner breaks even where it crosses the setup cost. Sales ramp up over the first months{pb?.cannibalised ? `, cut because an existing store is ${pb.nearestStoreKm} km away` : ""}. Margin {p.assumptions.marginPct}%.</p>
-        </div>
-        <div className="card">
-          <h3 style={{ marginTop: 0 }}>{T("What the brand earns")} ({years} yrs)</h3>
-          <table><thead><tr><th>{T("Scenario")}</th><th>{T("Partner sales")}</th><th>{T("Royalty")}</th><th>{T("Brand total")}</th></tr></thead>
-            <tbody>{pb?.projection.scenarios.map((s) => <tr key={s.name}><td>{s.name}</td><td>{L(s.salesLakh)}</td><td>{L(s.royaltyLakh)}</td><td><b>{L(s.brandTotalLakh)}</b></td></tr>)}</tbody></table>
-          <p className="small muted">Brand total = franchise fee {L(pb?.projection.franchiseFeeLakh)} + {p.assumptions.royaltyPct}% royalty on partner sales. Assumptions are editable on the Policy tab.</p>
-          <h3>{T("Partner payback by scenario")}</h3>
-          <table><tbody>{pb?.scenarios.map((s) => <tr key={s.name}><td>{s.name} ({s.salesPct}% of expected sales)</td><td>{s.breakEvenMonth ? `month ${s.breakEvenMonth}` : "beyond horizon"}</td></tr>)}</tbody></table>
-        </div>
+        <div className="stat"><div><span className="label">{T("Readiness score")}</span><b>{d.score?.total ?? "–"}/100</b><span className="small muted">{d.score ? `${Object.keys(d.score.parts).length} weighted factors` : "not scored"}</span></div></div>
+        <div className="stat"><div><span className="label">{T("Territory")}</span><b>{t?.id ?? "–"} · pin {d.assignedPin ?? "–"}</b><span className="small muted">{t ? `${t.city}, ${t.tier}` : ""}{d.proximity ? ` · nearest store ${d.proximity.storeId} ~${d.proximity.km} km` : ""}</span></div></div>
+        <div className="stat"><div><span className="label">{T("Launch")}</span><b>{p.pipeline?.launchDate ?? d.plan?.launchDate ?? "–"}</b><span className="small muted">{p.pipeline?.current ? p.pipeline.stages.find((x) => x.id === p.pipeline!.current)!.label : "Not started"}</span></div></div>
       </div>
 
       <div className="grid">
@@ -89,8 +67,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
           <h3 style={{ marginTop: 0 }}>{T("Investment")}</h3>
           {p.investment && <Bars rows={[{ label: `Committed vs ${t?.tier} minimum (₹ lakh)`, value: p.investment.committedLakh, max: Math.max(p.investment.committedLakh, p.investment.tierMinimumLakh) }]} />}
           <p className="small">Headroom over minimum: <b>{L(p.investment?.headroomLakh)}</b></p>
-          <h3>{T("Setup cost split")} ({L(pb?.setupCostLakh)})</h3>
-          <SplitBar parts={p.split} />
+          {d.proximity && <p className="small">{T("Nearest existing store")}: <b>{d.proximity.storeId}</b>, ~{d.proximity.km} km{d.proximity.near ? " — inside the cannibalisation radius (advisory flag)" : ""}</p>}
         </div>
         <div className="card">
           <h3 style={{ marginTop: 0 }}>{T("Readiness score")} {d.score?.total ?? "–"}/100</h3>
@@ -128,7 +105,7 @@ export default async function Snapshot({ params, searchParams }: { params: Promi
         <p className="small"><b>{T("Training")} ({d.plan.language}):</b> {d.plan.modules.map(T).join(", ")}</p>
       </div>}
 
-      <p className="small muted">Snapshot of run #{p.runNo}, policy v{p.policyVersion}, generated {p.generatedAt.slice(0, 16).replace("T", " ")} UTC. All money figures are estimates from {brand.name} policy assumptions. <Link className="noprint" href={`/s/${sessionId}/a/${enc}`}>Full decision card →</Link></p>
+      <p className="small muted">Snapshot of run #{p.runNo}, policy v{p.policyVersion}, generated {p.generatedAt.slice(0, 16).replace("T", " ")} UTC. <Link className="noprint" href={`/s/${sessionId}/a/${enc}`}>Full decision card →</Link></p>
     </div>
   );
 }

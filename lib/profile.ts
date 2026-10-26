@@ -2,7 +2,6 @@ import "server-only";
 import { getNotes, getReviewActions, getSession, getStageEvents, latestSnapshots } from "@/lib/db/repo";
 import { render } from "@/lib/reasons/render";
 import { pipelineFor } from "@/lib/session/stage";
-import { costSplit } from "@/lib/pack";
 import { gateAmounts } from "@/lib/engine/policy";
 import { round } from "@/lib/engine/gates";
 
@@ -26,12 +25,10 @@ export async function buildProfile(sessionId: string, applicationId: string) {
       committedLakh: app.investmentLakh ?? 0, tierMinimumLakh: gate.min,
       headroomLakh: round((app.investmentLakh ?? 0) - gate.min, 2), multiple: round((app.investmentLakh ?? 0) / gate.min, 2),
     },
-    split: costSplit(d, s.policy),
     pipeline: pipelineFor(d, events, s.policy),
     reasons: d.reasons.map(render), conditions: d.conditions.map((c) => ({ text: render(c.text), due: c.dueDate })),
     reviewQuestions: d.reviewReasons.map(render), nextStep: render(d.nextStep), whatWouldChange: d.whatWouldChange.map(render),
     reviews: myReviews, notes, weights: s.policy.scoring.weights as Record<string, number>,
-    assumptions: { marginPct: s.policy.payback.margin_pct, royaltyPct: s.policy.brand_economics.royalty_pct_of_sales, projectionMonths: s.policy.brand_economics.projection_months },
   };
 }
 export type Profile = NonNullable<Awaited<ReturnType<typeof buildProfile>>>;

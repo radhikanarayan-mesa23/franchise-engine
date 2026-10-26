@@ -54,8 +54,7 @@ const describe = (d: Decision) => ({
   score: d.score, reasons_by_impact: d.reasons.map(render), review_questions: d.reviewReasons.map(render),
   conditions: d.conditions.map((c) => `${render(c.text)} (due ${c.dueDate})`),
   what_would_change: d.whatWouldChange.map(render), next_step: render(d.nextStep),
-  payback_estimate: d.payback && { setup_cost_lakh: d.payback.setupCostLakh, base_break_even_month: d.payback.breakEvenMonth,
-    scenarios: d.payback.scenarios.map((s) => `${s.name}: month ${s.breakEvenMonth ?? "beyond horizon"}`), nearest_store_km: d.payback.nearestStoreKm },
+  nearest_store: d.proximity && { store: d.proximity.storeId, km: d.proximity.km, inside_cannibalisation_radius: d.proximity.near },
   ai_signals: d.signals && { relevance: d.signals.business_relevance, risk_flags: d.signals.risk_flags, contradictions: d.signals.contradictions },
   policy_version: d.policyVersion,
 });
@@ -126,7 +125,7 @@ export function sessionTools(sessionId: string) {
     },
     async get_policy() {
       const { s } = await load();
-      return { policy_version: s.policyVersion, policy: s.policy, note: "All values are editable brand policy assumptions. Payback figures are estimates." };
+      return { policy_version: s.policyVersion, policy: s.policy, note: "All values are editable brand policy assumptions." };
     },
     async update_policy({ path, value }) {
       const { s } = await load();

@@ -32,10 +32,8 @@ describe("policy-driven engine", () => {
     expect(fastestLaunch(p, true).weeks).toBeLessThan(before);
   });
 
-  it("changing margin changes payback", () => {
-    const a = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today }).decisions[0];
-    const b = runEngine({ applications: [ravi], territories: [ter01], policy: setPolicyPath(DEFAULT_POLICY, "payback.margin_pct", "30"), today }).decisions[0];
-    expect(b.payback!.breakEvenMonth!).toBeLessThan(a.payback!.breakEvenMonth!);
+  it("score weights sum to 100", () => {
+    expect(Object.values(DEFAULT_POLICY.scoring.weights).reduce((x, y) => x + y, 0)).toBe(100);
   });
 
   it("raising approve threshold changes status", () => {
@@ -44,14 +42,13 @@ describe("policy-driven engine", () => {
   });
 });
 
-describe("brand revenue projection", () => {
-  it("brand total = franchise fee + royalty on projected sales, and follows policy", () => {
-    const d = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today }).decisions[0];
-    const pr = d.payback!.projection;
-    const base = pr.scenarios.find((s) => s.name === "Base")!;
-    expect(pr.monthly).toHaveLength(DEFAULT_POLICY.brand_economics.projection_months);
-    expect(base.brandTotalLakh).toBeCloseTo(pr.franchiseFeeLakh + (base.salesLakh * DEFAULT_POLICY.brand_economics.royalty_pct_of_sales) / 100, 1);
-    const doubled = runEngine({ applications: [ravi], territories: [ter01], policy: setPolicyPath(DEFAULT_POLICY, "brand_economics.royalty_pct_of_sales", "12"), today }).decisions[0];
-    expect(doubled.payback!.projection.scenarios.find((s) => s.name === "Base")!.royaltyLakh).toBeCloseTo(base.royaltyLakh * 2, 1);
+describe("proximity flag", () => {
+  it("is advisory only and follows the policy radius", () => {
+    const store = { id: "ST-X", city: ter01.city, pin: ravi.pin!, openedYear: 2020 };
+    const base = { applications: [ravi], territories: [ter01], stores: [store], today };
+    const near = runEngine({ ...base, policy: DEFAULT_POLICY }).decisions[0];
+    expect(near.proximity).toMatchObject({ storeId: "ST-X", near: true });
+    const off = runEngine({ ...base, policy: setPolicyPath(DEFAULT_POLICY, "proximity.flag_radius_km", "0") }).decisions[0];
+    expect(off.proximity!.near).toBe(off.proximity!.km <= 0);
   });
 });

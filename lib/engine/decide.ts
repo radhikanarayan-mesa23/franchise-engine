@@ -5,7 +5,7 @@ import type { GateOutcome } from "./gates";
 import { addDays, buildPlan } from "./onboarding";
 import { round } from "./gates";
 import type { Policy } from "./policy";
-import type { AiSignals, Payback } from "@/lib/types";
+import type { AiSignals, Proximity } from "@/lib/types";
 
 const OWNER: Record<Status, Owner> = {
   "Recommended for approval": "Expansion manager", "Conditionally approved": "Applicant", "On hold": "Applicant",
@@ -14,7 +14,7 @@ const OWNER: Record<Status, Owner> = {
 
 export interface DecideInput {
   app: Application; flags: Flag[]; gate: GateOutcome; policy: Policy; today: string; policyVersion: number;
-  score: { total: number; parts: Record<string, number> } | null; payback: Payback | null;
+  score: { total: number; parts: Record<string, number> } | null; proximity: Proximity | null;
   alloc: Allocation | undefined; signals: AiSignals | null; tie: { other: string } | null;
   territoryCapacity: number;
   planStart?: string;
@@ -150,7 +150,7 @@ export function decide(d: DecideInput): Decision {
     owner: review.length && status !== "Rejected" ? "Expansion manager" : OWNER[status],
     territoryId: territory?.id ?? null, assignedPin,
     score: d.score, reasons: reasons.sort((x, y) => y.impact - x.impact), conditions, whatWouldChange: status === "Recommended for approval" ? [] : wwc,
-    nextStep, payback: d.payback, plan: movers.includes(status) ? buildPlan(app, policy, d.planStart ?? today) : null,
+    nextStep, proximity: d.proximity, plan: movers.includes(status) ? buildPlan(app, policy, d.planStart ?? today) : null,
     flags: d.flags, signals: d.signals, policyVersion: d.policyVersion, computedAt: today,
   };
 }

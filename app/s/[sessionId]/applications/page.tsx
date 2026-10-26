@@ -1,4 +1,4 @@
-import { getChat, getSession, latestSnapshots } from "@/lib/db/cached";
+import { getChat, getReviewActions, getSession, latestSnapshots } from "@/lib/db/cached";
 import { diffDecisions } from "@/lib/engine/diff";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS, STATUS_ORDER, enName, enNote } from "@/lib/ui";
@@ -10,7 +10,7 @@ import ApplicationsTable, { type Row } from "./ApplicationsTable";
 export default async function ApplicationsTab({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
   const s = (await getSession(sessionId))!;
-  const [[snap, prev], chat] = await Promise.all([latestSnapshots(sessionId, 2), getChat(sessionId, 20)]);
+  const [[snap, prev], chat, reviews] = await Promise.all([latestSnapshots(sessionId, 2), getChat(sessionId, 20), getReviewActions(sessionId)]);
   const ds = snap.decisions;
   const diff = prev ? diffDecisions(prev.decisions, ds) : [];
   const city = new Map(s.applications.map((a) => [a.id, a.city]));
@@ -38,7 +38,7 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
   return (
     <>
       <div style={{ marginBottom: 16 }}>
-        <FranchiseBento data={bentoData(ds, snap.territories, s.policy, new Date().toISOString().slice(0, 10))} title="Network overview" subtitle={`run #${snap.runNo}${snap.decisionMs != null ? ` · ${ds.length} decided in ${(snap.decisionMs / 1000).toFixed(1)} s` : ""} · estimates from policy v${snap.policyVersion}`} />
+        <FranchiseBento data={bentoData(ds, snap.territories, snap.decisionMs, new Set(reviews.map((r) => r.applicationId)))} title="Decision overview" subtitle={`run #${snap.runNo} · policy v${snap.policyVersion}`} />
       </div>
       {diff.length > 0 && <div className="diff" style={{ marginBottom: 16 }}><b>Changed in the last run ({snap.trigger}):</b>
         <ul style={{ margin: "4px 0" }}>{diff.map((x) => <li key={x.applicationId}>{x.applicationId} {x.name}: {x.from ?? "new"} → {x.to ?? "removed"}{x.scoreFrom !== x.scoreTo ? ` (score ${x.scoreFrom ?? "–"} → ${x.scoreTo ?? "–"})` : ""}</li>)}</ul></div>}

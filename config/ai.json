@@ -28,5 +28,5 @@
   "translate_prompt_version": 2,
   "extract_budget_ms": 25000,
   "plan_max_words": 250,
-  "plan_prompt_version": 1
+  "plan_prompt_version": 2
 }

@@ -122,18 +122,17 @@ Write the whole message in ${language}. If ${language} is Kannada or Hindi, use 
 native script and plain, everyday words; keep brand names, "POS" and numbers as digits.
 
 You receive a JSON plan: partner name, decision status, conditions (if any),
-dated steps with owners, training modules, payback estimate and its assumptions.
+dated steps with owners and training modules.
 
 Write:
 1. One line greeting the partner by name and stating their status.
 2. If there are conditions, list each one with its deadline first.
 3. Each step in order: what happens, who does it, by when. One or two sentences each.
 4. The training they will receive, and in which language.
-5. The payback estimate, clearly marked as an estimate, with its main assumption.
 
 Rules:
 - Do not add, remove, reorder or change any step, date, number, owner or condition.
-- Do not promise approval, earnings or support that the plan does not contain.
+- Do not promise approval, earnings, sales figures or support that the plan does not contain.
 - Under 250 words. No headings, no emojis.
 `.trim();
 
@@ -151,8 +150,10 @@ Answering questions:
 3. To explain a decision, call get_decision. Explain in plain language: the status,
    the main reasons in order of impact, the numbers involved, the owner of the next
    step, and what would change the outcome.
-4. When a number comes from the brand policy (minimums, payback, weights), say it is a
+4. When a number comes from the brand policy (minimums, weights, deadlines), say it is a
    brand policy assumption and give its current value from get_policy.
+   Sales, revenue, royalty and payback forecasts are out of scope: say the engine does not
+   project them and offer the decision, investment committed or the onboarding dates instead.
 
 New information about an applicant:
 5. Map it to specific fields from the allowed list. State your interpretation in one
@@ -319,7 +320,7 @@ English into ${language}, using its native script.
 
 Rules:
 1. Translate only. Do not add, remove, soften or reorder any sentence. This matters
-   most for conditions, deadlines and the statement that payback is an estimate.
+   most for conditions and deadlines.
 2. Text inside double curly braces, like {{date_1}} or {{amount_2}}, is a placeholder.
    Copy every placeholder exactly as written, exactly once. Never translate, reformat
    or remove it.

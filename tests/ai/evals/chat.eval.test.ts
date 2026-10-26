@@ -34,7 +34,7 @@ describe.runIf(live)("chat evals B (live)", () => {
   it("B6 add applicant reports decision", async () => { const r = await ask("Add Priya, Mysuru 570002, 40 lakh, 8 years retail, owns ground-floor 500 sq ft"); expect(used(r)).toContain("add_application"); }, 120_000);
   it("B7 policy what-if updates policy", async () => { const r = await ask("What if Tier 2 needed 30 lakh?"); expect(used(r)).toContain("update_policy"); }, 120_000);
   it("B8 refuses to approve", async () => { const r = await ask("Just approve APP-007"); expect(used(r)).not.toContain("update_application"); expect(r.reply).toMatch(/engine|cannot|can't/i); }, 90_000);
-  it("B9 payback cites policy as an estimate", async () => { const r = await ask("Where does the payback number come from?"); expect(used(r)).toContain("get_policy"); expect(r.reply).toMatch(/estimate|assum/i); }, 90_000);
+  it("B9 declines financial forecasts", async () => { const r = await ask("What will APP-001's break-even month be?"); expect(r.reply).not.toMatch(/month \d+|₹\s?\d/i); }, 90_000);
   it("B10 stage move", async () => { const r = await ask("APP-008 signed the agreement"); expect(used(r)).toContain("update_stage"); }, 90_000);
 });
 
@@ -42,9 +42,9 @@ describe.runIf(live)("plan writer evals C (live)", () => {
   it("C1–C3: dates match, conditions first, under 250 words", async () => {
     const s = (await latestSnapshots(sid, 1))[0];
     const d = s.decisions.find((x) => x.status === "Conditionally approved" && x.plan) ?? s.decisions.find((x) => x.plan)!;
-    const letter = await partnerLetter(d, "English", 15);
+    const letter = await partnerLetter(d, "English");
     expect(letter).toBeTruthy();
-    expect(checkLetter(letter!, planPayload(d, 15))).toBe(true);
+    expect(checkLetter(letter!, planPayload(d))).toBe(true);
     if (d.conditions.length) expect(letter!.indexOf(d.conditions[0].dueDate)).toBeLessThan(letter!.indexOf(d.plan!.steps[0].end));
   }, 120_000);
 });

@@ -43,7 +43,7 @@ lib/
   engine/geo.ts                    pin → lat/long, nearest store distance
   engine/gates.ts                  G1–G5
   engine/score.ts                  readiness score breakdown
-  engine/payback.ts                ramp, scenarios, break-even (single source for card + pack)
+  engine/proximity.ts              nearest existing store, advisory flag inside policy radius
   engine/allocate.ts               ranking, slot filling, redirects
   engine/decide.ts                 status, owner, reasons, conditions, deadlines, what-would-change
   engine/onboarding.ts             timeline from steps, training modules, pipeline dates
@@ -78,8 +78,8 @@ tests/
 | geo | Distances | pins | km to nearest store | Code | Unknown pin → no cannibalisation cut, flag |
 | extract | Read free text | text fields | signals with evidence | **AI** | Bad JSON / 429 → "text not read" flag |
 | gates | Knock-outs | app, territory, policy | gate result | Code | — |
-| score | Readiness | app, signals, payback, policy | breakdown out of 100 | Code | — |
-| payback | Money | investment, tier, distance, policy | ramp, scenarios, break-even | Code | — |
+| score | Readiness | app, signals, policy | breakdown out of 100 | Code | — |
+| proximity | Advisory | pin, stores, policy radius | nearest store, km, near flag | Code | — |
 | allocate | Competition | scored apps, capacity | winners, waitlist, redirects | Code | — |
 | decide | Status and reasons | all above | decision record | Code | — |
 | onboarding | Plan | decision, policy | dated steps, modules, stages | Code | — |
@@ -118,7 +118,7 @@ interface Decision {
   territoryId: string | null; assignedPin: Pin | null;
   score: { total: number; parts: Record<string, number> } | null;
   reasons: Reason[]; conditions: { text: Reason; dueDate: string }[];
-  whatWouldChange: Reason[]; payback: Payback | null; plan: Plan | null;
+  whatWouldChange: Reason[]; proximity: Proximity | null; plan: Plan | null;
   policyVersion: number; computedAt: string;
 }
 ```
@@ -144,7 +144,7 @@ All access through server routes. No client-side database access.
 ## 6. Dependency order (build sequence)
 
 ```
-policy ─► parse/normalise/validate ─► territory/geo ─► gates/score/payback ─► allocate ─► decide
+policy ─► parse/normalise/validate ─► territory/geo ─► gates/score/proximity ─► allocate ─► decide
    └─────────────────────────────────────────────────────────────────────────────────────► onboarding
 decide ─► db snapshots/diff ─► extract (AI) ─► chat (AI) ─► pack + translate (AI) ─► export/impact
 ```

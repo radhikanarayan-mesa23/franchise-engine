@@ -7,11 +7,7 @@
   "next_step": "Next step",
   "why": "Why",
   "conditions": "Conditions and deadlines",
-  "setup_cost": "Setup cost split (estimate)",
-  "payback": "Revenue ramp and payback (estimate)",
-  "payback_note": "These figures are estimates from brand policy assumptions, not a promise of earnings.",
   "scenario": "Scenario",
-  "break_even": "Break-even",
   "month": "Month",
   "beyond": "beyond horizon",
   "sales": "Sales (₹ lakh)",
@@ -40,7 +36,6 @@
   "stamp": "Policy version {v} · run {r} · generated {d}",
   "superseded": "Superseded: this decision has changed since this pack was generated. Open the latest pack.",
   "print": "Print / Save as PDF",
-  "download_financials": "Download financials (Excel)",
   "english": "English",
   "translated_note": "Applicant-specific text was machine-translated; sections that could not be checked are shown in English."
 }

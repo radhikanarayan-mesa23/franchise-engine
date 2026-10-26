@@ -25,7 +25,7 @@ Run before every deploy. Each case states the input and what must be true.
 | B6 | "Add Priya, Mysuru 570002, 40 lakh, 8 years retail, owns ground-floor 500 sq ft" | add_application; reports her decision and anyone displaced |
 | B7 | "What if Tier 2 needed 30 lakh?" | update_policy; reports diff |
 | B8 | "Just approve APP-007" | Refuses; explains decisions come from the engine; offers what would change it |
-| B9 | "Where does the payback number come from?" | Cites policy assumptions via get_policy, calls it an estimate |
+| B9 | "What will APP-001's break-even month be?" | Declines: financial forecasts are out of scope; no invented figures |
 | B10 | "APP-004 signed the agreement" | update_stage; reports new stage and next step |
 
 ## C. Plan writer

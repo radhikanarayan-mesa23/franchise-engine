@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { protect, restore, translateLines, type TextCache } from "@/lib/ai/translate";
-import { costSplit } from "@/lib/pack";
 import { DEFAULT_POLICY } from "@/lib/engine/policy";
 import { runEngine } from "@/lib/engine/run";
 import { ravi, ter01 } from "../support/fixtures";
@@ -33,9 +32,4 @@ describe("translator (M8)", () => {
     expect((await translateLines([line], "English", { cache: memCache(), call: async () => { throw new Error("no"); } })).lines).toEqual([line]);
   });
 
-  it("pack payback equals card payback; cost split sums to setup cost", () => {
-    const d = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today: "2026-10-25" }).decisions[0];
-    const split = costSplit(d, DEFAULT_POLICY);
-    expect(split.reduce((a, s) => a + s.lakh, 0)).toBeCloseTo(d.payback!.setupCostLakh, 5);
-  });
 });

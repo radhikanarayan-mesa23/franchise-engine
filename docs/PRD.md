@@ -11,7 +11,7 @@ Laser Vision, a fast-growing premium eyewear retail brand, wants many more franc
 | User | Needs |
 |---|---|
 | Expansion manager | See every decision with reasons, sign off approvals, handle flagged cases, track pipeline |
-| Franchise applicant | Know their status, what to fix or do next, their timeline, training and expected payback, in their language |
+| Franchise applicant | Know their status, what to fix or do next, their timeline and training, in their language |
 | Judges (test users) | Upload a file, ask "why", give new information, and see sensible, explained changes. No login, no help |
 
 ## 3. The nine checks
@@ -51,7 +51,7 @@ Laser Vision, a fast-growing premium eyewear retail brand, wants many more franc
 ### In scope (MVP)
 - F1 Excel ingest and validation
 - F2 Territory matching, pin rule, real capacity
-- F3 Gates, readiness score, payback estimate
+- F3 Gates, readiness score, proximity flag
 - F4 Allocation across competing applicants
 - F5 Decisions with reason codes, owners, conditions, deadlines
 - F6 Session storage, snapshots and decision diffs
@@ -82,7 +82,7 @@ Maps, footfall or real-estate data, logins, real SMS/WhatsApp sending (messages 
 - Real capacity = min(open slots, territory pins with no existing store).
 - A pin in two territories belongs to the higher-priority territory; tie goes to lower Territory ID. Flag it.
 
-### F3 Gates, score, payback
+### F3 Gates, score, proximity
 Gates (before scoring), using policy values:
 - G1 Pin in no territory → Redirect if same city has a territory with a free pin, else Rejected (kept on file).
 - G2 Pin has existing store → Redirect to a free pin in the same territory, else Waitlisted.
@@ -90,9 +90,9 @@ Gates (before scoring), using policy values:
 - G4 Investment between reject % and 100% → On hold (show financing or co-investor for the gap).
 - G5 Any critical flag → On hold.
 
-Readiness score out of 100 from policy weights: investment headroom, experience, business relevance (AI), space status, floor, size, timeline realism, payback, completeness.
+Readiness score out of 100 from policy weights: investment headroom, experience, business relevance (AI), space status, floor, size, timeline realism, completeness (weights sum to 100).
 
-Payback: base monthly sales by tier, reduced if an existing store is within the cannibalisation radius, ramped over the first months, times margin, against investment. Low/base/high scenarios. Always labelled as an estimate with assumptions.
+Proximity (advisory): nearest existing store and distance; flagged "near existing store" inside `proximity.flag_radius_km`. No sales or revenue maths; financial forecasting is out of scope.
 
 Fastest realistic launch is **derived from onboarding step durations**, never set separately.
 
@@ -132,7 +132,7 @@ Tools: get_application, get_decision, list_applications, update_application, add
 
 ### F9 Onboarding, pipeline, partner pack
 - Pipeline: Recommended → Confirmed → Agreement signed → Site checked → Fit-out → Staff hired → Trained → Store open. Each stage has owner and expected date; moving a stage recalculates later dates and flags slips.
-- Partner pack (web page with print styles, browser Save as PDF; Excel export for financials): decision summary, conditions, setup cost split, revenue ramp and payback scenarios, timeline, training plan, document checklist, current stage.
+- Partner pack (web page with print styles, browser Save as PDF): decision summary, conditions, timeline, training plan, document checklist, current stage.
 - Two views: partner view and team view (adds score breakdown, flags, history).
 - Translation: fixed text pre-translated in dictionaries; per-applicant prose via Gemini with placeholders; numbers and dates formatted in code; English toggle always visible.
 - Stamp every pack with policy version and date; mark superseded if the decision changes.
@@ -155,7 +155,7 @@ Tools: get_application, get_decision, list_applications, update_application, add
 - All AI-visible applicant text treated as data, never instructions.
 
 ## 8. Assumptions (all editable in policy)
-Tier minimum investments and space, acceptable floors, score weights and bands, payback inputs (sales by tier, margin, ramp, scenarios, cannibalisation radius and cut), onboarding step durations, deadlines, investment split.
+Tier minimum investments and space, acceptable floors, score weights and bands, proximity flag radius, onboarding step durations, deadlines.
 
 ## 9. Judging test map
 | Judge test | Covered by |
@@ -179,12 +179,10 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 | Stale explanations after policy edit | Reasons assembled from live values; policy version on decisions |
 | Judges' partial updates look like no change | Tenure-unknown value; diff shows step forward |
 | Indic scripts break in PDFs | Browser print with Noto fonts, no server PDF |
-| Invented payback read as promise | Scenarios, estimate labels, assumptions shown |
 
 ## 11. Build-time decisions (easiest to explain)
 - **Example row:** the template's grey example (APP-001 Ravi Kumar) is valid data and is kept. It is skipped only if it exactly matches the template and the judges' rows reuse APP-001. So keeping or deleting it never loses an applicant.
 - **Duplicate IDs:** both rows are kept (second becomes "APP-004 (row 7)"), both flagged critical → On hold.
-- **Setup cost for payback** = tier minimum investment (policy `payback.setup_cost_basis`). Ramp, scenarios, horizon and investment split added to policy.
 - **Text not read by AI** → business relevance gets neutral credit (`scoring.business_relevance.unread` = 60%).
 - **Fastest launch** derived from onboarding steps in weeks, rounded up to months with `calendar.weeks_per_month`; `timeline_months` in policy is informational only.
 - **Winner with middle-band score and no fixable gap** → status "Human review" (owner Expansion manager).
@@ -197,4 +195,4 @@ Tier minimum investments and space, acceptable floors, score weights and bands, 
 - **Contradictions:** a winner with a contradiction becomes Conditionally approved with a "confirm {field}" condition, and is flagged for review. AI risk flags only add human review; they never change score or status.
 - **AI gateway:** Google Gemini models only, reached only through OpenRouter (OPENROUTER_API_KEY), pinned to Google's own infrastructure with no provider fallback. Default model google/gemini-3.7-flash (config/ai.json, overridable with GEMINI_MODEL).
 - **No literals in lib/engine:** business values come from policy.json; reason display order from config/reasons.json; only /100 percent conversions remain.
-- **Brand revenue (estimate):** franchise fee (its share of setup cost) + royalty % on projected partner sales over `brand_economics.projection_months`; royalty % is an assumption in policy.
+- **Out of scope:** sales, revenue, royalty and payback forecasts were removed; the engine makes decisions only.

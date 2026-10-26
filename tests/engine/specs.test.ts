@@ -42,8 +42,8 @@ describe("missing specs", () => {
 
   it("plan letter check: dates must survive exactly and length is capped (C1, C3)", () => {
     const d = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today }).decisions[0];
-    const pl = planPayload(d, 15);
-    const good = `Dear Ravi, you are recommended. ${pl.steps.map((s) => `${s.step} by ${s.by}.`).join(" ")} Payback is an estimate.`;
+    const pl = planPayload(d);
+    const good = `Dear Ravi, you are recommended. ${pl.steps.map((s) => `${s.step} by ${s.by}.`).join(" ")} Welcome aboard.`;
     expect(checkLetter(good, pl)).toBe(true);
     expect(checkLetter(good.replace(pl.steps[0].by, "next month"), pl)).toBe(false);
     expect(checkLetter(good + " word".repeat(300), pl)).toBe(false);

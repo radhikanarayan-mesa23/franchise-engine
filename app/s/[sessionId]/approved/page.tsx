@@ -24,17 +24,17 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
             <div className="appr-head">
               <div style={{ minWidth: 0 }}>
                 <div className="appr-name"><Link href={base}>{d.applicationId}</Link> {(() => { const a = s.applications.find((x) => x.id === d.applicationId); return a ? enName(a) : d.name; })()}</div>
-                <div className="small muted">{d.territoryId} · pin {d.assignedPin} · score {d.score?.total}</div>
+                <div className="small muted">{d.territoryId} · pin {d.assignedPin}</div>
               </div>
               <span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status === "Recommended for approval" ? "Recommended" : "Conditional"}</span>
             </div>
             <div className="appr-kpis">
               <div><span>Investing</span><b>₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh}L</b></div>
-              <div><span>Brand rev ({(d.payback?.projection?.months ?? 0) / 12}y)</span><b>₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh}L</b></div>
-              <div><span>Break-even</span><b>{d.payback?.breakEvenMonth ? `M${d.payback.breakEvenMonth}` : "–"}</b></div>
+              <div><span>Readiness</span><b>{d.score?.total ?? "–"}<small className="muted">/100</small></b></div>
+              <div><span>Launch</span><b style={{ whiteSpace: "nowrap" }}>{p?.launchDate ? new Date(p.launchDate + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit", timeZone: "UTC" }) : "–"}</b></div>
             </div>
             <div className="appr-body small">
-              <div><span className="muted">Stage</span> <b>{p?.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b>{p?.slipped ? <span style={{ color: "var(--warn)" }}> ⚠ +{p.slipDays}d</span> : null} <span className="muted">· launch {p?.launchDate}</span></div>
+              <div><span className="muted">Stage</span> <b>{p?.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b>{p?.slipped ? <span style={{ color: "var(--warn)" }}> ⚠ +{p.slipDays}d</span> : null}</div>
               {d.conditions.length > 0 && <div className="appr-cond" title={d.conditions.map((c) => `${render(c.text)} — by ${c.dueDate}`).join("\n")}>
                 <span className="muted">Condition</span> {render(d.conditions[0].text)} <span className="muted">by {d.conditions[0].dueDate}</span>{d.conditions.length > 1 ? ` +${d.conditions.length - 1}` : ""}</div>}
             </div>

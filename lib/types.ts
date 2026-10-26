@@ -54,24 +54,7 @@ export interface AiSignals {
   summary: string;
 }
 
-export interface Payback {
-  setupCostLakh: number;
-  monthlySalesLakh: number;
-  cannibalised: boolean;
-  nearestStoreKm: number | null;
-  scenarios: { name: string; salesPct: number; breakEvenMonth: number | null; monthlyProfitLakh: number }[];
-  breakEvenMonth: number | null;
-  ramp: { month: number; salesLakh: number; profitLakh: number; cumulativeLakh: number }[];
-  /** Projection over policy.brand_economics.projection_months, per scenario: partner sales/profit and brand earnings. */
-  projection: {
-    months: number; royaltyPct: number; franchiseFeeLakh: number;
-    scenarios: { name: string; salesLakh: number; partnerProfitLakh: number; royaltyLakh: number; brandTotalLakh: number }[];
-    monthly: { month: number; low: number; base: number; high: number }[];
-    /** Cumulative partner profit per scenario, to compare against the setup cost. */
-    cumulativeProfit: { month: number; low: number; base: number; high: number }[];
-    year1: { salesLakh: number; royaltyLakh: number };
-  };
-}
+export interface Proximity { storeId: string; km: number; near: boolean }
 
 export interface PlanStep { id: string; label: string; owner: string; start: string; end: string; weeks: number }
 export interface Plan { steps: PlanStep[]; launchDate: string; modules: string[]; language: Language }
@@ -82,7 +65,7 @@ export interface Decision {
   territoryId: string | null; assignedPin: Pin | null;
   score: { total: number; parts: Record<string, number> } | null;
   reasons: Reason[]; conditions: { text: Reason; dueDate: string }[];
-  whatWouldChange: Reason[]; nextStep: Reason; payback: Payback | null; plan: Plan | null;
+  whatWouldChange: Reason[]; nextStep: Reason; proximity: Proximity | null; plan: Plan | null;
   flags: Flag[]; signals: AiSignals | null;
   /** Manager decision that overrides the engine, if any. */ override?: { status: Status; reason: string } | null;
   /** First run date this applicant held a reserved slot / became an approved mover (keeps deadlines and plan dates stable). */

@@ -1,4 +1,4 @@
-import type { AiSignals, Application, Flag, Payback, Tier } from "@/lib/types";
+import type { AiSignals, Application, Flag, Tier } from "@/lib/types";
 import { fastestLaunch, type Policy } from "./policy";
 import { round } from "./gates";
 
@@ -18,7 +18,7 @@ export function sizeBand(a: Application, tier: Tier, policy: Policy): keyof Poli
 }
 
 /** Readiness score out of 100. Every part is weight × a policy percentage, so it can be inspected. */
-export function scoreApplication(a: Application, tier: Tier, flags: Flag[], payback: Payback, signals: AiSignals | null, policy: Policy) {
+export function scoreApplication(a: Application, tier: Tier, flags: Flag[], signals: AiSignals | null, policy: Policy) {
   const s = policy.scoring, w = s.weights;
   const pct = (weight: number, p: number) => round((weight * p) / 100);
   const bandPct = <T extends { pct_of_weight: number }>(bands: T[], ok: (b: T) => boolean) => bands.find(ok)?.pct_of_weight ?? 0;
@@ -40,8 +40,6 @@ export function scoreApplication(a: Application, tier: Tier, flags: Flag[], payb
     floor: pct(w.floor, s.floor[(a.floor ?? "Not known") as keyof typeof s.floor] ?? 0),
     size: pct(w.size, s.size[sizeBand(a, tier, policy)]),
     timeline: pct(w.timeline, s.timeline[timelineBand(a, policy).band]),
-    payback: pct(w.payback, bandPct(s.payback_months, (b) => payback.breakEvenMonth !== null && payback.breakEvenMonth <= b.at_most) ||
-      s.payback_months[s.payback_months.length - 1].pct_of_weight),
     completeness: round(Math.max(0, w.completeness - s.completeness_penalty_per_blank * (blanks + softCount))),
   };
   const total = round(Object.values(parts).reduce((x, y) => x + y, 0));

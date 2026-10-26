@@ -62,10 +62,7 @@ export default async function Card({ params }: { params: Promise<{ sessionId: st
       {d.score && (<><h3>Score {d.score.total}/100</h3>
         <table cellPadding={4}><tbody>{Object.entries(d.score.parts).map(([k, v]) => <tr key={k}><td>{k.replace(/_/g, " ")}</td><td>{v} / {w[k]}</td></tr>)}</tbody></table></>)}
 
-      {d.payback && (<><h3>Payback (estimate)</h3>
-        <p>Setup cost ₹{d.payback.setupCostLakh} lakh · expected sales ₹{d.payback.monthlySalesLakh} lakh/month at full ramp
-          {d.payback.cannibalised ? ` (cut: existing store ${d.payback.nearestStoreKm} km away)` : ""} · margin {session.policy.payback.margin_pct}%.</p>
-        <ul>{d.payback.scenarios.map((s) => <li key={s.name}>{s.name} ({s.salesPct}% of sales): break-even {s.breakEvenMonth ? `month ${s.breakEvenMonth}` : "beyond horizon"}</li>)}</ul></>)}
+      {d.proximity && <p className="small"><b>Nearest existing store:</b> {d.proximity.storeId}, ~{d.proximity.km} km{d.proximity.near ? " — inside the cannibalisation radius (advisory flag, does not change the decision)" : ""}</p>}
 
       {d.plan && (<><h3>Onboarding plan · launch {d.plan.launchDate}</h3>
         <ol>{d.plan.steps.map((s) => <li key={s.id}>{s.label} — {s.owner} — {s.start} → {s.end}</li>)}</ol>

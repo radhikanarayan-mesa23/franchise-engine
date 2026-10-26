@@ -29,7 +29,7 @@ const textCall = geminiEnabled()
   : null;
 
 /** AI partner message for an approved applicant, checked against the plan; null means use the template. */
-export const partnerLetter = (d: Decision, language: string, marginPct: number) => writeLetter(d, language, marginPct, { cache, call: textCall });
+export const partnerLetter = (d: Decision, language: string) => writeLetter(d, language, { cache, call: textCall });
 
 /** Fill in English for Kannada/Hindi applicant text; returns the applications that changed. */
 export const englishFor = (apps: Application[]) => addEnglish(apps, { cache, call: textCall });

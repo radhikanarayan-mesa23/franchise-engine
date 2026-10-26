@@ -22,7 +22,7 @@ describe("M9", () => {
   it("editing a weight shows a diff; invalid edits refused; reset restores defaults", async () => {
     const bad = (await editPolicy(sid, { changes: [{ path: "scoring.weights.investment", value: "40" }] })) as R;
     expect(bad.error).toMatch(/add up to 100/);
-    const ok = (await editPolicy(sid, { changes: [{ path: "scoring.weights.investment", value: "35" }, { path: "scoring.weights.experience", value: "5" }] })) as R;
+    const ok = (await editPolicy(sid, { changes: [{ path: "scoring.weights.investment", value: "35" }, { path: "scoring.weights.experience", value: "10" }] })) as R;
     expect(ok.version).toBe(2);
     expect(ok.diff.length).toBeGreaterThan(0);
     await editPolicy(sid, { reset: true });
@@ -53,13 +53,13 @@ describe("M9", () => {
 });
 
 describe("profile snapshot", () => {
-  it("handoff profile carries investment, projections, plan and reasons from the same engine output", async () => {
+  it("handoff profile carries investment, proximity, plan and reasons from the same engine output", async () => {
     const { buildProfile } = await import("@/lib/profile");
     const p = (await buildProfile(sid, "APP-001"))!;
     const d = (await latestSnapshots(sid, 1))[0].decisions.find((x) => x.applicationId === "APP-001")!;
     expect(p.approved).toBe(true);
     expect(p.investment!.committedLakh).toBe(25);
-    expect(p.decision.payback).toEqual(d.payback);
+    expect(p.decision.proximity).toEqual(d.proximity);
     expect(p.decision.plan!.steps.length).toBeGreaterThan(0);
     expect(p.reasons.length).toBeGreaterThan(0);
   });
