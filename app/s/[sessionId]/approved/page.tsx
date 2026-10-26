@@ -20,18 +20,29 @@ export default async function ApprovedTab({ params }: { params: Promise<{ sessio
         const p = pipelineFor(d, events, s.policy);
         const base = `/s/${sessionId}/a/${encodeURIComponent(d.applicationId)}`;
         return (
-          <div className="card" key={d.applicationId}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <b><Link href={base}>{d.applicationId}</Link> {d.name}</b><span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status}</span>
+          <div className="card appr" key={d.applicationId}>
+            <div className="appr-head">
+              <div style={{ minWidth: 0 }}>
+                <div className="appr-name"><Link href={base}>{d.applicationId}</Link> {d.name}</div>
+                <div className="small muted">{d.territoryId} · pin {d.assignedPin} · score {d.score?.total}</div>
+              </div>
+              <span className={`pill ${STATUS_CLASS[d.status]}`}>{d.status === "Recommended for approval" ? "Recommended" : "Conditional"}</span>
             </div>
-            <p className="small muted" style={{ margin: "6px 0" }}>{d.territoryId} · pin {d.assignedPin} · score {d.score?.total}</p>
-            <p style={{ margin: "6px 0" }} className="small">{confirmed.has(d.applicationId) ? "✔ Confirmed by expansion manager" : "Awaiting manager approval"}</p>
-            <PipelineAction sessionId={sessionId} applicationId={d.applicationId} confirmed={confirmed.has(d.applicationId)}
-              next={p?.next ? { id: p.next.id, label: p.next.label, owner: p.next.owner } : null} />
-            {d.conditions.length > 0 && <ul className="small" style={{ paddingLeft: 18 }}>{d.conditions.map((c, i) => <li key={i}>{render(c.text)} — by {c.dueDate}</li>)}</ul>}
-            {p && <p className="small">Stage: <b>{p.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b> · next: {p.next?.label ?? "—"} ({p.next?.owner}) · launch {p.launchDate}{p.slipped ? ` ⚠ +${p.slipDays} days` : ""}</p>}
-            <p className="small">Investing ₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh} lakh · brand revenue ({(d.payback?.projection?.months ?? 0) / 12} yrs) ₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh} lakh · break-even month {d.payback?.breakEvenMonth ?? "–"}</p>
-            <Link href={`/s/${sessionId}/approved/${encodeURIComponent(d.applicationId)}`}><button className="primary" style={{ width: "100%" }}>Open profile snapshot →</button></Link>
+            <div className="appr-kpis">
+              <div><span>Investing</span><b>₹{s.applications.find((a) => a.id === d.applicationId)?.investmentLakh}L</b></div>
+              <div><span>Brand rev · {(d.payback?.projection?.months ?? 0) / 12} yrs</span><b>₹{d.payback?.projection?.scenarios.find((x) => x.name === "Base")?.brandTotalLakh}L</b></div>
+              <div><span>Break-even</span><b>{d.payback?.breakEvenMonth ? `M${d.payback.breakEvenMonth}` : "–"}</b></div>
+            </div>
+            <div className="appr-body small">
+              <div><span className="muted">Stage</span> <b>{p?.current ? p.stages.find((x) => x.id === p.current)!.label : "Not started"}</b>{p?.slipped ? <span style={{ color: "var(--warn)" }}> ⚠ +{p.slipDays}d</span> : null} <span className="muted">· launch {p?.launchDate}</span></div>
+              {d.conditions.length > 0 && <div className="appr-cond" title={d.conditions.map((c) => `${render(c.text)} — by ${c.dueDate}`).join("\n")}>
+                <span className="muted">Condition</span> {render(d.conditions[0].text)} <span className="muted">by {d.conditions[0].dueDate}</span>{d.conditions.length > 1 ? ` +${d.conditions.length - 1}` : ""}</div>}
+            </div>
+            <div className="appr-foot">
+              <PipelineAction compact sessionId={sessionId} applicationId={d.applicationId} confirmed={confirmed.has(d.applicationId)}
+                next={p?.next ? { id: p.next.id, label: p.next.label, owner: p.next.owner } : null} />
+              <Link className="btn appr-profile" href={`/s/${sessionId}/approved/${encodeURIComponent(d.applicationId)}`}>Profile →</Link>
+            </div>
           </div>
         );
       })}</div>
