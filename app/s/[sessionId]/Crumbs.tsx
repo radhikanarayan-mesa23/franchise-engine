@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import brand from "@/config/brand.json";
 
-const TITLES: Record<string, string> = { upload: "Upload", applications: "Applications", approved: "Approved", pins: "Location map", review: "Review queue", policy: "Policy", a: "Applicant" };
+const TITLES: Record<string, string> = { upload: "Upload", applications: "Applications", approved: "Approved", pins: "Location map", review: "Review queue", policy: "Policy", updates: "Applicant updates", a: "Applicant" };
 
 export default function Crumbs() {
   const parts = usePathname().split("/").filter(Boolean);

@@ -15,6 +15,7 @@ export default function Sidebar({ sessionId, counts, pinned }: { sessionId: stri
     { href: `${base}/approved`, label: "Approved", icon: "check", count: counts.approved },
     { href: `${base}/pins`, label: "Location map", icon: "glasses", count: counts.territories },
     { href: `${base}/review`, label: "Review queue", icon: "shield", count: counts.review },
+    { href: `${base}/updates`, label: "Applicant updates", icon: "steps", count: counts.updates },
     { href: `${base}/policy`, label: "Policy", icon: "sliders" },
   ];
   return (

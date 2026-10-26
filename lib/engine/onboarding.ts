@@ -41,7 +41,11 @@ export function pipeline(plan: Plan, events: StageEventLike[], policy: Policy, c
   for (const st of policy.pipeline_stages) {
     const base = end(st.step);
     if (!base) continue;
-    const expected = addDays(base, shift);
+    // Stages are sequential in the pipeline view: never expect a stage before the previous one.
+    const prev = stages[stages.length - 1];
+    const floor = prev ? (prev.actual && prev.actual > prev.expected ? prev.actual : prev.expected) : null;
+    const raw = addDays(base, shift);
+    const expected = floor && raw < floor ? floor : raw;
     const actual = [...events].reverse().find((e) => e.stage === st.id)?.at ?? null;
     const slipDays = actual ? daysBetween(expected, actual) : 0;
     if (actual) shift += slipDays;

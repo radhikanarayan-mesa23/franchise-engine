@@ -34,3 +34,12 @@ describe("onboarding and pipeline (M7)", () => {
     expect(p.next!.id).toBe("agreement_signed");
   });
 });
+
+describe("pipeline ordering", () => {
+  it("a later stage is never expected before an earlier one, even for parallel steps", () => {
+    const plan = runEngine({ applications: [ravi], territories: [ter01], policy: DEFAULT_POLICY, today }).decisions[0].plan!;
+    const fitEnd = plan.steps.find((s) => s.id === "fit_out")!.end;
+    const p = pipeline(plan, [{ stage: "fit_out", at: addDays(fitEnd, 30) }], DEFAULT_POLICY, today);
+    for (let i = 1; i < p.stages.length; i++) expect(p.stages[i].expected >= p.stages[i - 1].expected).toBe(true);
+  });
+});

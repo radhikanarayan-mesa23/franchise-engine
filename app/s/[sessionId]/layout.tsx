@@ -4,6 +4,7 @@ import { getReviewActions, getSession, latestSnapshots } from "@/lib/db/repo";
 import Sidebar from "./Sidebar";
 import Crumbs from "./Crumbs";
 import ThemeToggle from "@/components/ThemeToggle";
+import { fieldsToRequest } from "@/lib/session/updateLink";
 
 export const dynamic = "force-dynamic";
 const APPROVED = ["Recommended for approval", "Conditionally approved"];
@@ -18,6 +19,7 @@ export default async function SessionLayout({ children, params }: { children: Re
   const counts = {
     all: ds.length, approved: ds.filter((d) => APPROVED.includes(d.status)).length, territories: s.territories.length,
     review: ds.filter((d) => (d.humanReview || d.status === "Recommended for approval") && !done.has(d.applicationId)).length,
+    updates: ds.filter((d) => d.status !== "Rejected" && fieldsToRequest(d).length > 0).length,
   };
   const pinned = (snap?.territories ?? []).map((t) => ({ id: t.id, city: t.city, tier: t.tier, filled: t.filled, capacity: t.realCapacity }));
   return (

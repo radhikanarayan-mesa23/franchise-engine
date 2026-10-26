@@ -23,7 +23,7 @@ export default async function ApplicationsTab({ params }: { params: Promise<{ se
     switch (d.status) {
       case "Recommended for approval": case "Conditionally approved": return { label: "Approve", href: `${base}/approved#${id}`, tone: "approve" };
       case "Redirected": return { label: "View on map", href: `${base}/pins?t=${d.territoryId}&p=${d.assignedPin}`, tone: "map" };
-      case "On hold": return { label: "Send update", href: `${base}/a/${id}#message`, tone: "message" };
+      case "On hold": return { label: "Send update", href: `${base}/updates#${id}`, tone: "message" };
       case "Waitlisted": return { label: "Territory", href: `${base}/pins?t=${d.territoryId ?? ""}`, tone: "neutral" };
       case "Human review": return { label: "Review", href: `${base}/review#${id}`, tone: "review" };
       default: return { label: "Details", href: `${base}/a/${id}`, tone: "neutral" };
