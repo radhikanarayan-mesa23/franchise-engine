@@ -1,0 +1,4 @@
+{
+  "_note": "Optional pin colour per city on the location map (stores stay grey).",
+  "city_pin_colors": { "Bengaluru": "#f5a524" }
+}

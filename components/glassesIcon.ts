@@ -10,8 +10,10 @@ const STYLE: Record<PinKind, { fill: string; stroke: string; glow: string }> = {
 };
 
 /** SVG markup: glasses glyph inside a round badge (44×44 viewBox), coloured by state. */
-export function glassesSvg(kind: PinKind, selected = false, contested = false) {
-  const s = STYLE[kind];
+export function glassesSvg(kind: PinKind, selected = false, contested = false, tint: string | null = null) {
+  const base = STYLE[kind];
+  // A city tint recolours live pins; existing stores keep their neutral grey.
+  const s = tint && kind !== "store" ? { fill: kind === "free" ? base.fill : tint, stroke: kind === "free" ? tint : "#ffffff", glow: tint + "99" } : base;
   const ring = kind === "free" ? ` stroke-dasharray="4 3"` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
     <circle cx="22" cy="22" r="20" fill="${s.glow}" opacity="${selected ? 0.9 : 0.55}"/>
@@ -24,5 +26,5 @@ export function glassesSvg(kind: PinKind, selected = false, contested = false) {
   </svg>`;
 }
 
-export const glassesDataUrl = (kind: PinKind, selected = false, contested = false) =>
-  "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(glassesSvg(kind, selected, contested));
+export const glassesDataUrl = (kind: PinKind, selected = false, contested = false, tint: string | null = null) =>
+  "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(glassesSvg(kind, selected, contested, tint));

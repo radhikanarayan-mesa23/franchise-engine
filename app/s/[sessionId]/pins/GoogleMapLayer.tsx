@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { glassesDataUrl, type PinKind } from "@/components/glassesIcon";
 
-export interface GeoItem { id: string; lat: number; lng: number; kind: PinKind; title: string; contested: boolean; selected: boolean }
+export interface GeoItem { id: string; lat: number; lng: number; kind: PinKind; title: string; contested: boolean; selected: boolean; tint?: string | null }
 export interface GeoHalo { id: string; lat: number; lng: number; radiusM: number; label: string }
 
 // Arctic Depths map styling (navy land, deep-blue water, cyan roads, quiet labels).
@@ -83,7 +83,7 @@ export default function GoogleMapLayer({ apiKey, items, halos, fitKey, onSelect,
     layers.current.markers = items.map((it) => {
       const size = it.selected ? new google.maps.Size(46, 46) : new google.maps.Size(36, 36);
       const mk = new google.maps.Marker({ map: m, position: { lat: it.lat, lng: it.lng }, title: it.title, zIndex: it.selected ? 1000 : it.kind === "taken" ? 500 : 100,
-        icon: { url: glassesDataUrl(it.kind, it.selected, it.contested), scaledSize: size, anchor: new google.maps.Point(size.width / 2, size.height / 2) } });
+        icon: { url: glassesDataUrl(it.kind, it.selected, it.contested, it.tint ?? null), scaledSize: size, anchor: new google.maps.Point(size.width / 2, size.height / 2) } });
       mk.addListener("click", () => handlers.current.onSelect(it.id));
       return mk;
     });

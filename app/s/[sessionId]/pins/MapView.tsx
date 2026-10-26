@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import GoogleMapLayer, { type GeoHalo, type GeoItem } from "./GoogleMapLayer";
 import { glassesDataUrl, type PinKind } from "@/components/glassesIcon";
+import mapConfig from "@/config/map.json";
+
+const CITY_TINT = mapConfig.city_pin_colors as Record<string, string>;
 
 type Coord = [number, number] | null;
 interface Applicant { id: string; name: string; status: string; cls: string; score: number | null; reason: string }
@@ -123,7 +126,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
   const popStyle = useGoogle ? { right: 14, top: 70 } : anchor ? { left: `${Math.min(Math.max(((anchor.x + (anchor.x > W * 0.55 ? -360 : 34)) / W) * 100, 1), 64)}%`, top: `${Math.min(Math.max(((anchor.y - 60) / H) * 100, 12), 46)}%` } : {};
   const focusT = selMarker?.t ?? view.ts.find((t) => t.id === focus) ?? view.ts[0];
   const selId = sel?.kind === "pin" ? `pin:${sel.t}:${sel.pin}` : sel?.kind === "out" ? `out:${sel.id}` : null;
-  const geoItems: GeoItem[] = useMemo(() => view.geoBase.map((g) => ({ ...g, selected: g.id === selId })), [view.geoBase, selId]);
+  const geoItems: GeoItem[] = useMemo(() => view.geoBase.map((g) => ({ ...g, selected: g.id === selId, tint: CITY_TINT[city] ?? null })), [view.geoBase, selId, city]);
   const onGeoSelect = useCallback((id: string) => {
     const [kind, a, b] = id.split(":");
     if (kind === "pin") { setSel({ kind: "pin", t: a, pin: b }); setOffer(""); } else if (kind === "out") setSel({ kind: "out", id: a });
@@ -177,7 +180,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
                 onClick={(e) => { e.stopPropagation(); setSel({ kind: "pin", t: t.id, pin: p.pin }); setOffer(""); }} style={{ animation: `rise .5s ease ${i * 40}ms both` }}>
                 <circle className="pulse" r={r} fill={p.state === "taken" ? "rgba(13,184,211,0.45)" : "rgba(255,255,255,0.25)"} />
                 {p.contested && <circle r={r + 7} fill="none" stroke="#ff9f5a" strokeWidth={1.5} strokeDasharray="3 4" />}
-                <image className="core" href={glassesDataUrl(p.state as PinKind, isSel, p.contested)} x={-r * 1.1} y={-r * 1.1} width={r * 2.2} height={r * 2.2} />
+                <image className="core" href={glassesDataUrl(p.state as PinKind, isSel, p.contested, CITY_TINT[city] ?? null)} x={-r * 1.1} y={-r * 1.1} width={r * 2.2} height={r * 2.2} />
                 <text y={r + 16} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.8)">{p.pin}</text>
               </g>
               </g>
