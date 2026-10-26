@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 /* Beams background, adapted from the "BeamsBackground" component: same drifting, pulsing,
    blurred light beams on a canvas. Changes: plain CSS (no Tailwind), renders children,
    tuned for our light icy-blue theme (deeper blues, more opacity), DPR handled without
-   compounding scale on resize, and motion paused for reduced-motion users.
+   compounding scale on resize, and motion paused for reduced-motion users. For speed the blur
+   is a single CSS filter on the canvas instead of a per-frame canvas blur plus a backdrop blur.
    framer-motion is the same API as the `motion` package, which this project already ships. */
 
 interface Beam { x: number; y: number; width: number; length: number; angle: number; speed: number; opacity: number; hue: number; pulse: number; pulseSpeed: number }
@@ -31,7 +32,7 @@ export function BeamsBackground({ className = "", children, intensity = "strong"
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let W = 0, H = 0;
     const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = 1; // the canvas is blurred, so full-resolution pixels buy nothing
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
       canvas.style.width = `${W}px`; canvas.style.height = `${H}px`;
@@ -57,7 +58,6 @@ export function BeamsBackground({ className = "", children, intensity = "strong"
     };
     const tick = () => {
       ctx.clearRect(0, 0, W, H);
-      ctx.filter = "blur(35px)";
       const n = beams.current.length;
       beams.current.forEach((b, i) => {
         if (!reduce) { b.y -= b.speed; b.pulse += b.pulseSpeed; }
