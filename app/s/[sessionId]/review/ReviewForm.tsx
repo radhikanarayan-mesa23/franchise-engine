@@ -16,7 +16,7 @@ export default function ReviewForm({ sessionId, applicationId, canConfirm, canAp
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
       <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (required to override)" style={{ flex: 1, minWidth: 220, padding: 4 }} />
-      {canConfirm && <button onClick={() => act("confirm")}>Confirm</button>}
+      {canConfirm && <button className="primary" onClick={() => act("confirm")}>Confirm</button>}
       <select value={to} onChange={(e) => setTo(e.target.value)} title="Status to override to">
         {canApprove && <option value="Recommended for approval">Approve</option>}<option value="On hold">Hold</option><option value="Waitlisted">Waitlist</option><option value="Rejected">Reject</option>
       </select>

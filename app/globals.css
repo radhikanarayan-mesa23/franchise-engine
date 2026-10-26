@@ -244,3 +244,8 @@ button.primary.beam-tap { overflow: visible; }
 .landing-sub { max-width: 620px; margin: 16px auto 0; color: var(--muted); font-size: 16px; line-height: 1.6; }
 .landing-card { margin-top: 26px; padding: 18px 20px; display: inline-block; text-align: left; }
 @media (max-width: 640px) { .landing-top { padding: 16px; } .landing-sub { font-size: 14.5px; } }
+
+/* Inputs: readable placeholders and a solid field in both themes */
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
+input, select, textarea { background: var(--panel); color: var(--ink); }
+.review-item input { font-weight: 500; }
