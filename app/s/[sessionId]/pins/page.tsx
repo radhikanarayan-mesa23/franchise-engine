@@ -58,5 +58,5 @@ export default async function PinsTab({ params, searchParams }: { params: Promis
     return { id: a.id, name: a.name, city: a.city, pin: a.pin, coord: at(a.pin), status: d?.status ?? "", cls: d ? STATUS_CLASS[d.status] : "", reason: d?.reasons[0] ? render(d.reasons[0]) : "" };
   });
   const storeMarkers = s.stores.filter((st) => !inTerritories.has(st.pin)).map((st) => ({ id: st.id, city: st.city, pin: st.pin, coord: at(st.pin) }));
-  return <MapView sessionId={sessionId} territories={cards} outside={outside} stores={storeMarkers} focus={focus ?? null} focusPin={focusPin ?? null} />;
+  return <MapView sessionId={sessionId} territories={cards} outside={outside} stores={storeMarkers} focus={focus ?? null} focusPin={focusPin ?? null} mapsKey={process.env.GOOGLE_MAPS_API_KEY ?? null} />;
 }

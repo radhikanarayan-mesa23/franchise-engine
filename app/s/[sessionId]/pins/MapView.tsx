@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import GoogleMapLayer, { type GeoHalo, type GeoItem } from "./GoogleMapLayer";
+import { glassesDataUrl, type PinKind } from "@/components/glassesIcon";
 
 type Coord = [number, number] | null;
 interface Applicant { id: string; name: string; status: string; cls: string; score: number | null; reason: string }
@@ -33,7 +35,7 @@ function Streets({ seed }: { seed: string }) {
   );
 }
 
-export default function MapView({ sessionId, territories, outside, stores, focus, focusPin = null }: { sessionId: string; territories: TerritoryCard[]; outside: OutsideMarker[]; stores: StoreMarker[]; focus: string | null; focusPin?: string | null }) {
+export default function MapView({ sessionId, territories, outside, stores, focus, focusPin = null, mapsKey = null }: { sessionId: string; territories: TerritoryCard[]; outside: OutsideMarker[]; stores: StoreMarker[]; focus: string | null; focusPin?: string | null; mapsKey?: string | null }) {
   const router = useRouter();
   const cities = [...new Set([...territories.map((t) => t.city), ...outside.map((o) => o.city)])].filter(Boolean);
   const [city, setCity] = useState(territories.find((t) => t.id === focus)?.city ?? cities[0] ?? "");
@@ -43,6 +45,9 @@ export default function MapView({ sessionId, territories, outside, stores, focus
   const [offer, setOffer] = useState("");
   const [edit, setEdit] = useState<Record<string, { openSlots: string; priority: string; pins: string }>>({});
   const [msg, setMsg] = useState<{ text: string; diff: Diff[] } | null>(null);
+  const [gFailed, setGFailed] = useState(false);
+  const useGoogle = Boolean(mapsKey) && !gFailed;
+  const onMapFail = useCallback(() => setGFailed(true), []);
   const [busy, setBusy] = useState(false);
 
   const view = useMemo(() => {
@@ -70,7 +75,26 @@ export default function MapView({ sessionId, territories, outside, stores, focus
       const rad = Math.min(190, Math.max(70, ...ms.map((m) => Math.hypot(m.x - cx, m.y - cy) + 46)));
       return { t, cx, cy, rad };
     });
-    return { ts, markers, halos, outs: outs.map((o, i) => ({ o, ...place(o.coord, o.pin, i + 7) })), sts: sts.map((s, i) => ({ s, ...place(s.coord, s.pin, i + 13) })) };
+    const cLat = known.length ? lat.reduce((x, y) => x + y, 0) / lat.length : 12.97, cLng = known.length ? lng.reduce((x, y) => x + y, 0) / lng.length : 77.59;
+    const geoAt = (coord: Coord, key: string, i: number) => {
+      if (coord) return { lat: coord[0], lng: coord[1] };
+      const ang = rng(key)() * Math.PI * 2 + i;
+      return { lat: cLat + Math.sin(ang) * 0.018, lng: cLng + Math.cos(ang) * 0.022 };
+    };
+    const kmBetween = (a1: number, o1: number, a2: number, o2: number) => { const R = 6371, r = Math.PI / 180, h = Math.sin(((a2 - a1) * r) / 2) ** 2 + Math.cos(a1 * r) * Math.cos(a2 * r) * Math.sin(((o2 - o1) * r) / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+    const geoMarkers = markers.map((m, i) => ({ m, ...geoAt(m.p.coord, m.p.pin, i) }));
+    const geoHalos: GeoHalo[] = ts.map((t) => {
+      const ms = geoMarkers.filter((g) => g.m.t.id === t.id);
+      const la = ms.reduce((x, g) => x + g.lat, 0) / (ms.length || 1), lo = ms.reduce((x, g) => x + g.lng, 0) / (ms.length || 1);
+      const radiusM = Math.max(600, ...ms.map((g) => kmBetween(la, lo, g.lat, g.lng) * 1000 + 450));
+      return { id: t.id, lat: la, lng: lo, radiusM, label: `${t.id} · ${t.filled}/${t.realCapacity} slots` };
+    });
+    const geoBase = [
+      ...geoMarkers.map((g) => ({ id: `pin:${g.m.t.id}:${g.m.p.pin}`, lat: g.lat, lng: g.lng, kind: g.m.p.state as PinKind, title: `${g.m.p.pin} · ${g.m.t.id} · ${g.m.p.label}`, contested: g.m.p.contested })),
+      ...outs.map((o, i) => ({ id: `out:${o.id}`, ...geoAt(o.coord, o.pin, i + 7), kind: "outside" as PinKind, title: `${o.pin} · ${o.id} (outside territories)`, contested: false })),
+      ...sts.map((st, i) => ({ id: `store:${st.id}`, ...geoAt(st.coord, st.pin, i + 13), kind: "store" as PinKind, title: `${st.pin} · existing store ${st.id}`, contested: false })),
+    ];
+    return { ts, markers, halos, geoHalos, geoBase, outs: outs.map((o, i) => ({ o, ...place(o.coord, o.pin, i + 7) })), sts: sts.map((s, i) => ({ s, ...place(s.coord, s.pin, i + 13) })) };
   }, [territories, outside, stores, city]);
 
   function find(term: string) {
@@ -96,8 +120,15 @@ export default function MapView({ sessionId, territories, outside, stores, focus
   const selMarker = sel?.kind === "pin" ? view.markers.find((m) => m.t.id === sel.t && m.p.pin === sel.pin) : null;
   const selOut = sel?.kind === "out" ? view.outs.find((m) => m.o.id === sel.id) : null;
   const anchor = selMarker ?? selOut;
-  const popStyle = anchor ? { left: `${Math.min(Math.max(((anchor.x + (anchor.x > W * 0.55 ? -360 : 34)) / W) * 100, 1), 64)}%`, top: `${Math.min(Math.max(((anchor.y - 60) / H) * 100, 12), 46)}%` } : {};
+  const popStyle = useGoogle ? { right: 14, top: 70 } : anchor ? { left: `${Math.min(Math.max(((anchor.x + (anchor.x > W * 0.55 ? -360 : 34)) / W) * 100, 1), 64)}%`, top: `${Math.min(Math.max(((anchor.y - 60) / H) * 100, 12), 46)}%` } : {};
   const focusT = selMarker?.t ?? view.ts.find((t) => t.id === focus) ?? view.ts[0];
+  const selId = sel?.kind === "pin" ? `pin:${sel.t}:${sel.pin}` : sel?.kind === "out" ? `out:${sel.id}` : null;
+  const geoItems: GeoItem[] = useMemo(() => view.geoBase.map((g) => ({ ...g, selected: g.id === selId })), [view.geoBase, selId]);
+  const onGeoSelect = useCallback((id: string) => {
+    const [kind, a, b] = id.split(":");
+    if (kind === "pin") { setSel({ kind: "pin", t: a, pin: b }); setOffer(""); } else if (kind === "out") setSel({ kind: "out", id: a });
+  }, []);
+  const onGeoClear = useCallback(() => setSel(null), []);
 
   return (
     <>
@@ -115,6 +146,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
           </div>
         </div>
 
+        {useGoogle ? <GoogleMapLayer apiKey={mapsKey!} items={geoItems} halos={view.geoHalos} fitKey={city} onSelect={onGeoSelect} onClear={onGeoClear} onFail={onMapFail} /> :
         <svg className="map" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" onClick={() => setSel(null)}>
           <defs>
             <radialGradient id="gTaken"><stop offset="0%" stopColor="#7fdcec" /><stop offset="100%" stopColor="#1B7FDC" /></radialGradient>
@@ -128,11 +160,11 @@ export default function MapView({ sessionId, territories, outside, stores, focus
             </g>
           ))}
           {view.sts.map(({ s, x, y }) => (
-            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><circle className="core" r={11} fill="#2a4a60" stroke="rgba(255,255,255,0.35)" /><text y={4} textAnchor="middle" fontSize={8} fill="#cfe6f0">ST</text></g>
+            <g key={s.id} className="marker store" transform={`translate(${x} ${y})`}><image className="core" href={glassesDataUrl("store")} x={-18} y={-11} width={36} height={23} /></g>
           ))}
           {view.outs.map(({ o, x, y }) => (
             <g key={o.id} className={`marker ${sel?.kind === "out" && sel.id === o.id ? "sel" : ""}`} transform={`translate(${x} ${y})`} onClick={(e) => { e.stopPropagation(); setSel({ kind: "out", id: o.id }); }}>
-              <circle className="pulse" r={14} fill="rgba(165,164,255,0.35)" /><circle className="core" r={8} fill="#a5a4ff" />
+              <circle className="pulse" r={14} fill="rgba(165,164,255,0.35)" /><image className="core" href={glassesDataUrl("outside", sel?.kind === "out" && sel.id === o.id)} x={-18} y={-11} width={36} height={23} />
               <text y={24} textAnchor="middle" fontSize={10} fill="#c9c8ff">{o.id}</text>
             </g>
           ))}
@@ -145,19 +177,13 @@ export default function MapView({ sessionId, territories, outside, stores, focus
                 onClick={(e) => { e.stopPropagation(); setSel({ kind: "pin", t: t.id, pin: p.pin }); setOffer(""); }} style={{ animation: `rise .5s ease ${i * 40}ms both` }}>
                 <circle className="pulse" r={r} fill={p.state === "taken" ? "rgba(13,184,211,0.45)" : "rgba(255,255,255,0.25)"} />
                 {p.contested && <circle r={r + 7} fill="none" stroke="#ff9f5a" strokeWidth={1.5} strokeDasharray="3 4" />}
-                {p.state === "taken" && <circle className="core" r={r} fill="url(#gTaken)" filter="url(#glow)" />}
-                {p.state === "free" && <circle className="core" r={r} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.75)" strokeWidth={1.6} strokeDasharray="4 3" />}
-                {p.state === "store" && <circle className="core" r={r} fill="#2a4a60" stroke="rgba(255,255,255,0.35)" />}
-                {p.state === "elsewhere" && <circle className="core" r={r - 4} fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.25)" />}
-                <text y={4} textAnchor="middle" fontSize={p.state === "taken" ? 10 : 9} fontWeight={700} fill={p.state === "taken" ? "#ffffff" : "#eef8fc"}>
-                  {p.state === "taken" ? p.label.replace("APP-", "") : p.state === "store" ? "ST" : p.state === "free" ? "+" : "↗"}
-                </text>
+                <image className="core" href={glassesDataUrl(p.state as PinKind, isSel, p.contested)} x={-r * 1.4} y={-r * 0.9} width={r * 2.8} height={r * 1.8} />
                 <text y={r + 16} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.8)">{p.pin}</text>
               </g>
               </g>
             );
           })}
-        </svg>
+        </svg>}
 
         {selMarker && (
           <div className="popover glass" style={popStyle} onClick={(e) => e.stopPropagation()}>
@@ -228,7 +254,7 @@ export default function MapView({ sessionId, territories, outside, stores, focus
           );
         })}
       </div>
-      <p className="muted small">Positions use approximate pin-code centroids (no live map service); pins without a known location are placed on a ring around the city centre. The engine, not this view, decides who gets each pin.</p>
+      <p className="muted small">Pins sit on approximate pin-code centroids over Google Maps (a drawn map is used if Maps is unavailable); pins without a known location are placed on a small ring around the city centre. The engine, not this view, decides who gets each pin.</p>
     </>
   );
 }

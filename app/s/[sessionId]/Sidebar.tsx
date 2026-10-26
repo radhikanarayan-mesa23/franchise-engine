@@ -13,7 +13,7 @@ export default function Sidebar({ sessionId, counts, pinned }: { sessionId: stri
     { href: `${base}/upload`, label: "Upload", icon: "upload" },
     { href: `${base}/applications`, label: "Applications", icon: "list", count: counts.all, also: `${base}/a/` },
     { href: `${base}/approved`, label: "Approved", icon: "check", count: counts.approved },
-    { href: `${base}/pins`, label: "Location map", icon: "pin", count: counts.territories },
+    { href: `${base}/pins`, label: "Location map", icon: "glasses", count: counts.territories },
     { href: `${base}/review`, label: "Review queue", icon: "shield", count: counts.review },
     { href: `${base}/policy`, label: "Policy", icon: "sliders" },
   ];
