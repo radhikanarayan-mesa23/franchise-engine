@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getSession, latestSnapshots, latestTokenFor } from "@/lib/db/cached";
+import { getNotes } from "@/lib/db/repo";
+import { emailEnabled } from "@/lib/email";
+import { EMAIL_NOTE, updateMessage } from "@/lib/session/notify";
+import { EmailControls, SendAll } from "./EmailControls";
 import { fieldsToRequest } from "@/lib/session/updateLink";
 import { render } from "@/lib/reasons/render";
 import { STATUS_CLASS } from "@/lib/ui";
 import CopyButton from "@/components/CopyButton";
 import UpdateLinkButton from "../a/[appId]/UpdateLinkButton";
 import CreateAllLinks from "./CreateAllLinks";
-import brand from "@/config/brand.json";
 
 export const dynamic = "force-dynamic";
 
@@ -21,21 +24,20 @@ export default async function UpdatesTab({ params }: { params: Promise<{ session
   const rows = await Promise.all(snap.decisions
     .map((d) => ({ d, fields: fieldsToRequest(d), app: s.applications.find((a) => a.id === d.applicationId)! }))
     .filter((r) => r.fields.length > 0 && r.d.status !== "Rejected")
-    .map(async (r) => ({ ...r, token: await latestTokenFor(sessionId, r.d.applicationId) })));
+    .map(async (r) => ({ ...r, token: await latestTokenFor(sessionId, r.d.applicationId), sent: (await getNotes(sessionId, r.d.applicationId)).filter((n) => n.startsWith(EMAIL_NOTE)).pop() ?? null })));
+  const canEmail = emailEnabled();
   const due = (r: (typeof rows)[number]) => r.d.conditions.map((c) => c.dueDate).sort()[0] ?? null;
   rows.sort((a, b) => (due(a) ?? "9").localeCompare(due(b) ?? "9") || a.d.applicationId.localeCompare(b.d.applicationId));
-  const message = (r: (typeof rows)[number]) => [
-    `Dear ${r.d.name}, thank you for applying to become a ${brand.name} franchise partner (${r.d.applicationId}).`,
-    `To continue, please update: ${r.fields.join(", ")}${due(r) ? ` by ${due(r)}` : ""}.`,
-    r.token ? `Update your details here: ${origin}/u/${r.token}` : "",
-    `— ${brand.support_note}`,
-  ].filter(Boolean).join("\n");
+  const message = (r: (typeof rows)[number]) => updateMessage(r.d, r.fields, r.token ? `${origin}/u/${r.token}` : null);
 
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
         <p className="muted" style={{ margin: 0, maxWidth: 720 }}>Applicants with missing or flagged information. Each gets a personal link that asks only for these fields; when they submit, the engine re-decides straight away. Messages are drafted here for you to send by email or WhatsApp.</p>
-        <CreateAllLinks sessionId={sessionId} ids={rows.filter((r) => !r.token).map((r) => r.d.applicationId)} />
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <CreateAllLinks sessionId={sessionId} ids={rows.filter((r) => !r.token).map((r) => r.d.applicationId)} />
+          {canEmail && <SendAll sessionId={sessionId} ids={rows.filter((r) => r.app.email).map((r) => r.d.applicationId)} />}
+        </div>
       </div>
       {rows.length === 0 && <div className="card">Nobody needs to send more information right now.</div>}
       <div className="grid">{rows.map((r) => {
@@ -56,6 +58,8 @@ export default async function UpdatesTab({ params }: { params: Promise<{ session
             <div className="small clamp" title={render(r.d.reasons[0])}>{render(r.d.reasons[0])}</div>
             <div className="small">{updated ? <span className="pill s-rec">✓ Applicant sent an update</span>
               : r.token ? <span className="mono" style={{ wordBreak: "break-all" }}>{origin}/u/{r.token}</span> : <span className="muted">No update link yet</span>}</div>
+            <EmailControls sessionId={sessionId} applicationId={r.d.applicationId} email={r.app.email ?? null} enabled={canEmail} />
+            {r.sent && <div className="small" style={{ color: "var(--ok)" }}>✉ {r.sent.replace(EMAIL_NOTE, "")}</div>}
             <div className="appr-foot">
               {r.token ? <CopyButton text={message(r)} label="Copy message" /> : <UpdateLinkButton sessionId={sessionId} applicationId={r.d.applicationId} />}
               <Link className="btn appr-profile" href={`/s/${sessionId}/a/${encodeURIComponent(r.d.applicationId)}#message`}>{r.app.language} message →</Link>

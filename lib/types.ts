@@ -29,6 +29,7 @@ export interface Application {
   space: SpaceStatus | null; sizeSqft: number | null; floor: Floor | null;
   targetLaunchMonths: number | null; language: Language;
   notes: string | null; source: "upload" | "chat" | "update_link";
+  /** Optional contact address (workbook "Email" column or entered by the team); never sent to AI. */ email?: string | null;
   row?: number; originalId?: string;
 }
 

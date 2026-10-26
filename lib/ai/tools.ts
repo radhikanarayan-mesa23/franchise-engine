@@ -43,6 +43,7 @@ export function applyField(a: Application, field: string, value: string): string
     case "Target launch (months)": a.targetLaunchMonths = num(v); return needNum(a.targetLaunchMonths);
     case "Preferred language": a.language = normaliseLanguage(v, DEFAULT_POLICY.training.languages, DEFAULT_POLICY.training.default_language); return null;
     case "Notes from applicant": a.notes = text(v); return null;
+    case "Email": if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return `"${v}" is not a valid email address`; a.email = v || null; return null;
     default: return `Unknown field "${field}"`;
   }
 }

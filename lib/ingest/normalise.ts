@@ -89,6 +89,7 @@ export function normaliseApplications(rows: RawRow[], languages: readonly string
       targetLaunchMonths: num(r[COL.launch]),
       language: normaliseLanguage(r[COL.language], languages, defaultLanguage),
       notes: text(r[COL.notes]),
+      email: text(r["Email"] ?? r["Email address"] ?? r["Email ID"]),
       source: "upload" as const,
       row: r.__row,
       ...(text(r[COL.language]) ? {} : { _languageBlank: true }),
